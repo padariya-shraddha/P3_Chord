@@ -29,7 +29,11 @@ public class P3
 		predecessorNode = new Node(nodeId,ip,portNo);
 		for(int i = 0; i < M; i++) {
 			int gap = (int) (nodeId+ Math.pow(2,i));
-			Finger finger = new Finger(gap, (int) (gap + Math.pow(2, i)), nodeId, ip ,portNo );
+			int range = (int) (gap + Math.pow(2, i));
+			if (range > Math.pow(2, M)) {
+				range = (int) (range % Math.pow(2, M));
+			}
+			Finger finger = new Finger(gap, range , nodeId, ip ,portNo );
 			//finger[i] = new Finger(gap,nodeId+gap, nodeId, ip ,portNo );
 			fingerTable.add(finger);
 		}
