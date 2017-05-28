@@ -37,6 +37,14 @@ public class Finger {
 		return this.successorNode;
 	}
 	
+	public String getIp(){
+		return this.ip;
+	}
+	
+	public int getPort(){
+		return this.port;
+	}
+	
 	public void  print () {
 		System.out.print("Key =" +this.key);
 		System.out.print(" : range =" +this.span);

@@ -3,6 +3,8 @@ package chord;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -66,25 +68,38 @@ class ServerThread extends Thread{
 
 	public void run() {
 		//process request
-		String line;
-        BufferedReader in = null;
-        PrintWriter out = null;
+		ObjectInputStream in = null;
+		ObjectOutputStream out = null;
+		MyNetwork modelObj = null;
         try {
-            in = new BufferedReader(new InputStreamReader(s.getInputStream())); //wait for Input message
-            out = new PrintWriter(s.getOutputStream(), true);
+        	out= new ObjectOutputStream(s.getOutputStream());
+			in=new ObjectInputStream(s.getInputStream());
+			modelObj = (MyNetwork) in.readObject();
+            
+			if (modelObj != null) {
+				System.out.println("Request received for command " + modelObj.command);
+				
+				//process query here
+				
+			}
 
-        } catch (IOException e) {
-            System.out.println("in or out failed");
-            throw new RuntimeException();
-        }
-
-        try {
-            String inputString = in.readLine();
-            System.out.println("Request received " + inputString);
-
-        } catch (Exception e) {
+			modelObj.response= true;
+			out.writeObject(modelObj);
+			
+			
+			
+        }catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
 
         }
+        finally{
+			if (s!=null){
+				try {
+					s.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 }
