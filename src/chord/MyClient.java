@@ -41,6 +41,8 @@ public class MyClient extends Thread{
 				}else{
 					System.out.println("Please enter valid command");
 				}
+				
+				line = br.readLine();
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -98,6 +100,8 @@ public class MyClient extends Thread{
 						in.close();
 						out.close();
 						s.close();
+						
+						break;
 					} catch (IOException | ClassNotFoundException e) {
 						
 					} 
