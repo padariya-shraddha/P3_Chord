@@ -1,15 +1,16 @@
 package chord;
-//shraddha
+
 public class Node {
 	private int id;
 	private String ip;
 	private int portNo;
+	private Node successor;
+	private Node predecessor;
+	
 	public Node(int id, String ip, int portNo) {
-		// TODO Auto-generated constructor stub
 		this.id =id;
 		this.ip = ip;
 		this.portNo = portNo;
-
 	}
 
 	public void setId(int id) {
@@ -36,6 +37,20 @@ public class Node {
 		return this.portNo;
 	}
 
+	public Node getSuccessor() {
+		return successor;
+	}
 
+	public void setSuccessor(Node successor) {
+		this.successor = successor;
+	}
+
+	public Node getPredecessor() {
+		return predecessor;
+	}
+
+	public void setPredecessor(Node predecessor) {
+		this.predecessor = predecessor;
+	}
 
 }

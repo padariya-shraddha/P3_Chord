@@ -34,19 +34,12 @@ public class P3
 				range = (int) (range % Math.pow(2, M));
 			}
 			Finger finger = new Finger(gap, range , nodeId, ip ,portNo );
-			//finger[i] = new Finger(gap,nodeId+gap, nodeId, ip ,portNo );
 			fingerTable.add(finger);
 		}
 	}
 
 	public static void main(String args[]) throws IOException {
-//		if (args.length != 1) {
-//			System.out.println("Please enter host information format : host_key");
-//			System.out.println("linda>");
-//			return;
-//		}
 		System.out.print("Enter Id :");
-
 		Scanner scan = new Scanner(System.in);
 		local_host_key = scan.nextInt(); // assign unique indentifier to host
 		nodeId = local_host_key;
@@ -59,7 +52,6 @@ public class P3
 		System.out.println(local_ip + " at port number: " + local_port);
 		System.out.println();
 
-		
 		initialise(local_ip, local_port);
 		
 		for(int i = 0 ;i < M;i++) {
@@ -67,9 +59,10 @@ public class P3
 			System.out.println();
 		}
 		System.out.println();
+		Node node = new Node(local_host_key, local_ip, local_port);
 		
-		MyServer server = new MyServer(serversocket, local_host_key, local_ip,local_port,fingerTable);
-		MyClient client = new MyClient(fingerTable);
+		MyServer server = new MyServer(serversocket, local_host_key, local_ip,local_port,fingerTable,node);
+		MyClient client = new MyClient(fingerTable,node);
 		server.start();
 		client.start();   
 
