@@ -14,15 +14,23 @@ public class MyServer extends Thread{
 	String ipAddr;
 	ServerSocket serverSocket;
 	Node node;
+	Finger finger;
+	Node successorNode;
+	Node predecessorNode;
+	List<Finger> fingerTable;
 	
-	public MyServer(ServerSocket serverSocket,int hostKey,String ipAddr,int portNumber,List<Finger> fingerTable,Node node){
+	public MyServer(ServerSocket serverSocket,int hostKey,String ipAddr,int portNumber,List<Finger> fingerTable,Node node,Finger finger,Node successorNode,Node predecessorNode){
         //it will have finger table, successor, predecessor as arguments
         this.serverSocket = serverSocket;
         this.portNumber = portNumber;
         this.hostKey = hostKey;
         this.ipAddr = ipAddr;
         this.node = node;
-    }
+        this.finger = finger;
+        this.predecessorNode = predecessorNode;
+        this.successorNode = successorNode;
+        this.fingerTable = fingerTable;
+    } 
 	
 	public void run(){
 		Socket s=null;
@@ -31,7 +39,7 @@ public class MyServer extends Thread{
 		try{
 			while(true){
 				s= serverSocket.accept();
-				ServerThread st=new ServerThread(s,portNumber,hostKey,ipAddr,node);
+				ServerThread st=new ServerThread(s,portNumber,hostKey,ipAddr,node,finger,successorNode,predecessorNode,fingerTable);
 				st.start();
 			}
 		}
@@ -49,6 +57,7 @@ public class MyServer extends Thread{
 			}
 		}
 	}
+	
 }
 
 class ServerThread extends Thread{ 
@@ -57,13 +66,21 @@ class ServerThread extends Thread{
 	String ipAddr;
 	Socket s=null;
 	Node node;
+	Finger finger;
+	Node successorNode;
+	Node predecessorNode;
+	List<Finger> fingerTable;
 	
-	public ServerThread(Socket s,int portNumber,int hostKey,String ipAddr,Node node){
+	public ServerThread(Socket s,int portNumber,int hostKey,String ipAddr,Node node,Finger finger,Node successorNode,Node predecessorNode,List<Finger> fingerTable){
 		this.s = s;
 		this.portNumber = portNumber;
 		this.hostKey = hostKey;
 		this.ipAddr = ipAddr;
 		this.node= node;
+		this.finger = finger;
+		this.predecessorNode = predecessorNode;
+		this.successorNode = successorNode;
+		this.fingerTable = fingerTable;
 	}
 
 	public void run() {
@@ -82,7 +99,8 @@ class ServerThread extends Thread{
 				//process query here
 				if (modelObj.command=="add") {
 					modelObj.response = addNodeToChord(modelObj);
-				} else {
+				} else if (modelObj.command == "transferFingerTable"){
+					updateNewHostFingerTable(modelObj);
 
 				}
 				
@@ -106,24 +124,38 @@ class ServerThread extends Thread{
 	}
 
 	public boolean addNodeToChord(MyNetwork modelObj){
-		boolean retrunFlag = true;
+		boolean returnFlag = true;
 		int newNodeKey = Integer.parseInt(modelObj.addObject.get(0));
 		//check key to add is in self range
-		if (newNodeKey<=node.getId() && newNodeKey>node.getPredecessor().getId()) {
+		int currentNodeKey = node.getId();
+		int currentNodeScrKey = node.getSuccessor().getId();
+		int currentNodePredKey = node.getPredecessor().getId();
+		
+		//if we have only 1 node in system then new node would become both successor and predecessor of current node
+		if((currentNodeKey == currentNodeScrKey) && (currentNodeKey == currentNodePredKey)){
+			node.getPredecessor().setId(newNodeKey);
+			node.getSuccessor().setId(newNodeKey);
+			updateFingerTable(modelObj,newNodeKey);
+			passFingerTableToNewNode(modelObj);
+			//passDataToNewNode();  //To-DO
+
+		}
+		else if (newNodeKey<=currentNodeKey && newNodeKey>currentNodePredKey) {
 			
-			//NIDHI ADD YOUR CODE HERE
+			try{
+			node.getPredecessor().setId(newNodeKey);
+			updateFingerTable(modelObj,newNodeKey);
+            //updateAntiFingerTable(modelObj,newNodeKey);
+			}
+			catch(Exception e){
+				returnFlag = false;
+			}
 			
-			//update self finger table(with added new node)
-			//pass this finger table to new node(you can get ip, port og this node from modelObj.addObject index 1= ip, index 2 = port)
-			//also pass data related to keys to new node
-			
-			//if everything above goes well retrunFlag =true
-			//else retrunFlag =false
+			returnFlag = true;
 			
 		}else{	//else pass it to next Successor;
 			String ip = node.getSuccessor().getIp();
 			int port = node.getSuccessor().getPortNo();
-			
 			Socket s1;
 			try {
 				s1 = new Socket(ip, port);
@@ -131,7 +163,7 @@ class ServerThread extends Thread{
 				ObjectInputStream in = new ObjectInputStream(s1.getInputStream());
 				out.writeObject(modelObj);
 				MyNetwork response = (MyNetwork) in.readObject();
-				retrunFlag = response.response;
+				returnFlag = response.response;
 				in.close();
 				out.close();
 				s1.close();
@@ -141,6 +173,62 @@ class ServerThread extends Thread{
 			} 
 		}
 		
-		return retrunFlag;
+		System.out.println("updated finger table After adding "+newNodeKey+ " ");
+		P3 p3 = new P3();
+		p3.printFingerTable();
+		System.out.println();
+		
+		return returnFlag;
+		
 	}
+	
+	
+	public void updateFingerTable(MyNetwork modelObj,int newNodeKey){
+		
+		for (Finger finger : fingerTable) {
+			int keyStart = finger.getKey();
+			int keyEnd = finger.getSpan();
+			
+			if(newNodeKey >= keyStart && finger.getSuccessor() > newNodeKey){
+				finger.setSuccessorNode(newNodeKey);
+			}
+		}
+	}
+	
+	//To-Do
+    /*public void updateAntiFingerTable(MyNetwork modelObj,int newNodeKey){
+
+    }*/
+    
+    public void passFingerTableToNewNode(MyNetwork modelObj){
+    	String ip = modelObj.addObject.get(1);
+		int port = Integer.parseInt(modelObj.addObject.get(2)); 
+		Socket s1;
+		try {
+			s1 = new Socket(ip, port);
+			ObjectOutputStream out = new ObjectOutputStream(s1.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(s1.getInputStream());
+			MyNetwork obj = new MyNetwork();
+			obj.command = "transferFingerTable";
+			obj.fingerTable = fingerTable;
+			out.writeObject(obj);
+			MyNetwork response = (MyNetwork) in.readObject();
+			in.close();
+			out.close();
+			s1.close();
+		
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+		} 
+	}
+
+    public void updateNewHostFingerTable(MyNetwork modelObj){
+    	
+    }
+
+    /*public void passAntiFingerTableToNewNode(int newNodeKey){
+
+    }*/
+    
+    
 }

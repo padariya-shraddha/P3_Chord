@@ -62,9 +62,9 @@ public class MyClient extends Thread{
 				obj.command = "add";
 				
 				List<String> temp = new ArrayList<>();
-				temp.add(parts[0].trim());
-				temp.add(parts[1].trim());
-				temp.add(parts[1].trim());
+				temp.add(parts[0].trim()); //hostKey
+				temp.add(parts[1].trim()); //host IP
+				temp.add(parts[1].trim()); //host Port number
 				
 				obj.addObject =temp;
 			}
@@ -83,9 +83,9 @@ public class MyClient extends Thread{
 				int tempKey = finger.getKey();
 				int tempRange = finger.getSpan();
 				
+				//We have two scenerios here : (1)we get the current node (2) other node
 				if (keytoFind_int>=tempKey || keytoFind_int<tempRange) {
 					//send request to this node
-					
 					String ip = finger.getIp();
 					int port = finger.getPort();
 					

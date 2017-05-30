@@ -18,11 +18,11 @@ public class P3
 	static String local_ip;
 	static int local_port;
 	static private Map<Integer,String> dataKeys = new HashMap<Integer,String>();
-	static	private Finger finger;
-	static	private List<Finger> fingerTable;
+	static public Finger finger;
+	static public List<Finger> fingerTable;
 	static private int nodeId;
-	static private Node successorNode;
-	static private Node predecessorNode;
+	static public Node successorNode;
+	static public Node predecessorNode;
 
 	private static void initialise (String ip, int portNo) {
 		successorNode = new Node(nodeId,ip,portNo);
@@ -54,17 +54,21 @@ public class P3
 
 		initialise(local_ip, local_port);
 		
+		
+		Node node = new Node(local_host_key, local_ip, local_port);
+		
+		MyServer server = new MyServer(serversocket, local_host_key, local_ip,local_port,fingerTable,node,finger,successorNode,predecessorNode);
+		MyClient client = new MyClient(fingerTable,node);
+		server.start();
+		client.start();   
+
+	}
+	
+	public void printFingerTable(){
 		for(int i = 0 ;i < M;i++) {
 			fingerTable.get(i).print();
 			System.out.println();
 		}
 		System.out.println();
-		Node node = new Node(local_host_key, local_ip, local_port);
-		
-		MyServer server = new MyServer(serversocket, local_host_key, local_ip,local_port,fingerTable,node);
-		MyClient client = new MyClient(fingerTable,node);
-		server.start();
-		client.start();   
-
 	}
 }
