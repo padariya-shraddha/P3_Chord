@@ -3,6 +3,7 @@ package chord;
 
 
 //nidhi demo
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -137,22 +138,23 @@ class ServerThread extends Thread{
 		
 		//if we have only 1 node in system then new node would become both successor and predecessor of current node
 		//*******************We need to make this part generic instead of having if else
-		if((currentNodeKey == currentNodeScrKey) && (currentNodeKey == currentNodePredKey)){
+		/*if((currentNodeKey == currentNodeScrKey) && (currentNodeKey == currentNodePredKey)){
 			node.getPredecessor().setId(newNodeKey);
 			node.getSuccessor().setId(newNodeKey);
 			updateFingerTable(modelObj,newNodeKey);
 			passFingerTableToNewNode(modelObj);
 			//passDataToNewNode();  //To-DO
 
-		}
+		}*/
 		//
-		else if (newNodeKey<=currentNodeKey && newNodeKey>currentNodePredKey) {
+		if (newNodeKey<=currentNodeKey && newNodeKey>currentNodePredKey) {
 			
 			try{
 			node.getPredecessor().setId(newNodeKey);
 			updateFingerTable(modelObj,newNodeKey);
 			passFingerTableToNewNode(modelObj);
-            //updateAntiFingerTable(modelObj,newNodeKey);
+			//passDataToNewNode();
+			//updateAntiFingerTable(modelObj,newNodeKey);
 			}
 			catch(Exception e){
 				returnFlag = false;
@@ -163,8 +165,27 @@ class ServerThread extends Thread{
 		}
 		//*******************
 		else{	//else pass it to next Successor;
-			String ip = node.getSuccessor().getIp();
-			int port = node.getSuccessor().getPortNo();
+			String ip = null;
+			int port = -1;
+			if(newNodeKey > currentNodeKey && newNodeKey <= currentNodeScrKey){
+				 ip = node.getSuccessor().getIp();
+				 port = node.getSuccessor().getPortNo();
+			}
+			else{
+				for (Finger finger : fingerTable) {
+					int keyStart = finger.getKey();
+					int keyEnd = finger.getSpan();
+					
+					if(newNodeKey >= keyStart && newNodeKey < keyEnd){
+						 ip = finger.getIp();
+						 port = finger.getPort();
+					}
+				}
+			}
+			
+			//String ip = node.getSuccessor().getIp();
+			//int port = node.getSuccessor().getPortNo();
+			
 			Socket s1;
 			try {
 				s1 = new Socket(ip, port);
@@ -231,12 +252,30 @@ class ServerThread extends Thread{
 		} 
 	}
 
-    public void updateNewHostFingerTable(MyNetwork modelObj){
+  public void updateNewHostFingerTable(MyNetwork modelObj){
+	  /*
+    	List<Finger> input_fingerTable = modelObj.fingerTable;
     	
+    	for(Finger currentNodeFinger : fingerTable){
+    		
+    		
+    	}
+    	
+    	for (Finger finger : input_fingerTable) {
+			int keyStart = finger.getKey();
+			int keyEnd = finger.getSpan();
+			
+			if(newNodeKey >= keyStart && finger.getSuccessor() > newNodeKey){
+				finger.setSuccessorNode(newNodeKey);
+			}
+		}
+    	*/
     }
     
     public void passDataToNewHost(MyNetwork modelObj){
     	
+    	
+
     }
 
     /*public void passAntiFingerTableToNewNode(int newNodeKey){
