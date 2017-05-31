@@ -132,6 +132,7 @@ class ServerThread extends Thread{
 		int currentNodePredKey = node.getPredecessor().getId();
 		
 		//if we have only 1 node in system then new node would become both successor and predecessor of current node
+		//*******************We need to make this part generic instead of having if else
 		if((currentNodeKey == currentNodeScrKey) && (currentNodeKey == currentNodePredKey)){
 			node.getPredecessor().setId(newNodeKey);
 			node.getSuccessor().setId(newNodeKey);
@@ -153,7 +154,9 @@ class ServerThread extends Thread{
 			
 			returnFlag = true;
 			
-		}else{	//else pass it to next Successor;
+		}
+		//*******************
+		else{	//else pass it to next Successor;
 			String ip = node.getSuccessor().getIp();
 			int port = node.getSuccessor().getPortNo();
 			Socket s1;
