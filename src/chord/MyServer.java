@@ -1,8 +1,4 @@
 package chord;
-//demo branch
-
-
-//nidhi demo
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -106,11 +102,8 @@ class ServerThread extends Thread{
 					modelObj.response = addNodeToChord(modelObj);
 				} else if (modelObj.command == "transferFingerTable"){
 					updateNewHostFingerTable(modelObj);
-
 				}
-				
 			}
-
 			out.writeObject(modelObj);
 			
         }catch (IOException | ClassNotFoundException e) {
@@ -135,18 +128,7 @@ class ServerThread extends Thread{
 		int currentNodeKey = node.getId();
 		int currentNodeScrKey = node.getSuccessor().getId();
 		int currentNodePredKey = node.getPredecessor().getId();
-		
-		//if we have only 1 node in system then new node would become both successor and predecessor of current node
-		//*******************We need to make this part generic instead of having if else
-		/*if((currentNodeKey == currentNodeScrKey) && (currentNodeKey == currentNodePredKey)){
-			node.getPredecessor().setId(newNodeKey);
-			node.getSuccessor().setId(newNodeKey);
-			updateFingerTable(modelObj,newNodeKey);
-			passFingerTableToNewNode(modelObj);
-			//passDataToNewNode();  //To-DO
 
-		}*/
-		//
 		if (newNodeKey<=currentNodeKey && newNodeKey>currentNodePredKey) {
 			
 			try{
@@ -163,8 +145,9 @@ class ServerThread extends Thread{
 			returnFlag = true;
 			
 		}
-		//*******************
+
 		else{	//else pass it to next Successor;
+			
 			String ip = null;
 			int port = -1;
 			if(newNodeKey > currentNodeKey && newNodeKey <= currentNodeScrKey){
@@ -182,9 +165,6 @@ class ServerThread extends Thread{
 					}
 				}
 			}
-			
-			//String ip = node.getSuccessor().getIp();
-			//int port = node.getSuccessor().getPortNo();
 			
 			Socket s1;
 			try {
