@@ -146,6 +146,12 @@ class ServerThread extends Thread{
 				passFingerTableToNewNode(modelObj);
 				//passDataToNewNode();
 				//updateAntiFingerTable(modelObj,newNodeKey);
+				
+				System.out.println("updated finger table After adding "+newNodeKey+ " ");
+				P3 p3 = new P3();
+				p3.printFingerTable();
+				System.out.println();
+				
 			}
 			catch(Exception e){
 				returnFlag = false;
@@ -157,7 +163,6 @@ class ServerThread extends Thread{
 
 		else{	//else pass it to next Successor;
 
-			
 			String ip = null;
 			int port = -1;
 			//newNodeKey > currentNodeKey && (newNodeKey <= currentNodeScrKey |(newNodeKey <= currentNodeScrKey + Math.pow(2, M))))
@@ -261,8 +266,6 @@ class ServerThread extends Thread{
 	}
 
 	public void passDataToNewHost(MyNetwork modelObj){
-
-
 
 	}
 
