@@ -18,12 +18,10 @@ public class MyServer extends Thread{
 	Node successorNode;
 	Node predecessorNode;
 	List<Finger> fingerTable;
-	int totalNodes= 64;
+	int totalNodes;
 	int M;
 
-
 	public MyServer(ServerSocket serverSocket,int hostKey,String ipAddr,int portNumber,List<Finger> fingerTable,Node node,Finger finger,Node successorNode,Node predecessorNode,int M){
-
 		//it will have finger table, successor, predecessor as arguments
 		this.serverSocket = serverSocket;
 		this.portNumber = portNumber;
@@ -62,7 +60,6 @@ public class MyServer extends Thread{
 			}
 		}
 	}
-
 }
 
 class ServerThread extends Thread{ 
@@ -218,11 +215,9 @@ class ServerThread extends Thread{
     	if(!flag && (searchKey >= start && searchKey < end)) {result = true;}
     	
     	return result;
-    	
     }
 
 	public void updateFingerTable(MyNetwork modelObj,int newNodeKey){
-
 		for (Finger finger : fingerTable) {
 			int keyStart = finger.getKey();
 			int keyEnd = finger.getSpan();
@@ -237,8 +232,7 @@ class ServerThread extends Thread{
 	/*public void updateAntiFingerTable(MyNetwork modelObj,int newNodeKey){
 
     }*/
-
-
+	
 	public void passFingerTableToNewNode(MyNetwork modelObj,Node previousPred){
 
 		String ip = modelObj.addObject.get(1);
@@ -265,7 +259,6 @@ class ServerThread extends Thread{
 	}
 
 	public void updateNewHostFingerTable(MyNetwork modelObj){
-		
 
 		//get successor's finger table 
 		List<Finger> succFingerTable = modelObj.fingerTable;
@@ -281,7 +274,6 @@ class ServerThread extends Thread{
 		int updateRangeEnd = node.getSuccessor().getId();
 		
 		for (Finger finger : fingerTable) {
-			
 			int tempKey =finger.getKey();
 			if (checkSpanRange(updateRangeStart,updateRangeEnd,tempKey,true)) {	//if key falls between span
 				finger.setSuccessorNode(updateRangeEnd);
@@ -289,12 +281,9 @@ class ServerThread extends Thread{
 				for (Finger finger2 : succFingerTable) {
 					
 				}
-			}
-			
+			}	
 		}
-
 	}
-
 
 	public void passDataToNewHost(MyNetwork modelObj){
 
@@ -303,6 +292,5 @@ class ServerThread extends Thread{
 	/*public void passAntiFingerTableToNewNode(int newNodeKey){
 
     }*/
-
 
 }
