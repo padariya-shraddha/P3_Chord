@@ -13,6 +13,7 @@ import java.util.List;
 public class MyClient extends Thread{
 
 	List<Finger> fingerTable;
+	
 	public MyClient(List<Finger> fingerTable,Node node){
 		//it will have finger table, successor, predecessor as arguments
 		this.fingerTable = fingerTable;

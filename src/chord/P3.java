@@ -56,7 +56,7 @@ public class P3
 		
 		Node node = new Node(local_host_key, local_ip, local_port);
 		
-		MyServer server = new MyServer(serversocket, local_host_key, local_ip,local_port,fingerTable,node,finger,successorNode,predecessorNode);
+		MyServer server = new MyServer(serversocket, local_host_key, local_ip,local_port,fingerTable,node,finger,successorNode,predecessorNode,M);
 		MyClient client = new MyClient(fingerTable,node);
 		server.start();
 		client.start();   
