@@ -54,10 +54,9 @@ public class P3
 
 		initialise(local_ip, local_port);
 		
-		
 		Node node = new Node(local_host_key, local_ip, local_port);
 		
-		MyServer server = new MyServer(serversocket, local_host_key, local_ip,local_port,fingerTable,node,finger,successorNode,predecessorNode);
+		MyServer server = new MyServer(serversocket, local_host_key, local_ip,local_port,fingerTable,node,finger,successorNode,predecessorNode,M);
 		MyClient client = new MyClient(fingerTable,node);
 		server.start();
 		client.start();   
@@ -71,4 +70,12 @@ public class P3
 		}
 		System.out.println();
 	}
+	
+	/*public void printAntiFingerTable(){
+		for(int i = 0 ;i < M;i++) {
+			fingerTable.get(i).print();
+			System.out.println();
+		}
+		System.out.println();
+	}*/
 }
