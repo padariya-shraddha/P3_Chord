@@ -60,6 +60,11 @@ public class P3
 		MyClient client = new MyClient(fingerTable,node);
 		server.start();
 		client.start();   
+		
+		
+		Fix_finger fixFinger = new Fix_finger(local_host_key, local_ip,local_port,fingerTable);
+		fixFinger.start();
+		
 
 	}
 	
