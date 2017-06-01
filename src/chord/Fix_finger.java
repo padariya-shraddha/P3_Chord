@@ -23,42 +23,71 @@ public class Fix_finger extends Thread{
 
 	public void run(){
 		
-		for(Finger finger : local_fingertable){
-			
-			Socket s1;
-			try {
+		for(Finger finger : local_fingertable)
+		{
+			try
+			{ 	
+				int other_node_id = finger.getSuccessor();
+				String other_node_ip = finger.getIp();
+				int other_node_port = finger.getPort();
+				int finger_key = finger.getKey(); //this key range we need to confirm
 				
-				/*s1 = new Socket(ip, port);
-				ObjectOutputStream out = new ObjectOutputStream(s1.getOutputStream());
-				ObjectInputStream in = new ObjectInputStream(s1.getInputStream());
 				MyNetwork obj = new MyNetwork();
-				
-				obj.command = "check_span_range";
-				obj.fingerTable = fingerTable;
-				obj.predecessor= previousPred;
-				obj.successor=node;
-				out.writeObject(obj);
-				
-				out.writeObject(modelObj);
-				MyNetwork response = (MyNetwork) in.readObject();
-				returnFlag = response.response;
-				in.close();
-				out.close();
-				s1.close();*/
-				
-				/*
-			
-			MyNetwork response = (MyNetwork) in.readObject();
-			in.close();
-			out.close();
-			s1.close();*/
+				obj.command = "fixFinger_validateRange";
+				obj.keyTobeValidate = finger_key;
+				Node responsibleNode = sendRequest(other_node_ip,other_node_port, obj);
+				System.out.println("Fix_finger class received response host Key "+responsibleNode.getId());
+				if(responsibleNode.getId() != other_node_id){
+					finger.setSuccessorNode(responsibleNode.getId());
+					finger.setip(responsibleNode.getIp());
+					finger.setPort(responsibleNode.getPortNo());
+				}
 
+				System.out.println("Fix_finger : updated successfully");
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 			} 
 			
 		}
 		
+		
+	}
+	
+	public Node sendRequest(String ip, int port,MyNetwork modelObj){
+		Socket s1=null;
+		boolean returnFlag;
+		ObjectOutputStream out=null;
+		ObjectInputStream in=null;
+		Node response = null;
+		try {
+			s1 = new Socket(ip, port);
+			out = new ObjectOutputStream(s1.getOutputStream());
+			in = new ObjectInputStream(s1.getInputStream());
+			out.writeObject(modelObj);
+			response = (Node) in.readObject();
+			//returnFlag = response.response;
+			
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+			returnFlag= false;
+		}finally{
+			try {
+				if (in!=null) {
+					in.close();
+				}
+				if (out!=null) {
+					out.close();
+				}
+				if (s1!=null) {
+					s1.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return response;
 		
 	}
 }

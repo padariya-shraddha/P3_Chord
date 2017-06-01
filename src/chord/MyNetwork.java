@@ -9,7 +9,9 @@ public class MyNetwork implements Serializable{
 	public List<String> addObject;	//id, ip ,port
 	public boolean response; 
 	public List<Finger> fingerTable;
+	public Node responsibleNode; // used by fix_finger class
 	public int nodeToDeleteId;
+	public int keyTobeValidate; //key to be validate in case of fix finger
 	public Node nodeToDelete;
 	public Node predecessor;	//for passing predecessor in case of add
 	public Node successor;	//for passing successor in case of add
