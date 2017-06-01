@@ -27,6 +27,7 @@ public class Fix_finger extends Thread{
 			
 			Socket s1;
 			try {
+				
 				/*s1 = new Socket(ip, port);
 				ObjectOutputStream out = new ObjectOutputStream(s1.getOutputStream());
 				ObjectInputStream in = new ObjectInputStream(s1.getInputStream());
