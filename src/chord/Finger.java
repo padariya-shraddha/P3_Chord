@@ -25,6 +25,13 @@ public class Finger {
 		this.successorNode = successorNode;
 	}
 	
+	public void setip(String ip) {
+		this.ip = ip;
+	}
+	
+	public void setPort(int port) {
+		this.port = port;
+	}
 	public int getKey() {
 		return this.key;
 	}

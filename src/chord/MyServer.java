@@ -107,6 +107,13 @@ class ServerThread extends Thread{
 				} else if (modelObj.command == "add_PassFingerTable"){
 					updateNewHostFingerTable(modelObj);
 				}
+				else if (modelObj.command.equals("delete")) {
+					deleteMethod(modelObj);
+				}
+				else if (modelObj.command.equals("update finger table after neighbour is deleted")) {
+					// updating the finger table after neighbour is deleted i.e., when the successor or the the predecssor is deleted
+					updateAfterDelete(modelObj);
+				}
 			}
 			out.writeObject(modelObj);
 
@@ -203,6 +210,68 @@ class ServerThread extends Thread{
 
 		return returnFlag;
 	}
+	
+	private void deleteMethod(MyNetwork networkObj) {
+		int nodeToFind = networkObj.nodeToDeleteId;
+		if (node.getId() == nodeToFind) {
+			networkObj.command = "update finger table after neighbour is deleted";
+			// notifying successor the deletion of the current node
+			sendMessage(node.getSuccessor().getIp(), node.getSuccessor().getPortNo(), networkObj);
+			// notifying predecessor the deletion of the current node
+			sendMessage(node.getPredecessor().getIp(), node.getPredecessor().getPortNo(), networkObj);
+			// deleting the node
+			System.exit(0);
+		}
+		else {
+			for (Finger finger : fingerTable) {
+				int tempKey = finger.getKey();
+				int tempRange = finger.getSpan();
+
+				// 
+				if (nodeToFind >= tempKey || nodeToFind < tempRange) {
+					//send request to this node
+					String ip = finger.getIp();
+					int port = finger.getPort();
+					try {
+						s = new Socket(ip, port);
+						ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
+						out.writeObject(networkObj);
+						out.close();
+						s.close();
+						break;
+					} catch (IOException e) {
+
+					} 
+				}
+			}
+		}
+	}
+	private void sendMessage(String ip,int portNo, MyNetwork networkObj) {
+		try {
+			s = new Socket(ip, portNo);
+			ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
+			out.writeObject(networkObj);
+			out.close();
+			s.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	private void updateAfterDelete(MyNetwork modelObj) {
+		// TODO Auto-generated method stub
+		for (Finger finger : fingerTable) {
+			int keyStart = finger.getKey();
+			int keyEnd = finger.getSpan();
+
+			if(finger.getSuccessor() == modelObj.nodeToDelete.getId()){
+				finger.setSuccessorNode(modelObj.nodeToDelete.getSuccessor().getId());
+				finger.setip(modelObj.nodeToDelete.getSuccessor().getIp());
+				finger.setPort(modelObj.nodeToDelete.getSuccessor().getPortNo());
+			}
+		}
+	}
+
+	
 
     public boolean checkSpanRange(int start,int end,int searchKey,boolean flag){
     	boolean result = false;
