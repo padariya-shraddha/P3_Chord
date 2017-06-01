@@ -20,8 +20,9 @@ public class MyServer extends Thread{
 	List<Finger> fingerTable;
 	int totalNodes;
 	int M;
+	List<String> dataList;
 
-	public MyServer(ServerSocket serverSocket,int hostKey,String ipAddr,int portNumber,List<Finger> fingerTable,Node node,Finger finger,Node successorNode,Node predecessorNode,int M){
+	public MyServer(ServerSocket serverSocket,int hostKey,String ipAddr,int portNumber,List<Finger> fingerTable,Node node,Finger finger,Node successorNode,Node predecessorNode,int M,List<String> dataList){
 		//it will have finger table, successor, predecessor as arguments
 		this.serverSocket = serverSocket;
 		this.portNumber = portNumber;
@@ -34,6 +35,7 @@ public class MyServer extends Thread{
 		this.fingerTable = fingerTable;
 		this.M = M;
 		totalNodes =  (int) Math.pow(2, M);
+		this.dataList=dataList;
 	} 
 
 	public void run(){
@@ -43,7 +45,7 @@ public class MyServer extends Thread{
 		try{
 			while(true){
 				s= serverSocket.accept();
-				ServerThread st=new ServerThread(s,portNumber,hostKey,ipAddr,node,finger,successorNode,predecessorNode,fingerTable,M);
+				ServerThread st=new ServerThread(s,portNumber,hostKey,ipAddr,node,finger,successorNode,predecessorNode,fingerTable,M,dataList);
 				st.start();
 			}
 		}

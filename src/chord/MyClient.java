@@ -20,12 +20,14 @@ public class MyClient extends Thread{
 	List<Finger> fingerTable;
 	private Node node;
 	public int M;
+	List<String> dataList;
 	
-	public MyClient(List<Finger> fingerTable,Node node,int M){
+	public MyClient(List<Finger> fingerTable,Node node,int M,List<String> dataList){
 		//it will have finger table, successor, predecessor as arguments
 		this.fingerTable = fingerTable;
 		this.node = node;
 		this.M = M;
+		this.dataList = dataList;
 	}
 
 	public void run(){
@@ -52,7 +54,7 @@ public class MyClient extends Thread{
 						Operation.deleteMethod(networkObj, node, fingerTable);
 
 					} else if(command.equals("out")) {
-						outMethod(networkObj);
+						Operation.outMethod(networkObj,M,node,fingerTable,dataList);
 					} 
 					else{
 						System.out.println("Please enter valid command");
@@ -138,65 +140,6 @@ public class MyClient extends Thread{
 					} catch (IOException | ClassNotFoundException e) {
 						
 					} 
-				}
-			}
-		}
-	}
-
-	public void outMethod(MyNetwork networkObj){
-		
-		if (networkObj != null && (!networkObj.dataString.equals(""))) {
-			String line = networkObj.dataString.trim();
-			int NodeId = Operation.getmd5Modulo(line,M);
-			
-			if (NodeId>=0) {
-				
-				//************ we can also use anti- finger table
-				
-				
-				String ip ;
-				int port;
-				
-				//check if NodeId is same as self
-				int selfId = node.getId();
-				if (selfId == NodeId) {
-					//send request to self
-					ip= node.getIp(); 
-					port= node.getPortNo();
-					
-					Operation.sendRequest(ip, port, networkObj);
-					
-					return;
-				}
-				
-				//check if NodeId resides between self and successor *****
-				selfId= (selfId+1)%((int) Math.pow(2, M));
-				int successorID = node.getSuccessor().getId();
-				
-				if (Operation.checkSpanRange(selfId,successorID,NodeId,true,M)) {
-					//send request to successor
-					ip = node.getSuccessor().getIp();
-					port = node.getSuccessor().getPortNo();
-					
-					Operation.sendRequest(ip, port, networkObj);
-					
-					return;
-				}
-				
-				for (Finger finger : fingerTable) {
-					int start = finger.getKey();
-					int end = finger.getSpan();
-					
-					if (Operation.checkSpanRange(start,end,NodeId,false,M)) {
-						//send request to found node to add data
-						
-						ip = finger.getIp();
-						port= finger.getPort();
-						
-						Operation.sendRequest(ip, port, networkObj);
-						
-						return;
-					}
 				}
 			}
 		}

@@ -18,8 +18,9 @@ class ServerThread extends Thread{
 	List<Finger> fingerTable;
 	int totalNodes;
 	int M;
+	List<String> dataList;
 
-	public ServerThread(Socket s,int portNumber,int hostKey,String ipAddr,Node node,Finger finger,Node successorNode,Node predecessorNode,List<Finger> fingerTable,int M){
+	public ServerThread(Socket s,int portNumber,int hostKey,String ipAddr,Node node,Finger finger,Node successorNode,Node predecessorNode,List<Finger> fingerTable,int M,List<String> dataList){
 		this.s = s;
 		this.portNumber = portNumber;
 		this.hostKey = hostKey;
@@ -31,6 +32,7 @@ class ServerThread extends Thread{
 		this.fingerTable = fingerTable;
 		this.M = M;
 		totalNodes =  (int) Math.pow(2, M);
+		this.dataList=dataList;
 	}
 
 	//COMMAND NAME UPADTE: "update finger table after neighbour is deleted"
@@ -68,7 +70,10 @@ class ServerThread extends Thread{
 						node.setSuccessor(modelObj.successor);
 					}
 					modelObj.response= true;
-				}
+				}if (modelObj.command=="out") {
+					Operation.outMethod(modelObj,M,node,fingerTable,dataList);
+					modelObj.response=true;
+				} 
 			}
 			out.writeObject(modelObj);
 
