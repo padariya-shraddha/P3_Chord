@@ -33,6 +33,7 @@ public class MyServer extends Thread{
 		this.successorNode = successorNode;
 		this.fingerTable = fingerTable;
 		this.M = M;
+		totalNodes =  (int) Math.pow(2, M);
 	} 
 
 	public void run(){
@@ -72,7 +73,7 @@ class ServerThread extends Thread{
 	Node successorNode;
 	Node predecessorNode;
 	List<Finger> fingerTable;
-	int totalNodes= 64;
+	int totalNodes;
 	int M;
 
 	public ServerThread(Socket s,int portNumber,int hostKey,String ipAddr,Node node,Finger finger,Node successorNode,Node predecessorNode,List<Finger> fingerTable,int M){
@@ -86,6 +87,7 @@ class ServerThread extends Thread{
 		this.successorNode = successorNode;
 		this.fingerTable = fingerTable;
 		this.M = M;
+		totalNodes =  (int) Math.pow(2, M);
 	}
 
 	public void run() {
@@ -348,7 +350,13 @@ class ServerThread extends Thread{
 				finger.setSuccessorNode(updateRangeEnd);
 			}else{	//calculate it from successor's finger table
 				for (Finger finger2 : succFingerTable) {
-					
+					int temp_start = finger2.getKey();
+					int temp_end = finger2.getSpan();
+					boolean flag = checkSpanRange(temp_start,temp_end,tempKey,false);
+					if (flag) {
+						finger.setSuccessorNode(finger2.getSuccessor());
+						break;
+					}
 				}
 			}	
 		}
