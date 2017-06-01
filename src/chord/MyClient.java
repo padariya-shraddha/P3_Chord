@@ -86,6 +86,7 @@ public class MyClient extends Thread{
 		
 		return obj;
 	}
+	
 	private void deleteMethod(MyNetwork networkObj) {
 		int nodeToFind = networkObj.nodeToDeleteId;
 		if (node.getId() == nodeToFind) {
@@ -121,6 +122,7 @@ public class MyClient extends Thread{
 			}
 		}
 	}
+	
 	private void sendMessage(String ip,int portNo, MyNetwork networkObj) {
 		try {
 			Socket s = new Socket(ip, portNo);
@@ -179,6 +181,5 @@ public class MyClient extends Thread{
 		}
 		
 	}
-
 	
 }

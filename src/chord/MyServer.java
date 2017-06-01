@@ -90,6 +90,7 @@ class ServerThread extends Thread{
 		totalNodes =  (int) Math.pow(2, M);
 	}
 
+	//COMMAND NAME UPADTE: "update finger table after neighbour is deleted"
 	public void run() {
 		//process request
 		ObjectInputStream in = null;
@@ -108,20 +109,26 @@ class ServerThread extends Thread{
 					modelObj.response = addNodeToChord(modelObj);
 				} else if (modelObj.command == "add_PassFingerTable"){
 					updateNewHostFingerTable(modelObj);
+					modelObj.response= true;
 				}
 				else if (modelObj.command.equals("delete")) {
 					deleteMethod(modelObj);
 				}
+				//COMMAND NAME SHOULD BE SHORT SO UPDATE ACCORDING
 				else if (modelObj.command.equals("update finger table after neighbour is deleted")) {
 					// updating the finger table after neighbour is deleted i.e., when the successor or the the predecssor is deleted
 					updateAfterDelete(modelObj);
+				}else if(modelObj.command.equals("updateSuccessor")){
+					if (modelObj.successor != null) {
+						node.setSuccessor(modelObj.successor);
+					}
+					modelObj.response= true;
 				}
 			}
 			out.writeObject(modelObj);
 
 		}catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
-
 		}
 		finally{
 			if (s!=null){
@@ -160,6 +167,11 @@ class ServerThread extends Thread{
 				p3.printFingerTable();
 				System.out.println();
 				
+				//SEND REQUEST TO PREVIOUS PREDE TO UPDATE ITS SUCCESSOR
+				MyNetwork obj = new MyNetwork();
+				obj.command = "updateSuccessor";
+				obj.successor= temp;
+				returnFlag = sendRequest(tempPred.getIp(), tempPred.getPortNo(), obj);
 			}
 			catch(Exception e){
 				returnFlag = false;
@@ -171,7 +183,6 @@ class ServerThread extends Thread{
 			String ip = null;
 			int port = -1;
 			
-			//newNodeKey > currentNodeKey && (newNodeKey <= currentNodeScrKey |(newNodeKey <= currentNodeScrKey + Math.pow(2, M))))
 			if(checkSpanRange(currentNodeKey,currentNodeScrKey,newNodeKey,true))
 			{
 				ip = node.getSuccessor().getIp();
@@ -184,25 +195,12 @@ class ServerThread extends Thread{
 					if(newNodeKey >= keyStart && newNodeKey < keyEnd){
 						ip = finger.getIp();
 						port = finger.getPort();
+						break;
 					}
 				}
 			}
-
-			Socket s1;
-			try {
-				s1 = new Socket(ip, port);
-				ObjectOutputStream out = new ObjectOutputStream(s1.getOutputStream());
-				ObjectInputStream in = new ObjectInputStream(s1.getInputStream());
-				out.writeObject(modelObj);
-				MyNetwork response = (MyNetwork) in.readObject();
-				returnFlag = response.response;
-				in.close();
-				out.close();
-				s1.close();
-
-			} catch (IOException | ClassNotFoundException e) {
-				e.printStackTrace();
-			} 
+			//reroute add node request 
+			returnFlag= sendRequest(ip,port,modelObj);
 		}
 
 		System.out.println("updated finger table After adding "+newNodeKey+ " ");
@@ -235,6 +233,7 @@ class ServerThread extends Thread{
 					String ip = finger.getIp();
 					int port = finger.getPort();
 					try {
+						//CALL "sendRequest" METHOD TO USE SAME CODE
 						s = new Socket(ip, port);
 						ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
 						out.writeObject(networkObj);
@@ -248,6 +247,8 @@ class ServerThread extends Thread{
 			}
 		}
 	}
+	
+	//EITHER KEEP sendMessage OR sendRequest, BECAUSE BOTH METHOD IS DOING SAME WORK
 	private void sendMessage(String ip,int portNo, MyNetwork networkObj) {
 		try {
 			s = new Socket(ip, portNo);
@@ -259,8 +260,9 @@ class ServerThread extends Thread{
 			e.printStackTrace();
 		}
 	}
+	
 	private void updateAfterDelete(MyNetwork modelObj) {
-		// TODO Auto-generated method stub
+		
 		for (Finger finger : fingerTable) {
 			int keyStart = finger.getKey();
 			int keyEnd = finger.getSpan();
@@ -272,8 +274,6 @@ class ServerThread extends Thread{
 			}
 		}
 	}
-
-	
 
     public boolean checkSpanRange(int start,int end,int searchKey,boolean flag){
     	boolean result = false;
@@ -308,25 +308,13 @@ class ServerThread extends Thread{
 
 		String ip = modelObj.addObject.get(1);
 		int port = Integer.parseInt(modelObj.addObject.get(2)); 
-		Socket s1;
-		try {
-			s1 = new Socket(ip, port);
-			ObjectOutputStream out = new ObjectOutputStream(s1.getOutputStream());
-			ObjectInputStream in = new ObjectInputStream(s1.getInputStream());
-			MyNetwork obj = new MyNetwork();
-			obj.command = "add_PassFingerTable";
-			obj.fingerTable = fingerTable;
-			obj.predecessor= previousPred;
-			obj.successor=node;
-			out.writeObject(obj);
-			MyNetwork response = (MyNetwork) in.readObject();
-			in.close();
-			out.close();
-			s1.close();
-
-		} catch (IOException | ClassNotFoundException e) {
-			e.printStackTrace();
-		} 
+		MyNetwork obj = new MyNetwork();
+		obj.command = "add_PassFingerTable";
+		obj.fingerTable = fingerTable;
+		obj.predecessor= previousPred;
+		obj.successor=node;
+		
+		sendRequest(ip,port,obj);
 	}
 
 	public void updateNewHostFingerTable(MyNetwork modelObj){
@@ -369,5 +357,39 @@ class ServerThread extends Thread{
 	/*public void passAntiFingerTableToNewNode(int newNodeKey){
 
     }*/
-
+	
+	//EITHER KEEP sendMessage OR sendRequest, BECAUSE BOTH METHOD IS DOING SAME WORK
+	public boolean sendRequest(String ip, int port,MyNetwork modelObj){
+		Socket s1=null;
+		boolean returnFlag;
+		ObjectOutputStream out=null;
+		ObjectInputStream in=null;
+		try {
+			s1 = new Socket(ip, port);
+			out = new ObjectOutputStream(s1.getOutputStream());
+			in = new ObjectInputStream(s1.getInputStream());
+			out.writeObject(modelObj);
+			MyNetwork response = (MyNetwork) in.readObject();
+			returnFlag = response.response;
+			
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+			returnFlag= false;
+		}finally{
+			try {
+				if (in!=null) {
+					in.close();
+				}
+				if (out!=null) {
+					out.close();
+				}
+				if (s1!=null) {
+					s1.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return returnFlag;
+	}
 }
