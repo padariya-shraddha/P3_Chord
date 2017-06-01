@@ -13,10 +13,11 @@ import java.util.List;
 public class MyClient extends Thread{
 
 	List<Finger> fingerTable;
-	
+	private Node node;
 	public MyClient(List<Finger> fingerTable,Node node){
 		//it will have finger table, successor, predecessor as arguments
 		this.fingerTable = fingerTable;
+		this.node = node;
 	}
 
 	public void run(){
@@ -38,7 +39,9 @@ public class MyClient extends Thread{
 					if (command.equals("add")) {
 						//find immediate successor
 						addMethod(networkObj);
-					} 
+					} else if (command.equals("delete")) {
+						deleteMethod(networkObj);
+					}
 				}else{
 					System.out.println("Please enter valid command");
 				}
@@ -49,7 +52,8 @@ public class MyClient extends Thread{
 			// TODO: handle exception
 		}
 	}
-
+	
+	
 	public MyNetwork getCommand(String line){
 
 		// parsing code
@@ -71,7 +75,62 @@ public class MyClient extends Thread{
 			}
 		}
 		
+		else if (line.contains("delete") && line.length() > 6) {
+			String[] parts = line.split(" ");
+				obj = new MyNetwork();
+				obj.command = "delete";
+				if (StrToIntCheck(parts[1])) {
+					obj.nodeToDeleteId = Integer.parseInt(parts[1]);
+				}
+		}
+		
 		return obj;
+	}
+	private void deleteMethod(MyNetwork networkObj) {
+		int nodeToFind = networkObj.nodeToDeleteId;
+		if (node.getId() == nodeToFind) {
+			networkObj.command = "update finger table after neighbour is deleted";
+			// notifying successor the deletion of the current node
+			sendMessage(node.getSuccessor().getIp(), node.getSuccessor().getPortNo(), networkObj);
+			// notifying predecessor the deletion of the current node
+			sendMessage(node.getPredecessor().getIp(), node.getPredecessor().getPortNo(), networkObj);
+			// deleting the node
+			System.exit(0);
+		}
+		else {
+			for (Finger finger : fingerTable) {
+				int tempKey = finger.getKey();
+				int tempRange = finger.getSpan();
+
+				// 
+				if (nodeToFind >= tempKey || nodeToFind < tempRange) {
+					//send request to this node
+					String ip = finger.getIp();
+					int port = finger.getPort();
+					try {
+						Socket s = new Socket(ip, port);
+						ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
+						out.writeObject(networkObj);
+						out.close();
+						s.close();
+						break;
+					} catch (IOException e) {
+
+					} 
+				}
+			}
+		}
+	}
+	private void sendMessage(String ip,int portNo, MyNetwork networkObj) {
+		try {
+			Socket s = new Socket(ip, portNo);
+			ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
+			out.writeObject(networkObj);
+			out.close();
+			s.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void addMethod(MyNetwork networkObj)
