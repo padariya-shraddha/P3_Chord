@@ -11,6 +11,8 @@ public class Node {
 		this.id =id;
 		this.ip = ip;
 		this.portNo = portNo;
+		this.successor= this;
+		this.predecessor= this;
 	}
 
 	public void setId(int id) {

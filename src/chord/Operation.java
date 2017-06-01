@@ -3,7 +3,10 @@ package chord;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.math.BigInteger;
 import java.net.Socket;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +56,7 @@ public class Operation {
 			}
 		}
 	}
+	
 	public static void sendMessage(String ip,int portNo, MyNetwork networkObj) {
 		try {
 			Socket s = new Socket(ip, portNo);
@@ -112,5 +116,39 @@ public class Operation {
 		return returnFlag;
 	}
 
+	public static boolean StrToIntCheck(String str){
+		try {
+			int i = Integer.parseInt(str);
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
+		
+	}
+	
+	public static int getmd5Modulo(String lineNoSpace,int M){
+		String s=lineNoSpace;
+	    MessageDigest m;
+		try {
+			m = MessageDigest.getInstance("MD5");
+			m.update(s.getBytes(),0,s.length());
+			BigInteger bi = new BigInteger(1,m.digest());
+			int count = (int) Math.pow(2, M);
+			
+			if (count>0) {
+				BigInteger modulo = new BigInteger(""+count+"");
+				bi = bi.remainder(modulo);
+				return bi.intValue();
+				
+			} else {
+				return -1;
+			}
+			
+		} catch (NoSuchAlgorithmException e) {
+			System.out.println("Error in getmd5Modulo");
+			return -1;
+		} 
+	}
+	
 
 }

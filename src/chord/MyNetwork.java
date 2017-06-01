@@ -13,5 +13,5 @@ public class MyNetwork implements Serializable{
 	public Node nodeToDelete;
 	public Node predecessor;	//for passing predecessor in case of add
 	public Node successor;	//for passing successor in case of add
-	
+	public String dataString;
 }

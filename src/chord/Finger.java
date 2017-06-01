@@ -1,5 +1,5 @@
 package chord;
-// deepak rtp
+
 public class Finger {
 	private int key;
 	private int span;

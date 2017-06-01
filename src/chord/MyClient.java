@@ -1,11 +1,16 @@
 package chord;
 //ghj
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.math.BigInteger;
 import java.net.Socket;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,10 +19,13 @@ public class MyClient extends Thread{
 
 	List<Finger> fingerTable;
 	private Node node;
-	public MyClient(List<Finger> fingerTable,Node node){
+	public int M;
+	
+	public MyClient(List<Finger> fingerTable,Node node,int M){
 		//it will have finger table, successor, predecessor as arguments
 		this.fingerTable = fingerTable;
 		this.node = node;
+		this.M = M;
 	}
 
 	public void run(){
@@ -40,19 +48,22 @@ public class MyClient extends Thread{
 						//find immediate successor
 						addMethod(networkObj);
 					} else if (command.equals("delete")) {
+
 						Operation.deleteMethod(networkObj, node, fingerTable);
+
+					} else if(command.equals("out")) {
+						outMethod(networkObj);
+					} 
+					else{
+						System.out.println("Please enter valid command");
 					}
-				}else{
-					System.out.println("Please enter valid command");
-				}
 				
-				line = br.readLine();
+					line = br.readLine();
+				}
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 		}
 	}
-	
 	
 	public MyNetwork getCommand(String line){
 
@@ -74,13 +85,21 @@ public class MyClient extends Thread{
 				obj.addObject =temp;
 			}
 		}
-		
 		else if (line.contains("delete") && line.length() > 6) {
 			String[] parts = line.split(" ");
 				obj = new MyNetwork();
 				obj.command = "delete";
-				if (StrToIntCheck(parts[1])) {
+				if (Operation.StrToIntCheck(parts[1])) {
 					obj.nodeToDeleteId = Integer.parseInt(parts[1]);
+				}
+		}
+		else if (line.contains("out") && line.length() > 3) {
+			String[] parts = line.split(" ");
+			
+				if (parts.length==2) {
+					obj = new MyNetwork();
+					obj.command = "out";
+					obj.dataString = parts[1];
 				}
 		}
 		
@@ -91,7 +110,7 @@ public class MyClient extends Thread{
 	{
 		String keytoFind = networkObj.addObject.get(0);
 		
-		if (StrToIntCheck(keytoFind)) {
+		if (Operation.StrToIntCheck(keytoFind)) {
 			int keytoFind_int= Integer.parseInt(keytoFind);
 			for (Finger finger : fingerTable) {
 				int tempKey = finger.getKey();
@@ -124,14 +143,63 @@ public class MyClient extends Thread{
 		}
 	}
 
-	public boolean StrToIntCheck(String str){
-		try {
-			int i = Integer.parseInt(str);
-			return true;
-		} catch (NumberFormatException e) {
-			return false;
-		}
+	public void outMethod(MyNetwork networkObj){
 		
+		if (networkObj != null && (!networkObj.dataString.equals(""))) {
+			String line = networkObj.dataString.trim();
+			int NodeId = Operation.getmd5Modulo(line,M);
+			
+			if (NodeId>=0) {
+				
+				//************ we can also use anti- finger table
+				
+				
+				String ip ;
+				int port;
+				
+				//check if NodeId is same as self
+				int selfId = node.getId();
+				if (selfId == NodeId) {
+					//send request to self
+					ip= node.getIp(); 
+					port= node.getPortNo();
+					
+					Operation.sendRequest(ip, port, networkObj);
+					
+					return;
+				}
+				
+				//check if NodeId resides between self and successor *****
+				selfId= (selfId+1)%((int) Math.pow(2, M));
+				int successorID = node.getSuccessor().getId();
+				
+				if (Operation.checkSpanRange(selfId,successorID,NodeId,true,M)) {
+					//send request to successor
+					ip = node.getSuccessor().getIp();
+					port = node.getSuccessor().getPortNo();
+					
+					Operation.sendRequest(ip, port, networkObj);
+					
+					return;
+				}
+				
+				for (Finger finger : fingerTable) {
+					int start = finger.getKey();
+					int end = finger.getSpan();
+					
+					if (Operation.checkSpanRange(start,end,NodeId,false,M)) {
+						//send request to found node to add data
+						
+						ip = finger.getIp();
+						port= finger.getPort();
+						
+						Operation.sendRequest(ip, port, networkObj);
+						
+						return;
+					}
+				}
+			}
+		}
 	}
 	
 }
