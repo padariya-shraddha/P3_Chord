@@ -59,11 +59,9 @@ class ServerThread extends Thread{
 				}
 				else if (modelObj.command.equals("fixFinger_validateRange")) {
                     modelObj.response_message =  fixFinger_validateRange(modelObj);
-                }
-				else if (modelObj.command.equals("delete")) {
+                } else if (modelObj.command.equals("delete")) {
 					Operation.deleteMethod(modelObj,node,fingerTable);
-				}
-				else if (modelObj.command.equals("update after delete")) {
+				} else if (modelObj.command.equals("update after delete")) {
 					// updating the finger table after neighbour is deleted i.e., when the successor or the the predecssor is deleted
 					updateAfterDelete(modelObj);
 				}else if(modelObj.command.equals("updateSuccessor")){
@@ -72,10 +70,16 @@ class ServerThread extends Thread{
 						node.setSuccessor(modelObj.successor);
 					}
 					modelObj.response= true;
-				}if (modelObj.command=="out") {
+				} else if (modelObj.command.equals("out")) {
 					Operation.outMethod(modelObj,M,node,fingerTable,dataList);
 					modelObj.response=true;
-				} 
+				} else if(modelObj.command.equals("in")) {
+					Operation.inMethod(modelObj, M, node, fingerTable, dataList);
+				} else if(modelObj.command.equals("successfully added")) {
+					outSuccess(modelObj);
+				} else if (modelObj.command.equals("successfully found")) {
+					inSuccess(modelObj);
+				}
 			}
 			out.writeObject(modelObj);
 
@@ -167,7 +171,7 @@ class ServerThread extends Thread{
 		return returnFlag;
 	}
 
-	
+
 	private void updateAfterDelete(MyNetwork modelObj) {
 
 		// updating the immediate successor if the successor node is deleted
@@ -266,31 +270,31 @@ class ServerThread extends Thread{
 	                keyTobeValidate <= node.getId()) ? true : false;
 	        }
 
-	        //if Key range to be validated doesn't fall into local host range then check the finger table
-	        if(!validate){
-	            for(Finger finger : fingerTable){
-	                boolean check = Operation.checkSpanRange(finger.getKey(),finger.getSpan(),keyTobeValidate,false,M);
-	                if(check){
-	                    responsibleNode = new Node(finger.getKey(),finger.getIp(),finger.getPort());
-	                }
-	                else{
-	                    System.out.println("fixFinger_validateRange :not found");
-	                }
-	            }
+		//if Key range to be validated doesn't fall into local host range then check the finger table
+		if(!validate){
+			for(Finger finger : fingerTable){
+				boolean check = Operation.checkSpanRange(finger.getKey(),finger.getSpan(),keyTobeValidate,false,M);
+				if(check){
+					responsibleNode = new Node(finger.getKey(),finger.getIp(),finger.getPort());
+				}
+				else{
+					System.out.println("fixFinger_validateRange :not found");
+				}
+			}
 
-	        }
-	        else if(validate){
-	            responsibleNode = new Node(node.getId(),node.getIp(),node.getPortNo());
-	        }
+		}
+		else if(validate){
+			responsibleNode = new Node(node.getId(),node.getIp(),node.getPortNo());
+		}
 
+	
 	        String response_string = node.getId()+"/"+node.getIp()+"/"+node.getPortNo();
 	        System.out.println("fixFinger_validateRange responsible node found : " +responsibleNode.getId());
 	        //return responsibleNode;
 	        System.out.println("response_string "+response_string);
 	        return response_string;
+	}
 
-	    }
-	 
 	public void passDataToNewHost(MyNetwork modelObj){
 
 	}
@@ -298,6 +302,15 @@ class ServerThread extends Thread{
 	/*public void passAntiFingerTableToNewNode(int newNodeKey){
 
     }*/
+
+	public void outSuccess(MyNetwork modelObj) {
+		System.out.println("The data "+modelObj.dataString +"is successfully added in"+ modelObj.respondedNodeId);
+	}
+	
+	public void inSuccess(MyNetwork modelObj) {
+		System.out.println("The data "+modelObj.dataString +"is successfully found in"+ modelObj.respondedNodeId);
+	}
+
 
 }
 

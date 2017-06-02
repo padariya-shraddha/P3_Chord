@@ -21,7 +21,7 @@ public class MyClient extends Thread{
 	private Node node;
 	public int M;
 	List<String> dataList;
-	
+
 	public MyClient(List<Finger> fingerTable,Node node,int M,List<String> dataList){
 		//it will have finger table, successor, predecessor as arguments
 		this.fingerTable = fingerTable;
@@ -39,13 +39,13 @@ public class MyClient extends Thread{
 			line = line.trim();
 
 			while(!line.equals("quit")){
-				
+
 				//parse user command
 				MyNetwork networkObj = getCommand(line);
-				
+
 				if (networkObj != null) {
 					String command = networkObj.command;
-					
+
 					if (command.equals("add")) {
 						//find immediate successor
 						addMethod(networkObj);
@@ -56,6 +56,9 @@ public class MyClient extends Thread{
 					} else if(command.equals("out")) {
 						Operation.outMethod(networkObj,M,node,fingerTable,dataList);
 					} 
+					else if(command.equals("in")) {
+						Operation.inMethod(networkObj, M, node, fingerTable, dataList);
+					}
 					else if(command.equals("printFinger")) {
 						Operation.printFingerTable(fingerTable);
 					} 
@@ -72,47 +75,47 @@ public class MyClient extends Thread{
 		} catch (Exception e) {
 		}
 	}
-	
+
 	public MyNetwork getCommand(String line){
 
 		// parsing code
 		MyNetwork obj = null;
-		
+
 		if (line.contains("add") && line.length()>3) {
-			
+
 			line = line.substring(3,line.length());
-			
+
 			String[] parts = line.split(",");
 			if (parts.length==3) {
 				obj = new MyNetwork();
 				obj.command = "add";
-				
+
 				List<String> temp = new ArrayList<>();
 				temp.add(parts[0].trim()); //hostKey
 				temp.add(parts[1].trim()); //host IP
 				temp.add(parts[2].trim()); //host Port number
-				
-				
-				
+				temp.add(parts[1].trim()); //host Port number
 				obj.addObject =temp;
 			}
 		}
 		else if (line.contains("delete") && line.length() > 6) {
 			String[] parts = line.split(" ");
-				obj = new MyNetwork();
-				obj.command = "delete";
-				if (Operation.StrToIntCheck(parts[1])) {
-					obj.nodeToDeleteId = Integer.parseInt(parts[1]);
-				}
+			obj = new MyNetwork();
+			obj.command = "delete";
+			if (Operation.StrToIntCheck(parts[1])) {
+				obj.nodeToDeleteId = Integer.parseInt(parts[1]);
+			}
 		}
 		else if (line.contains("out") && line.length() > 3) {
 			String[] parts = line.split(" ");
-			
-				if (parts.length==2) {
-					obj = new MyNetwork();
-					obj.command = "out";
-					obj.dataString = parts[1];
-				}
+			if (parts.length==2) {
+				obj = new MyNetwork();
+				obj.command = "out";
+				obj.dataString = parts[1];
+				obj.requestedNodeId = node.getId();
+				obj.requestedNodeIp = node.getIp();
+				obj.requestedNodeport = node.getPortNo();
+			}
 		}else if(line.contains("printFinger")) {
 			obj = new MyNetwork();
 			obj.command = "printFinger";
@@ -120,28 +123,37 @@ public class MyClient extends Thread{
 		else if(line.contains("printData")) {
 			obj = new MyNetwork();
 			obj.command ="printData";
-		} 
-		
+		} else if (line.contains("in") && line.length() > 2) {
+			String[] parts = line.split(" ");
+			if (parts.length == 2) {
+				obj = new MyNetwork();
+				obj.command = "in";
+				obj.dataString = parts[1];
+				obj.requestedNodeId = node.getId();
+				obj.requestedNodeIp = node.getIp();
+				obj.requestedNodeport = node.getPortNo();
+
+			}
+		}
 		return obj;
 	}
-	
+
 	public void addMethod(MyNetwork networkObj)
 	{
 		String keytoFind = networkObj.addObject.get(0);
-		
 		
 		if (Operation.StrToIntCheck(keytoFind)) {
 			int keytoFind_int= Integer.parseInt(keytoFind);
 			for (Finger finger : fingerTable) {
 				int tempKey = finger.getKey();
 				int tempRange = finger.getSpan();
-				
+
 				//We have two scenerios here : (1)we get the current node (2) other node
 				if (keytoFind_int>=tempKey || keytoFind_int<tempRange) {
 					//send request to this node
 					String ip = finger.getIp();
 					int port = finger.getPort();
-					
+
 					Socket s;
 					try {
 						s = new Socket(ip, port);
@@ -154,14 +166,14 @@ public class MyClient extends Thread{
 						in.close();
 						out.close();
 						s.close();
-						
+
 						break;
 					} catch (IOException | ClassNotFoundException e) {
-						
+
 					} 
 				}
 			}
 		}
 	}
-	
+
 }
