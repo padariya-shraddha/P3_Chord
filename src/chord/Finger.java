@@ -1,6 +1,8 @@
 package chord;
 
-public class Finger {
+import java.io.Serializable;
+
+public class Finger implements Serializable{
 	private int key;
 	private int span;
 	private int successorNode;

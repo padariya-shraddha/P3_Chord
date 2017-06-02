@@ -63,6 +63,7 @@ public class P3
 		server.start();
 		client.start();   
 		
+
 		System.out.println("Initialize finger table");
 		P3 p3 = new P3();
 		p3.printFingerTable();

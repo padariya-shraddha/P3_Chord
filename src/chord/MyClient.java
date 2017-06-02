@@ -56,10 +56,16 @@ public class MyClient extends Thread{
 					} else if(command.equals("out")) {
 						Operation.outMethod(networkObj,M,node,fingerTable,dataList);
 					} 
+					else if(command.equals("printFinger")) {
+						Operation.printFingerTable(fingerTable);
+					} 
+					else if(command.equals("printData")) {
+						Operation.printDataTable(dataList);
+					} 
 					else{
 						System.out.println("Please enter valid command");
 					}
-				
+					System.out.print("chord > ");
 					line = br.readLine();
 				}
 			}
@@ -73,7 +79,9 @@ public class MyClient extends Thread{
 		MyNetwork obj = null;
 		
 		if (line.contains("add") && line.length()>3) {
-			line = line.substring(3,line.length()-1);
+			
+			line = line.substring(3,line.length());
+			
 			String[] parts = line.split(",");
 			if (parts.length==3) {
 				obj = new MyNetwork();
@@ -82,7 +90,9 @@ public class MyClient extends Thread{
 				List<String> temp = new ArrayList<>();
 				temp.add(parts[0].trim()); //hostKey
 				temp.add(parts[1].trim()); //host IP
-				temp.add(parts[1].trim()); //host Port number
+				temp.add(parts[2].trim()); //host Port number
+				
+				
 				
 				obj.addObject =temp;
 			}
@@ -103,7 +113,14 @@ public class MyClient extends Thread{
 					obj.command = "out";
 					obj.dataString = parts[1];
 				}
-		}
+		}else if(line.contains("printFinger")) {
+			obj = new MyNetwork();
+			obj.command = "printFinger";
+		} 
+		else if(line.contains("printData")) {
+			obj = new MyNetwork();
+			obj.command ="printData";
+		} 
 		
 		return obj;
 	}
@@ -111,6 +128,7 @@ public class MyClient extends Thread{
 	public void addMethod(MyNetwork networkObj)
 	{
 		String keytoFind = networkObj.addObject.get(0);
+		
 		
 		if (Operation.StrToIntCheck(keytoFind)) {
 			int keytoFind_int= Integer.parseInt(keytoFind);
@@ -131,6 +149,7 @@ public class MyClient extends Thread{
 						ObjectInputStream in = new ObjectInputStream(s.getInputStream());
 						out.writeObject(networkObj);
 						MyNetwork response = (MyNetwork) in.readObject();
+						System.out.println("response :"+response.response);
 						System.out.println("added node "+ keytoFind_int +" in ring");
 						in.close();
 						out.close();

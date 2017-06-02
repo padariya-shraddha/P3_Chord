@@ -70,6 +70,11 @@ public class Operation {
 	}
 
 	public static boolean checkSpanRange(int start,int end,int searchKey,boolean flag,int M) {
+		
+		if (start==end) {
+			return true;
+		}
+		
 		boolean result = false;
 		int keyStart;
 		int keyEnd;
@@ -88,6 +93,7 @@ public class Operation {
 		ObjectOutputStream out=null;
 		ObjectInputStream in=null;
 		try {
+			System.out.println("ip :"+ip +", port :"+port);
 			s1 = new Socket(ip, port);
 			out = new ObjectOutputStream(s1.getOutputStream());
 			in = new ObjectInputStream(s1.getInputStream());
@@ -208,4 +214,17 @@ public class Operation {
 		}
 	}
 
+	public static void printFingerTable(List<Finger> fingerTable){
+		for (Finger finger : fingerTable) {
+			finger.print();
+			System.out.println();
+		}
+	}
+	
+	public static void printDataTable(List<String> dataList){
+		System.out.println("In print dataList");
+		for (String data : dataList) {
+			System.out.println(data);
+		}
+	}
 }
