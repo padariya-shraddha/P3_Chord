@@ -184,10 +184,18 @@ public class Operation {
 				int predecessorID = node.getPredecessor().getId();
 				predecessorID = (predecessorID+1)%((int) Math.pow(2, M));
 				
-				if (Operation.checkSpanRange(predecessorID, selfId, NodeId, true, M)) {
+				if (checkSpanRange(predecessorID, selfId, NodeId, true, M)) {
 					
 					//add to self
 					dataList.add(networkObj.dataString);
+					System.out.println("The data "+ networkObj.dataString +"is added in "+node.getId());
+					if(networkObj.requestedNodeId != node.getId()) {
+						networkObj.command ="successfully added";
+						networkObj.respondedNodeId= node.getId();
+						networkObj.respondedNodeIp = node.getIp();
+						networkObj.respondedNodeport = node.getPortNo();
+						sendMessage(networkObj.requestedNodeIp, networkObj.requestedNodeport, networkObj);
+					}
 					return;
 				}
 				
@@ -200,7 +208,7 @@ public class Operation {
 					ip = node.getSuccessor().getIp();
 					port = node.getSuccessor().getPortNo();
 					
-					Operation.sendRequest(ip, port, networkObj);
+					sendMessage(ip, port, networkObj);
 					
 					return;
 				}
@@ -210,12 +218,12 @@ public class Operation {
 					int end = finger.getSpan();
 					
 					if (Operation.checkSpanRange(start,end,NodeId,false,M)) {
-						//send request to found node to add data
+						//send request to the node to add data
 						
 						ip = finger.getIp();
 						port= finger.getPort();
 						
-						Operation.sendRequest(ip, port, networkObj);
+						sendMessage(ip, port, networkObj);
 						
 						return;
 					}
@@ -223,6 +231,75 @@ public class Operation {
 			}
 		}
 	}
+	
+public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<String> dataList){
+		
+		if (networkObj != null && (!networkObj.dataString.equals(""))) {
+			String line = networkObj.dataString.trim();
+			int NodeId = Operation.getmd5Modulo(line,M);
+			
+			if (NodeId>=0) {
+				
+				//************ we can also use anti- finger table
+				
+				String ip ;
+				int port;
+				
+				//check if NodeId is in range of predecessorID and self
+				int selfId = node.getId();
+				int predecessorID = node.getPredecessor().getId();
+				predecessorID = (predecessorID+1)%((int) Math.pow(2, M));
+				
+				if (checkSpanRange(predecessorID, selfId, NodeId, true, M)) {
+					
+					//checking in self
+					if (dataList.contains(networkObj.dataString)) {
+						System.out.println("Data key" + networkObj.dataString+ " is found in" + node.getId()); 
+						if(networkObj.requestedNodeId != node.getId()) {
+							networkObj.command ="successfully found";
+							networkObj.respondedNodeId= node.getId();
+							networkObj.respondedNodeIp = node.getIp();
+							networkObj.respondedNodeport = node.getPortNo();
+							sendMessage(networkObj.requestedNodeIp, networkObj.requestedNodeport, networkObj);
+						}
+					}
+					return;
+				}
+				
+				//check if NodeId resides between self and successor *****
+				selfId= (selfId+1)%((int) Math.pow(2, M));
+				int successorID = node.getSuccessor().getId();
+				
+				if (checkSpanRange(selfId,successorID,NodeId,true,M)) {
+					//send request to successor
+					ip = node.getSuccessor().getIp();
+					port = node.getSuccessor().getPortNo();
+					
+					sendMessage(ip, port, networkObj);
+					
+					return;
+				}
+				
+				for (Finger finger : fingerTable) {
+					int start = finger.getKey();
+					int end = finger.getSpan();
+					
+					if (checkSpanRange(start,end,NodeId,false,M)) {
+						//send request to the node which has the data
+						
+						ip = finger.getIp();
+						port= finger.getPort();
+						
+						sendMessage(ip, port, networkObj);
+						
+						return;
+					}
+				}
+			}
+		}
+	}
+	
+	
 
 	public static void printFingerTable(List<Finger> fingerTable){
 		for (Finger finger : fingerTable) {

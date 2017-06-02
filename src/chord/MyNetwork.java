@@ -17,4 +17,10 @@ public class MyNetwork implements Serializable{
 	public Node predecessor;	//for passing predecessor in case of add
 	public Node successor;	//for passing successor in case of add
 	public String dataString;
+	public int requestedNodeId;
+	public String requestedNodeIp;
+	public int requestedNodeport;
+	public int respondedNodeId;
+	public String respondedNodeIp;
+	public int respondedNodeport;
 }
