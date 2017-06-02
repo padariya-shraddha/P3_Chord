@@ -63,13 +63,13 @@ public class P3
 		server.start();
 		client.start();   
 		
-
+		/*
 		System.out.println("Initialize finger table");
 		P3 p3 = new P3();
 		p3.printFingerTable();
 		System.out.println();		
 		Fix_finger fixFinger = new Fix_finger(local_host_key, local_ip,local_port,fingerTable);
-		fixFinger.start();
+		fixFinger.start();*/
 
 	}
 	

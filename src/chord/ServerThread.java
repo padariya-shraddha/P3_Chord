@@ -47,13 +47,14 @@ class ServerThread extends Thread{
 			modelObj = (MyNetwork) in.readObject();
 
 			if (modelObj != null) {
-				System.out.println("Request received for command " + modelObj.command);
+				//System.out.println("Request received for command " + modelObj.command);
 
 				//process query here
 				if (modelObj.command.equals("add")) {
-					
+					System.out.println("in add");
 					modelObj.response = addNodeToChord(modelObj);
 				} else if (modelObj.command == "add_PassFingerTable"){
+					System.out.println("add_PassFingerTable");
 					updateNewHostFingerTable(modelObj);
 					modelObj.response= true;
 				}
@@ -65,7 +66,7 @@ class ServerThread extends Thread{
 					// updating the finger table after neighbour is deleted i.e., when the successor or the the predecssor is deleted
 					updateAfterDelete(modelObj);
 				}else if(modelObj.command.equals("updateSuccessor")){
-					System.out.println("in updateSuccessor");
+					
 					if (modelObj.successor != null) {
 						node.setSuccessor(modelObj.successor);
 					}
@@ -108,10 +109,6 @@ class ServerThread extends Thread{
 		int currentNodeScrKey = node.getSuccessor().getId();
 		int currentNodePredKey = node.getPredecessor().getId();
 
-		System.out.println("currentNodeKey :"+currentNodeKey+" ,currentNodeScrKey:"+currentNodeScrKey+" ,currentNodePredKey:"+currentNodePredKey);
-		
-		
-		
 		if (Operation.checkSpanRange(currentNodePredKey,currentNodeKey,newNodeKey,true, M)) {
 			try{
 				Node tempPred = node.getPredecessor();
@@ -123,16 +120,11 @@ class ServerThread extends Thread{
 				//passDataToNewNode();
 				//updateAntiFingerTable(modelObj,newNodeKey);
 
-				System.out.println("updated finger table After adding "+newNodeKey+ " ");
-				P3 p3 = new P3();
-				p3.printFingerTable();
-				System.out.println();
-
 				//SEND REQUEST TO PREVIOUS PREDE TO UPDATE ITS SUCCESSOR
-				/*MyNetwork obj = new MyNetwork();
+				MyNetwork obj = new MyNetwork();
 				obj.command = "updateSuccessor";
 				obj.successor= temp;
-				returnFlag = Operation.sendRequest(tempPred.getIp(), tempPred.getPortNo(), obj);*/
+				returnFlag = Operation.sendRequest(tempPred.getIp(), tempPred.getPortNo(), obj);
 			}
 			catch(Exception e){
 				returnFlag = false;
@@ -163,10 +155,10 @@ class ServerThread extends Thread{
 			//reroute add node request 
 			returnFlag= Operation.sendRequest(ip,port,modelObj);
 		}
-		System.out.println("updated finger table After adding "+newNodeKey+ " ");
-		P3 p3 = new P3();
-		p3.printFingerTable();
-		System.out.println();
+		
+		//System.out.println("getPredecessor :"+node.getPredecessor().getId());
+		//Operation.printFingerTable(fingerTable);
+		//System.out.println("getSuccessor :"+node.getSuccessor().getId());
 
 		return returnFlag;
 	}
@@ -194,12 +186,36 @@ class ServerThread extends Thread{
 		}
 	}
 	
-	public void updateFingerTable(MyNetwork modelObj,int newNodeKey){
+	//need to delete it...just kept it for reference
+	public void updateFingerTable_proto(MyNetwork modelObj,int newNodeKey){
 		for (Finger finger : fingerTable) {
-			int keyStart = finger.getKey();
-			int keyEnd = finger.getSpan();
-
-			if(newNodeKey >= keyStart && finger.getSuccessor() > newNodeKey){
+			int keyStart = node.getId();
+			int keyEnd = node.getPredecessor().getId();
+			
+			//if( newNodeKey >= keyStart && finger.getSuccessor() > newNodeKey)
+			System.out.println("keyStart :"+keyStart);
+			System.out.println("keyEnd :"+keyEnd);
+			System.out.println("newNodeKey :"+newNodeKey);
+			if(Operation.checkSpanRange(keyStart,keyEnd,newNodeKey,true,M)){
+				finger.setSuccessorNode(newNodeKey);
+			}
+		}
+		System.out.println("updateFingerTable:");
+		Operation.printFingerTable(fingerTable);
+		
+	}
+	
+	public void updateFingerTable(MyNetwork modelObj,int newNodeKey){
+		int selfId =node.getId();
+		System.out.println("selfId: "+selfId);
+		for (Finger finger : fingerTable) {
+			int successorNodeId = finger.getSuccessor();
+			
+			int temp_newNodeKey = (newNodeKey+1)%((int)Math.pow(2, M));
+			
+			boolean rangeCheckFlag = Operation.checkSpanRange1(temp_newNodeKey, selfId, finger.getKey(), true, M);
+			
+			if (successorNodeId ==selfId && (rangeCheckFlag==false)) {
 				finger.setSuccessorNode(newNodeKey);
 			}
 		}
@@ -211,7 +227,7 @@ class ServerThread extends Thread{
     }*/
 
 	public void passFingerTableToNewNode(MyNetwork modelObj,Node previousPred){
-	
+		
 		String ip = modelObj.addObject.get(1);
 		int port = Integer.parseInt(modelObj.addObject.get(2)); 
 		MyNetwork obj = new MyNetwork();
@@ -220,11 +236,13 @@ class ServerThread extends Thread{
 		obj.predecessor= previousPred;
 		obj.successor=node;
 
+		System.out.println("ip :"+ip+", port:"+port);
+		
 		Operation.sendRequest(ip,port,obj);
 	}
 
 	public void updateNewHostFingerTable(MyNetwork modelObj){
-
+		System.out.println("in updateNewHostFingerTable");
 		//get successor's finger table 
 		List<Finger> succFingerTable = modelObj.fingerTable;
 
@@ -240,13 +258,13 @@ class ServerThread extends Thread{
 
 		for (Finger finger : fingerTable) {
 			int tempKey =finger.getKey();
-			if (Operation.checkSpanRange(updateRangeStart,updateRangeEnd,tempKey,true,M)) {	//if key falls between span
+			if (Operation.checkSpanRange1(updateRangeStart,updateRangeEnd,tempKey,true,M)) {	//if key falls between span
 				finger.setSuccessorNode(updateRangeEnd);
 			}else{	//calculate it from successor's finger table
 				for (Finger finger2 : succFingerTable) {
 					int temp_start = finger2.getKey();
 					int temp_end = finger2.getSpan();
-					boolean flag = Operation.checkSpanRange(temp_start,temp_end,tempKey,false,M);
+					boolean flag = Operation.checkSpanRange1(temp_start,temp_end,tempKey,false,M);
 					if (flag) {
 						finger.setSuccessorNode(finger2.getSuccessor());
 						break;
@@ -254,6 +272,9 @@ class ServerThread extends Thread{
 				}
 			}	
 		}
+		
+		System.out.println("TEST : updated table");
+		Operation.printFingerTable(fingerTable);
 	}
 
 	//public Node fixFinger_validateRange(MyNetwork modelObj)

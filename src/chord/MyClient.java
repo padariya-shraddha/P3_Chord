@@ -161,7 +161,6 @@ public class MyClient extends Thread{
 						ObjectInputStream in = new ObjectInputStream(s.getInputStream());
 						out.writeObject(networkObj);
 						MyNetwork response = (MyNetwork) in.readObject();
-						System.out.println("response :"+response.response);
 						System.out.println("added node "+ keytoFind_int +" in ring");
 						in.close();
 						out.close();
