@@ -87,23 +87,56 @@ public class Operation {
 		}
 		
 		boolean result = false;
-		int keyStart;
-		int keyEnd;
+		int keyStart = -1;
+		int keyEnd = -1;
 
 		keyEnd = (start<end) ? end : (int) (end + Math.pow(2, M));
+<<<<<<< HEAD
+=======
+		System.out.println("KeyStart"+keyStart+" KeyEnd " +keyEnd+ "searchKey "+searchKey);
+		
+>>>>>>> 35a390360a85c9caf10579e2b7b44756bf98113b
 		if(flag && (searchKey >= start && searchKey <= end)) {result = true;}
 		if(!flag && (searchKey >= start && searchKey < end)) {result = true;}
 
 		return result;
 	}
+	
+	public static boolean checkSpanRange1(int start,int end,int searchKey,boolean flag,int M) {
+		
+		if (start==end) {
+			return true;
+		}
+		
+		int finalEndNode = ((int) Math.pow(2, M))-1;
+		
+		if (start>end) {
+			boolean b1 = checkSpanRange1(start,finalEndNode,searchKey,flag,M);
+			boolean b2 = checkSpanRange1(0,end,searchKey,flag,M);
+			
+			if (b1 || b2) {
+				return true;
+			}
+			else 
+				return false;
+		}
+		else{
+			if (searchKey >= start && searchKey <= end) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
 
 	public static  boolean sendRequest(String ip, int port,MyNetwork modelObj){
+		System.out.println("sendRequest");
 		Socket s1=null;
 		boolean returnFlag;
 		ObjectOutputStream out=null;
 		ObjectInputStream in=null;
 		try {
-			System.out.println("ip :"+ip +", port :"+port);
+			
 			s1 = new Socket(ip, port);
 			out = new ObjectOutputStream(s1.getOutputStream());
 			in = new ObjectInputStream(s1.getInputStream());

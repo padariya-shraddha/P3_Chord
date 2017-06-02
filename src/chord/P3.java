@@ -63,7 +63,7 @@ public class P3
 		server.start();
 		client.start();   
 		
-
+		/*
 		System.out.println("Initialize finger table");
 		Operation.printFingerTable(fingerTable);
 		System.out.println();		
@@ -81,7 +81,6 @@ public class P3
 		}
 		}*/
 		
-
 	}
 	
 	public void printFingerTable(){
