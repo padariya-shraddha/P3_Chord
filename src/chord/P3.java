@@ -65,11 +65,22 @@ public class P3
 		
 
 		System.out.println("Initialize finger table");
-		P3 p3 = new P3();
-		p3.printFingerTable();
+		Operation.printFingerTable(fingerTable);
 		System.out.println();		
+		
+		/*while(true)
+		{
 		Fix_finger fixFinger = new Fix_finger(local_host_key, local_ip,local_port,fingerTable);
 		fixFinger.start();
+		try {
+			fixFinger.join(50000000);
+			//System.out.println("fixFinger Thread is alive : "+fixFinger.isAlive());
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}*/
+		
 
 	}
 	

@@ -1,5 +1,6 @@
 package chord;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -9,9 +10,19 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 public class Operation {
+	
+	private static Logger logger = Logger.getLogger(Operation.class.getSimpleName());  
+	private static String filename = "/tmp/log.log";
+	private static FileHandler fh ;  
+    
 
+    
+    
 	public static void deleteMethod(MyNetwork networkObj, Node node,List<Finger> fingerTable  ){
 		int nodeToFind = networkObj.nodeToDeleteId;
 		if (node.getId() == nodeToFind) {
@@ -80,7 +91,6 @@ public class Operation {
 		int keyEnd;
 
 		keyEnd = (start<end) ? end : (int) (end + Math.pow(2, M));
-
 		if(flag && (searchKey >= start && searchKey <= end)) {result = true;}
 		if(!flag && (searchKey >= start && searchKey < end)) {result = true;}
 
@@ -226,5 +236,24 @@ public class Operation {
 		for (String data : dataList) {
 			System.out.println(data);
 		}
+	}
+	
+	public static void printDataInLogFile(List<Finger> fingerTable) {  
+
+	    try {  
+	    	//File fh = new File(filename);
+	    	fh = new FileHandler(filename);  
+	    	logger.addHandler(fh);
+			for (Finger finger : fingerTable) {
+				String data = finger.getKey()+" "+finger.getSpan()+" "+finger.getSuccessor();
+				//logger.info(data); 
+			}
+	         
+
+	    } catch (Exception e) {  
+	        e.printStackTrace();  
+	    }  
+
+
 	}
 }

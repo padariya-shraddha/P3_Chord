@@ -91,9 +91,6 @@ public class MyClient extends Thread{
 				temp.add(parts[0].trim()); //hostKey
 				temp.add(parts[1].trim()); //host IP
 				temp.add(parts[2].trim()); //host Port number
-				
-				
-				
 				obj.addObject =temp;
 			}
 		}

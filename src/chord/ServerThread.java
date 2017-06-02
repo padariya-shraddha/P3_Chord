@@ -284,9 +284,8 @@ class ServerThread extends Thread{
 	        }
 
 	        String response_string = node.getId()+"/"+node.getIp()+"/"+node.getPortNo();
-	        System.out.println("fixFinger_validateRange responsible node found : " +responsibleNode.getId());
-	        //return responsibleNode;
-	        System.out.println("response_string "+response_string);
+	        //System.out.println("fixFinger_validateRange responsible node found : " +responsibleNode.getId());
+	        //System.out.println("response_string "+response_string);
 	        return response_string;
 
 	    }
