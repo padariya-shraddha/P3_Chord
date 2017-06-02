@@ -57,7 +57,7 @@ class ServerThread extends Thread{
 					modelObj.response= true;
 				}
 				else if (modelObj.command.equals("fixFinger_validateRange")) {
-                    modelObj.responsibleNode =  fixFinger_validateRange(modelObj);
+                    modelObj.response_message =  fixFinger_validateRange(modelObj);
                 }
 				else if (modelObj.command.equals("delete")) {
 					Operation.deleteMethod(modelObj,node,fingerTable);
@@ -246,13 +246,19 @@ class ServerThread extends Thread{
 		}
 	}
 
-	 public Node fixFinger_validateRange(MyNetwork modelObj){
+	//public Node fixFinger_validateRange(MyNetwork modelObj)
+	 public String fixFinger_validateRange(MyNetwork modelObj){
 
 	        Node responsibleNode = null;
 	        int keyTobeValidate = modelObj.keyTobeValidate;
-
-	        boolean validate = (keyTobeValidate > node.getPredecessor().getId() &&
+	        boolean validate = false;
+	        if(node.getPredecessor().getId() == node.getId()){
+	        	validate = true;
+	        }
+	        else{
+	         validate = (keyTobeValidate > node.getPredecessor().getId() &&
 	                keyTobeValidate <= node.getId()) ? true : false;
+	        }
 
 	        //if Key range to be validated doesn't fall into local host range then check the finger table
 	        if(!validate){
@@ -271,8 +277,11 @@ class ServerThread extends Thread{
 	            responsibleNode = new Node(node.getId(),node.getIp(),node.getPortNo());
 	        }
 
+	        String response_string = node.getId()+"/"+node.getIp()+"/"+node.getPortNo();
 	        System.out.println("fixFinger_validateRange responsible node found : " +responsibleNode.getId());
-	        return responsibleNode;
+	        //return responsibleNode;
+	        System.out.println("response_string "+response_string);
+	        return response_string;
 
 	    }
 	 
