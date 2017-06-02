@@ -22,7 +22,8 @@ public class Fix_finger extends Thread{
   }
 
   public void run(){
-
+	  
+	  System.out.println();
 	  System.out.println("Fix_finger table size "+local_fingerTable.size());
       for(Finger finger : local_fingerTable)
       {
@@ -38,14 +39,15 @@ public class Fix_finger extends Thread{
               obj.keyTobeValidate = finger_key;
               //Node responsibleNode = sendRequest(other_node_ip,other_node_port, obj);
               String response_message = sendRequest(other_node_ip,other_node_port, obj);
-              //System.out.println("Fix_finger class received response host Key "+responsibleNode.getId());
-              /*if(responsibleNode.getId() != other_node_id){
-                  finger.setSuccessorNode(responsibleNode.getId());
-                  finger.setip(responsibleNode.getIp());
-                  finger.setPort(responsibleNode.getPortNo());
-              }*/
+              System.out.println("Fix_finger class received response host Key "+response_message);
+              String[] parsedArray = response_message.split("/");
+              if(Integer.parseInt(parsedArray[0]) != other_node_id){
+                  finger.setSuccessorNode(Integer.parseInt(parsedArray[0]));
+                  finger.setip(parsedArray[1]);
+                  finger.setPort(Integer.parseInt(parsedArray[2]));
+              }
 
-              System.out.println("Fix_finger : updated successfully");
+              
 
           } catch (Exception e) {
               e.printStackTrace();
@@ -53,9 +55,10 @@ public class Fix_finger extends Thread{
 
       }
       
-      System.out.println("updated finger table After running Fix_finger for "+local_host_key);
+        System.out.println("updated finger table After running Fix_finger for "+local_host_key);
 		P3 p3 = new P3();
 		p3.printFingerTable();
+		System.out.println("Fix_finger : updated successfully");
 		System.out.println();
 
 
