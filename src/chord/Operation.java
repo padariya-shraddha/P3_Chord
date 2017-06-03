@@ -91,11 +91,8 @@ public class Operation {
 		int keyEnd = -1;
 
 		keyEnd = (start<end) ? end : (int) (end + Math.pow(2, M));
-<<<<<<< HEAD
-=======
 		System.out.println("KeyStart"+keyStart+" KeyEnd " +keyEnd+ "searchKey "+searchKey);
 		
->>>>>>> 35a390360a85c9caf10579e2b7b44756bf98113b
 		if(flag && (searchKey >= start && searchKey <= end)) {result = true;}
 		if(!flag && (searchKey >= start && searchKey < end)) {result = true;}
 
