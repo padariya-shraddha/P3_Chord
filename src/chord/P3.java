@@ -29,6 +29,11 @@ public class P3
 		predecessorNode = new Node(nodeId,ip,portNo);
 		for(int i = 0; i < M; i++) {
 			int gap = (int) (nodeId+ Math.pow(2,i));
+			
+			if (gap> Math.pow(2, M)) {
+				gap = (int) (gap % Math.pow(2, M));
+			}
+			
 			int range = (int) (gap + Math.pow(2, i));
 			if (range > Math.pow(2, M)) {
 				range = (int) (range % Math.pow(2, M));

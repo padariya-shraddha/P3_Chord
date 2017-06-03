@@ -64,6 +64,9 @@ public class MyClient extends Thread{
 					} 
 					else if(command.equals("printData")) {
 						Operation.printDataTable(dataList);
+					}
+					else if(command.equals("nodeDetail")) {
+						Operation.nodeDeatil(node);
 					} 
 					else{
 						System.out.println("Please enter valid command");
@@ -133,6 +136,9 @@ public class MyClient extends Thread{
 				obj.requestedNodeport = node.getPortNo();
 
 			}
+		}else if(line.contains("nodeDetail")) {
+			obj = new MyNetwork();
+			obj.command ="nodeDetail";
 		}
 		return obj;
 	}

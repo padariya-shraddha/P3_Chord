@@ -35,7 +35,6 @@ class ServerThread extends Thread{
 		this.dataList=dataList;
 	}
 
-	//COMMAND NAME UPADTE: "update finger table after neighbour is deleted"
 	public void run() {
 		//process request
 		ObjectInputStream in = null;
@@ -49,12 +48,9 @@ class ServerThread extends Thread{
 			if (modelObj != null) {
 				//System.out.println("Request received for command " + modelObj.command);
 
-				//process query here
 				if (modelObj.command.equals("add")) {
-					System.out.println("in add");
 					modelObj.response = addNodeToChord(modelObj);
-				} else if (modelObj.command == "add_PassFingerTable"){
-					System.out.println("add_PassFingerTable");
+				} else if (modelObj.command.equals("add_PassFingerTable")){
 					updateNewHostFingerTable(modelObj);
 					modelObj.response= true;
 				}
@@ -109,7 +105,7 @@ class ServerThread extends Thread{
 		int currentNodeScrKey = node.getSuccessor().getId();
 		int currentNodePredKey = node.getPredecessor().getId();
 
-		if (Operation.checkSpanRange(currentNodePredKey,currentNodeKey,newNodeKey,true, M)) {
+		if (Operation.checkSpanRange1(currentNodePredKey,currentNodeKey,newNodeKey,true, M)) {
 			try{
 				Node tempPred = node.getPredecessor();
 				Node temp = new Node(newNodeKey,newNodeIp,newNodePort);
@@ -136,7 +132,7 @@ class ServerThread extends Thread{
 			String ip = null;
 			int port = -1;
 
-			if(Operation.checkSpanRange(currentNodeKey,currentNodeScrKey,newNodeKey,true,M))
+			if(Operation.checkSpanRange1(currentNodeKey,currentNodeScrKey,newNodeKey,true,M))
 			{
 				ip = node.getSuccessor().getIp();
 				port = node.getSuccessor().getPortNo();
@@ -156,10 +152,6 @@ class ServerThread extends Thread{
 			returnFlag= Operation.sendRequest(ip,port,modelObj);
 		}
 		
-		//System.out.println("getPredecessor :"+node.getPredecessor().getId());
-		//Operation.printFingerTable(fingerTable);
-		//System.out.println("getSuccessor :"+node.getSuccessor().getId());
-
 		return returnFlag;
 	}
 
@@ -207,7 +199,7 @@ class ServerThread extends Thread{
 	
 	public void updateFingerTable(MyNetwork modelObj,int newNodeKey){
 		int selfId =node.getId();
-		System.out.println("selfId: "+selfId);
+		//System.out.println("selfId: "+selfId);
 		for (Finger finger : fingerTable) {
 			int successorNodeId = finger.getSuccessor();
 			
@@ -235,14 +227,12 @@ class ServerThread extends Thread{
 		obj.fingerTable = fingerTable;
 		obj.predecessor= previousPred;
 		obj.successor=node;
-
-		System.out.println("ip :"+ip+", port:"+port);
 		
 		Operation.sendRequest(ip,port,obj);
 	}
 
 	public void updateNewHostFingerTable(MyNetwork modelObj){
-		System.out.println("in updateNewHostFingerTable");
+		
 		//get successor's finger table 
 		List<Finger> succFingerTable = modelObj.fingerTable;
 
@@ -273,23 +263,23 @@ class ServerThread extends Thread{
 			}	
 		}
 		
-		System.out.println("TEST : updated table");
-		Operation.printFingerTable(fingerTable);
+		System.out.println("added in Chord Network");
+		System.out.print("chord >");
 	}
 
 	//public Node fixFinger_validateRange(MyNetwork modelObj)
-	 public String fixFinger_validateRange(MyNetwork modelObj){
+	public String fixFinger_validateRange(MyNetwork modelObj){
 
-	        Node responsibleNode = null;
-	        int keyTobeValidate = modelObj.keyTobeValidate;
-	        boolean validate = false;
-	        if(node.getPredecessor().getId() == node.getId()){
-	        	validate = true;
-	        }
-	        else{
-	         validate = (keyTobeValidate > node.getPredecessor().getId() &&
-	                keyTobeValidate <= node.getId()) ? true : false;
-	        }
+		Node responsibleNode = null;
+		int keyTobeValidate = modelObj.keyTobeValidate;
+		boolean validate = false;
+		if(node.getPredecessor().getId() == node.getId()){
+			validate = true;
+		}
+		else{
+			validate = (keyTobeValidate > node.getPredecessor().getId() &&
+					keyTobeValidate <= node.getId()) ? true : false;
+		}
 
 		//if Key range to be validated doesn't fall into local host range then check the finger table
 		if(!validate){
@@ -302,17 +292,16 @@ class ServerThread extends Thread{
 					System.out.println("fixFinger_validateRange :not found");
 				}
 			}
-
 		}
 		else if(validate){
 			responsibleNode = new Node(node.getId(),node.getIp(),node.getPortNo());
 		}
 
-	
-	        String response_string = node.getId()+"/"+node.getIp()+"/"+node.getPortNo();
-	        //System.out.println("fixFinger_validateRange responsible node found : " +responsibleNode.getId());
-	        //System.out.println("response_string "+response_string);
-	        return response_string;
+		String response_string = node.getId()+"/"+node.getIp()+"/"+node.getPortNo();
+		//System.out.println("fixFinger_validateRange responsible node found : " +responsibleNode.getId());
+		//System.out.println("response_string "+response_string);
+		return response_string;
+
 	}
 
 	public void passDataToNewHost(MyNetwork modelObj){

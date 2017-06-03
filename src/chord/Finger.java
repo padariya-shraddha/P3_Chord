@@ -9,6 +9,7 @@ public class Finger implements Serializable{
 	private String ip;
 	private int port;
 	Finger(int gap,int span,int successorNode, String ip, int port) {
+		
 		this.key = gap;
 		this.span = span;
 		this.successorNode = successorNode;

@@ -91,7 +91,6 @@ public class Operation {
 		int keyEnd = -1;
 
 		keyEnd = (start<end) ? end : (int) (end + Math.pow(2, M));
-		System.out.println("KeyStart"+keyStart+" KeyEnd " +keyEnd+ "searchKey "+searchKey);
 		
 		if(flag && (searchKey >= start && searchKey <= end)) {result = true;}
 		if(!flag && (searchKey >= start && searchKey < end)) {result = true;}
@@ -127,13 +126,12 @@ public class Operation {
 	}
 
 	public static  boolean sendRequest(String ip, int port,MyNetwork modelObj){
-		System.out.println("sendRequest");
+	
 		Socket s1=null;
 		boolean returnFlag;
 		ObjectOutputStream out=null;
 		ObjectInputStream in=null;
 		try {
-			
 			s1 = new Socket(ip, port);
 			out = new ObjectOutputStream(s1.getOutputStream());
 			in = new ObjectInputStream(s1.getInputStream());
@@ -145,7 +143,8 @@ public class Operation {
 			e.printStackTrace();
 			returnFlag= false;
 		}finally{
-			try {
+			/*try {
+				
 				if (in!=null) {
 					in.close();
 				}
@@ -154,10 +153,10 @@ public class Operation {
 				}
 				if (s1!=null) {
 					s1.close();
-				}
+				
 			} catch (IOException e) {
 				e.printStackTrace();
-			}
+			}}*/
 		}
 		return returnFlag;
 	}
@@ -355,12 +354,27 @@ public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fi
 				String data = finger.getKey()+" "+finger.getSpan()+" "+finger.getSuccessor();
 				//logger.info(data); 
 			}
-	         
+
 
 	    } catch (Exception e) {  
 	        e.printStackTrace();  
 	    }  
-
+	}
+	    
+	public static void nodeDeatil(Node node){
+		if (node != null) {
+			System.out.println("Node id: "+node.getId() + ", ip: "+node.getIp()+", port: "+node.getPortNo());
+			Node tempSuccessor = node.getSuccessor();
+			Node tempPredecessor = node.getPredecessor();
+			
+			if (tempSuccessor != null) {
+				System.out.println("Node Successor:"+tempSuccessor.getId());
+			}
+			
+			if (tempPredecessor != null) {
+				System.out.println("Node Predecessor:"+tempPredecessor.getId());
+			}
+		}
 
 	}
 }
