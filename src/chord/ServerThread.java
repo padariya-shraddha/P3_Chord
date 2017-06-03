@@ -19,6 +19,7 @@ class ServerThread extends Thread{
 	int totalNodes;
 	int M;
 	List<String> dataList;
+	boolean output_disable = false;
 
 	public ServerThread(Socket s,int portNumber,int hostKey,String ipAddr,Node node,Finger finger,Node successorNode,Node predecessorNode,List<Finger> fingerTable,int M,List<String> dataList){
 		this.s = s;
@@ -61,6 +62,7 @@ class ServerThread extends Thread{
 				} else if (modelObj.command.equals("update after delete")) {
 					// updating the finger table after neighbour is deleted i.e., when the successor or the the predecssor is deleted
 					updateAfterDelete(modelObj);
+					output_disable = true;
 				}else if(modelObj.command.equals("updateSuccessor")){
 					
 					if (modelObj.successor != null) {
@@ -78,7 +80,15 @@ class ServerThread extends Thread{
 					inSuccess(modelObj);
 				}
 			}
-			out.writeObject(modelObj);
+			
+			if(!output_disable) //change by nidhi due to update Delete function
+			{
+				out.writeObject(modelObj);
+			}
+			else{
+				output_disable = false;
+			}
+			
 
 		}catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
@@ -160,22 +170,28 @@ class ServerThread extends Thread{
 
 		// updating the immediate successor if the successor node is deleted
 		if(node.getSuccessor().getId() == modelObj.nodeToDeleteId) {
-			node.setSuccessor(modelObj.nodeToDelete.getSuccessor());
+			
+			//node.setSuccessor(modelObj.nodeToDelete.getSuccessor());
+			node.setSuccessor(modelObj.successor);
 		}
 		// updating the immediate predecessor if the successor node is deleted
 		else if(node.getPredecessor().getId() == modelObj.nodeToDeleteId) {
-			node.setPredecessor(modelObj.nodeToDelete.getPredecessor());
+			//node.setPredecessor(modelObj.nodeToDelete.getPredecessor());
+			node.setPredecessor(modelObj.predecessor);
 		}
 		for (Finger finger : fingerTable) {
 			int keyStart = finger.getKey();
 			int keyEnd = finger.getSpan();
 
-			if(finger.getSuccessor() == modelObj.nodeToDelete.getId()){
-				finger.setSuccessorNode(modelObj.nodeToDelete.getSuccessor().getId());
-				finger.setip(modelObj.nodeToDelete.getSuccessor().getIp());
-				finger.setPort(modelObj.nodeToDelete.getSuccessor().getPortNo());
+			if(finger.getSuccessor() == modelObj.nodeToDeleteId){
+				finger.setSuccessorNode(modelObj.successor.getId());
+				finger.setip(modelObj.successor.getIp());
+				finger.setPort(modelObj.successor.getPortNo());
 			}
 		}
+		
+		System.out.println("Finger table After removing node "+modelObj.nodeToDeleteId);
+		Operation.printFingerTable(fingerTable);
 	}
 	
 	//need to delete it...just kept it for reference
@@ -209,8 +225,12 @@ class ServerThread extends Thread{
 			
 			if (successorNodeId ==selfId && (rangeCheckFlag==false)) {
 				finger.setSuccessorNode(newNodeKey);
+				finger.setip(modelObj.addObject.get(1));
+				finger.setPort(Integer.parseInt(modelObj.addObject.get(2)));
 			}
 		}
+		
+		Operation.printFingerTable(fingerTable);
 	}
 
 	//To-Do
@@ -263,6 +283,7 @@ class ServerThread extends Thread{
 			}	
 		}
 		
+		Operation.printFingerTable(fingerTable);
 		System.out.println("added in Chord Network");
 		System.out.print("chord >");
 	}
@@ -284,12 +305,10 @@ class ServerThread extends Thread{
 		//if Key range to be validated doesn't fall into local host range then check the finger table
 		if(!validate){
 			for(Finger finger : fingerTable){
-				boolean check = Operation.checkSpanRange(finger.getKey(),finger.getSpan(),keyTobeValidate,false,M);
+				boolean check = Operation.checkSpanRange(finger.getKey(),finger.getSpan(),keyTobeValidate,true,M);
 				if(check){
 					responsibleNode = new Node(finger.getKey(),finger.getIp(),finger.getPort());
-				}
-				else{
-					System.out.println("fixFinger_validateRange :not found");
+					break;
 				}
 			}
 		}

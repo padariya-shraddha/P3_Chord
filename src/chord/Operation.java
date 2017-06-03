@@ -1,6 +1,7 @@
 package chord;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -18,7 +19,8 @@ public class Operation {
 	
 	private static Logger logger = Logger.getLogger(Operation.class.getSimpleName());  
 	private static String filename = "/tmp/log.log";
-	private static FileHandler fh ;  
+	private static FileHandler fh ; 
+	private static int M = 6;
     
 
     
@@ -31,6 +33,12 @@ public class Operation {
 			}
 			else {
 				networkObj.command = "update after delete";
+				Node pred = new Node(node.getPredecessor().getId(),node.getPredecessor().getIp(),node.getPredecessor().getPortNo());
+				Node succ = new Node(node.getSuccessor().getId(),node.getSuccessor().getIp(),node.getSuccessor().getPortNo());
+				
+				networkObj.predecessor = pred;
+				networkObj.successor = succ;
+				
 				// notifying successor the deletion of the current node
 				if(node.getId() != node.getSuccessor().getId()) {
 					sendMessage(node.getSuccessor().getIp(), node.getSuccessor().getPortNo(), networkObj);
@@ -44,12 +52,19 @@ public class Operation {
 			}
 		}
 		else {
+			
 			for (Finger finger : fingerTable) {
 				int tempKey = finger.getKey();
 				int tempRange = finger.getSpan();
 
-				// 
-				if (nodeToFind >= tempKey || nodeToFind < tempRange) {
+				// checkSpanRange
+				//if (nodeToFind >= tempKey || nodeToFind < tempRange) {
+				System.out.println("tempKey "+tempKey+"tempRange"+tempRange+"nodeToFind"+nodeToFind+"result"+checkSpanRange(tempKey,tempRange,nodeToFind,true,M));
+
+				if(checkSpanRange(tempKey,tempRange,nodeToFind,true,M))
+				{
+					System.out.println(finger.getIp()+" "+finger.getPort());
+
 					//send request to this node
 					String ip = finger.getIp();
 					int port = finger.getPort();
@@ -61,7 +76,7 @@ public class Operation {
 						s.close();
 						break;
 					} catch (IOException e) {
-
+						System.out.println("Error : deleteMethod");
 					} 
 				}
 			}
@@ -90,11 +105,37 @@ public class Operation {
 		int keyStart = -1;
 		int keyEnd = -1;
 
-		keyEnd = (start<end) ? end : (int) (end + Math.pow(2, M));
-		
-		if(flag && (searchKey >= start && searchKey <= end)) {result = true;}
-		if(!flag && (searchKey >= start && searchKey < end)) {result = true;}
+		if(start>end){
+			keyStart = start;
+			keyEnd = (int) (end + Math.pow(2, M));
+		}
+		else{
+			keyStart = start;
+			keyEnd = end;
+		}
 
+		System.out.println("checkSpanRange : keyEnd "+keyEnd);
+		
+		if(flag)
+			{
+			 if(searchKey >= keyStart && searchKey <= keyEnd) {
+				 result = true;
+			 }
+			 else{
+					result = false;
+				}
+			
+			}
+		else{
+			
+			if(searchKey >= keyStart && searchKey < keyEnd) {
+				 result = true;
+			 }
+			 else{
+					result = false;
+				}
+		}
+		
 		return result;
 	}
 	
@@ -344,6 +385,7 @@ public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fi
 		}
 	}
 	
+	//need to delete
 	public static void printDataInLogFile(List<Finger> fingerTable) {  
 
 	    try {  
@@ -377,4 +419,50 @@ public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fi
 		}
 
 	}
+	
+	public static String createLogFile(int hostName) {
+        try {
+            File f = new File("/tmp/chord/" + hostName);
+            String flag = null;
+            String flag1 = null;
+
+            if (f.mkdirs()) {
+                System.out.println("nets file successfully created");
+                flag = "Success";
+            } else {
+                flag = "notsuccess";
+            }
+
+            if (flag == "Success") {
+                File file = new File(f.getAbsolutePath() + "/host_"+hostName+".txt");
+                if (file.createNewFile()) {
+                    flag1 = "Success";
+                } else {
+                    flag1 = "notsuccess";
+                }
+                return file.getAbsolutePath();
+            }
+        } catch (Exception e) {
+            System.out.println("createDirectory : failed");
+        }
+        return "NotSuccess";
+    }
+	
+	public static void writeInLogFiles(List<Finger> fingerTable, String filePath) {
+        try {
+            String data = null;
+        	FileWriter writer = new FileWriter(filePath, true);
+        	for (Finger finger : fingerTable) {
+				data = finger.getKey()+" "+finger.getSpan()+" "+finger.getSuccessor();
+				writer.write(data);
+	            writer.write("\r\n");			
+	        }
+            
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("log file : failed");
+        }
+
+    }
+
 }

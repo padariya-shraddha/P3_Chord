@@ -60,6 +60,7 @@ public class P3
 		initialise(local_ip, local_port);
 		
 		Node node = new Node(local_host_key, local_ip, local_port);
+		String path = Operation.createLogFile(local_host_key);
 		
 		List<String> dataList = new ArrayList<>();
 		
@@ -68,14 +69,14 @@ public class P3
 		server.start();
 		client.start();   
 		
-		/*
-		System.out.println("Initialize finger table");
-		Operation.printFingerTable(fingerTable);
-		System.out.println();		
 		
-		/*while(true)
+		/*System.out.println("Initialize finger table");
+		Operation.printFingerTable(fingerTable);
+		System.out.println();*/		
+		
+		while(true)
 		{
-		Fix_finger fixFinger = new Fix_finger(local_host_key, local_ip,local_port,fingerTable);
+		Fix_finger fixFinger = new Fix_finger(local_host_key, local_ip,local_port,fingerTable,node,path);
 		fixFinger.start();
 		try {
 			fixFinger.join(50000000);
@@ -84,7 +85,7 @@ public class P3
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		}*/
+		}
 		
 	}
 	

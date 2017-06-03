@@ -13,17 +13,22 @@ public class Fix_finger extends Thread{
   private String local_ip;
   private int local_port;
   private List<Finger> local_fingerTable;
-  public Fix_finger(int local_host_key,String local_ip,int local_port,List<Finger> local_fingerTable){
+  private Node node;
+  private String path;
+  public Fix_finger(int local_host_key,String local_ip,int local_port,List<Finger> local_fingerTable,Node node,String path){
       this.local_host_key = local_host_key;
       this.local_ip = local_ip;
       this.local_port = local_port;
       this.local_fingerTable = local_fingerTable;
+      this.node = node;
+      this.path = path;
 
   }
 
   public void run(){
 	  System.out.println();
 
+	  if(node.getId() != node.getSuccessor().getId() && node.getId() != node.getPredecessor().getId()){
       for(Finger finger : local_fingerTable)
       {
           try
@@ -52,11 +57,16 @@ public class Fix_finger extends Thread{
           }
 
       }
+	  }
+	  
+	  Operation.writeInLogFiles(local_fingerTable, path);
+	  try {
+		Thread.sleep(500000);
+	} catch (InterruptedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
       
-        //System.out.println("updated finger table After running Fix_finger for "+local_host_key);
-     
-        Operation.printDataInLogFile(local_fingerTable);
-
   }
 
   public String sendRequest(String ip, int port,MyNetwork modelObj){
