@@ -208,8 +208,8 @@ class ServerThread extends Thread{
 				finger.setSuccessorNode(newNodeKey);
 			}
 		}
-		System.out.println("updateFingerTable:");
-		Operation.printFingerTable(fingerTable);
+		//System.out.println("updateFingerTable:");
+		//Operation.printFingerTable(fingerTable);
 		
 	}
 	
@@ -230,7 +230,7 @@ class ServerThread extends Thread{
 			}
 		}
 		
-		Operation.printFingerTable(fingerTable);
+		//Operation.printFingerTable(fingerTable);
 	}
 
 	//To-Do
@@ -270,6 +270,8 @@ class ServerThread extends Thread{
 			int tempKey =finger.getKey();
 			if (Operation.checkSpanRange1(updateRangeStart,updateRangeEnd,tempKey,true,M)) {	//if key falls between span
 				finger.setSuccessorNode(updateRangeEnd);
+				finger.setip(node.getSuccessor().getIp());
+				finger.setPort(node.getSuccessor().getPortNo());
 			}else{	//calculate it from successor's finger table
 				for (Finger finger2 : succFingerTable) {
 					int temp_start = finger2.getKey();
@@ -277,13 +279,15 @@ class ServerThread extends Thread{
 					boolean flag = Operation.checkSpanRange1(temp_start,temp_end,tempKey,false,M);
 					if (flag) {
 						finger.setSuccessorNode(finger2.getSuccessor());
+						finger.setip(finger2.getIp());
+						finger.setPort(finger2.getPort());
 						break;
 					}
 				}
 			}	
 		}
 		
-		Operation.printFingerTable(fingerTable);
+		//Operation.printFingerTable(fingerTable);
 		System.out.println("added in Chord Network");
 		System.out.print("chord >");
 	}

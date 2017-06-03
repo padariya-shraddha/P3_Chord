@@ -167,7 +167,7 @@ public class MyClient extends Thread{
 						out.writeObject(networkObj);
 						MyNetwork response = (MyNetwork) in.readObject();
 						System.out.println("added node "+ keytoFind_int +" in ring");
-						Operation.printFingerTable(fingerTable);
+						//Operation.printFingerTable(fingerTable);
 						in.close();
 						out.close();
 						s.close();
