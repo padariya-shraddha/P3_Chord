@@ -417,7 +417,6 @@ public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fi
 				System.out.println("Node Predecessor:"+tempPredecessor.getId());
 			}
 		}
-
 	}
 	
 	public static String createLogFile(int hostName) {
@@ -462,7 +461,5 @@ public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fi
         } catch (IOException e) {
             System.out.println("log file : failed");
         }
-
     }
-
 }
