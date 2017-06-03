@@ -22,11 +22,8 @@ public class Fix_finger extends Thread{
   }
 
   public void run(){
-	  
-<<<<<<< HEAD
 	  System.out.println();
-=======
->>>>>>> 35a390360a85c9caf10579e2b7b44756bf98113b
+
       for(Finger finger : local_fingerTable)
       {
           try
@@ -41,10 +38,6 @@ public class Fix_finger extends Thread{
               obj.keyTobeValidate = finger_key;
               //Node responsibleNode = sendRequest(other_node_ip,other_node_port, obj);
               String response_message = sendRequest(other_node_ip,other_node_port, obj);
-<<<<<<< HEAD
-=======
-             
->>>>>>> 35a390360a85c9caf10579e2b7b44756bf98113b
               String[] parsedArray = response_message.split("/");
               if(Integer.parseInt(parsedArray[0]) != other_node_id){
                   finger.setSuccessorNode(Integer.parseInt(parsedArray[0]));
@@ -60,13 +53,10 @@ public class Fix_finger extends Thread{
 
       }
       
-<<<<<<< HEAD
         //System.out.println("updated finger table After running Fix_finger for "+local_host_key);
      
         Operation.printDataInLogFile(local_fingerTable);
 
-=======
->>>>>>> 35a390360a85c9caf10579e2b7b44756bf98113b
   }
 
   public String sendRequest(String ip, int port,MyNetwork modelObj){
@@ -85,13 +75,6 @@ public class Fix_finger extends Thread{
           //response = (Node) in.readObject();
           response = (MyNetwork) in.readObject();
           response_message = response.response_message;
-          //returnFlag = response.response;
-<<<<<<< HEAD
-          //System.out.println("fix_finger response node: "+response.response_message);
-=======
-         
->>>>>>> 35a390360a85c9caf10579e2b7b44756bf98113b
-
       } catch (IOException | ClassNotFoundException e) {
           e.printStackTrace();
           returnFlag= false;
