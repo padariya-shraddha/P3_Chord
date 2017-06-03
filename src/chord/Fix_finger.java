@@ -28,45 +28,53 @@ public class Fix_finger extends Thread{
   public void run(){
 	  System.out.println();
 
-	  if(node.getId() != node.getSuccessor().getId() && node.getId() != node.getPredecessor().getId()){
-      for(Finger finger : local_fingerTable)
-      {
-          try
-          {
-              int other_node_id = finger.getSuccessor();
-              String other_node_ip = finger.getIp();
-              int other_node_port = finger.getPort();
-              int finger_key = finger.getKey(); //this key range we need to confirm
-
-              MyNetwork obj = new MyNetwork();
-              obj.command = "fixFinger_validateRange";
-              obj.keyTobeValidate = finger_key;
-              //Node responsibleNode = sendRequest(other_node_ip,other_node_port, obj);
-              String response_message = sendRequest(other_node_ip,other_node_port, obj);
-              String[] parsedArray = response_message.split("/");
-              if(Integer.parseInt(parsedArray[0]) != other_node_id){
-                  finger.setSuccessorNode(Integer.parseInt(parsedArray[0]));
-                  finger.setip(parsedArray[1]);
-                  finger.setPort(Integer.parseInt(parsedArray[2]));
-              }
-
-              
-
-          } catch (Exception e) {
-              e.printStackTrace();
-          }
-
-      }
+	  while(true){
+		  fix_finger_update();
+		  Operation.writeInLogFiles(local_fingerTable, path);
+		  try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	  }
 	  
-	  Operation.writeInLogFiles(local_fingerTable, path);
-	  try {
-		Thread.sleep(500000);
-	} catch (InterruptedException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
+	  
       
+  }
+  
+  public void fix_finger_update(){
+	  
+	  if(node.getId() != node.getSuccessor().getId() && node.getId() != node.getPredecessor().getId()){
+	      for(Finger finger : local_fingerTable)
+	      {
+	          try
+	          {
+	              int other_node_id = finger.getSuccessor();
+	              String other_node_ip = finger.getIp();
+	              int other_node_port = finger.getPort();
+	              int finger_key = finger.getKey(); //this key range we need to confirm
+
+	              MyNetwork obj = new MyNetwork();
+	              obj.command = "fixFinger_validateRange";
+	              obj.keyTobeValidate = finger_key;
+	              //Node responsibleNode = sendRequest(other_node_ip,other_node_port, obj);
+	              String response_message = sendRequest(other_node_ip,other_node_port, obj);
+	              String[] parsedArray = response_message.split("/");
+	              if(Integer.parseInt(parsedArray[0]) != other_node_id){
+	                  finger.setSuccessorNode(Integer.parseInt(parsedArray[0]));
+	                  finger.setip(parsedArray[1]);
+	                  finger.setPort(Integer.parseInt(parsedArray[2]));
+	              }
+
+	              
+
+	          } catch (Exception e) {
+	              e.printStackTrace();
+	          }
+
+	      }
+		  }
   }
 
   public String sendRequest(String ip, int port,MyNetwork modelObj){

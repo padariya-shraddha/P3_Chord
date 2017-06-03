@@ -113,8 +113,6 @@ public class Operation {
 			keyStart = start;
 			keyEnd = end;
 		}
-
-		System.out.println("checkSpanRange : keyEnd "+keyEnd);
 		
 		if(flag)
 			{

@@ -74,7 +74,10 @@ public class P3
 		Operation.printFingerTable(fingerTable);
 		System.out.println();*/		
 		
-		while(true)
+		Fix_finger fixFinger = new Fix_finger(local_host_key, local_ip,local_port,fingerTable,node,path);
+		fixFinger.start();
+		
+		/*while(true)
 		{
 		Fix_finger fixFinger = new Fix_finger(local_host_key, local_ip,local_port,fingerTable,node,path);
 		fixFinger.start();
@@ -85,7 +88,7 @@ public class P3
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		}
+		}*/
 		
 	}
 	

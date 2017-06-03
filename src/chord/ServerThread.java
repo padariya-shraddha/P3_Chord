@@ -291,6 +291,7 @@ class ServerThread extends Thread{
 	//public Node fixFinger_validateRange(MyNetwork modelObj)
 	public String fixFinger_validateRange(MyNetwork modelObj){
 
+		System.out.println("fixFinger_validateRange "+modelObj.keyTobeValidate);
 		Node responsibleNode = null;
 		int keyTobeValidate = modelObj.keyTobeValidate;
 		boolean validate = false;
