@@ -447,14 +447,17 @@ public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fi
 	
 	public static void writeInLogFiles(List<Finger> fingerTable, String filePath) {
         try {
+        	
             String data = null;
         	FileWriter writer = new FileWriter(filePath, true);
+        	writer.write("-------------------------------------------------------------------------");
+        	writer.write("\r\n");
         	for (Finger finger : fingerTable) {
 				data = finger.getKey()+" "+finger.getSpan()+" "+finger.getSuccessor();
 				writer.write(data);
 	            writer.write("\r\n");			
 	        }
-            
+        			
             writer.close();
         } catch (IOException e) {
             System.out.println("log file : failed");

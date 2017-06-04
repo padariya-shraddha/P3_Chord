@@ -73,7 +73,8 @@ public class P3
 		/*System.out.println("Initialize finger table");
 		Operation.printFingerTable(fingerTable);
 		System.out.println();*/		
-		
+		  Operation.writeInLogFiles(fingerTable, path);
+
 		Fix_finger fixFinger = new Fix_finger(local_host_key, local_ip,local_port,fingerTable,node,path);
 		fixFinger.start();
 		

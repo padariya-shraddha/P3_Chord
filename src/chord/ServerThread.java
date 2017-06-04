@@ -66,6 +66,7 @@ class ServerThread extends Thread{
 				}else if(modelObj.command.equals("updateSuccessor")){
 					
 					if (modelObj.successor != null) {
+						System.out.println("updateSuccessor : "+modelObj.successor.getId());
 						node.setSuccessor(modelObj.successor);
 					}
 					modelObj.response= true;
@@ -131,6 +132,10 @@ class ServerThread extends Thread{
 				obj.command = "updateSuccessor";
 				obj.successor= temp;
 				returnFlag = Operation.sendRequest(tempPred.getIp(), tempPred.getPortNo(), obj);
+				
+				System.out.println("Successor "+node.getSuccessor().getId()+" "+node.getSuccessor().getIp()+" "+node.getSuccessor().getPortNo()+
+						" predecessor "+node.getPredecessor().getId()+" "+node.getPredecessor().getIp()+" "+node.getPredecessor().getPortNo());
+				Operation.printFingerTable(fingerTable);
 			}
 			catch(Exception e){
 				returnFlag = false;
@@ -191,6 +196,8 @@ class ServerThread extends Thread{
 		}
 		
 		System.out.println("Finger table After removing node "+modelObj.nodeToDeleteId);
+		System.out.println("Successor "+node.getSuccessor().getId()+" "+node.getSuccessor().getIp()+" "+node.getSuccessor().getPortNo()+
+				" predecessor "+node.getPredecessor().getId()+" "+node.getPredecessor().getIp()+" "+node.getPredecessor().getPortNo());
 		Operation.printFingerTable(fingerTable);
 	}
 	
@@ -287,7 +294,9 @@ class ServerThread extends Thread{
 			}	
 		}
 		
-		//Operation.printFingerTable(fingerTable);
+		System.out.println("Successor "+node.getSuccessor().getId()+" "+node.getSuccessor().getIp()+" "+node.getSuccessor().getPortNo()+
+				" predecessor "+node.getPredecessor().getId()+" "+node.getPredecessor().getIp()+" "+node.getPredecessor().getPortNo());
+		Operation.printFingerTable(fingerTable);
 		System.out.println("added in Chord Network");
 		System.out.print("chord >");
 	}
@@ -295,7 +304,6 @@ class ServerThread extends Thread{
 	//public Node fixFinger_validateRange(MyNetwork modelObj)
 	public String fixFinger_validateRange(MyNetwork modelObj){
 
-		System.out.println("fixFinger_validateRange "+modelObj.keyTobeValidate);
 		Node responsibleNode = null;
 		int keyTobeValidate = modelObj.keyTobeValidate;
 		boolean validate = false;
@@ -303,27 +311,43 @@ class ServerThread extends Thread{
 			validate = true;
 		}
 		else{
-			validate = (keyTobeValidate > node.getPredecessor().getId() &&
-					keyTobeValidate <= node.getId()) ? true : false;
+			validate = Operation.checkSpanRange(node.getPredecessor().getId(),node.getId(),keyTobeValidate,true, M);
+					
+					//keyTobeValidate > node.getPredecessor().getId() &&
+					//keyTobeValidate <= node.getId()) ? true : false;
 		}
+
+		System.out.println("fixFinger_validateRange "+modelObj.keyTobeValidate+ " validate "+validate);
 
 		//if Key range to be validated doesn't fall into local host range then check the finger table
 		if(!validate){
+			
+			System.out.println(" checkSpan "+Operation.checkSpanRange(node.getId(),node.getSuccessor().getId(),keyTobeValidate,true,M));
+
+			if(Operation.checkSpanRange(node.getId(),node.getSuccessor().getId(),keyTobeValidate,false,M)){
+					//keyTobeValidate > node.getId() && keyTobeValidate <= node.getSuccessor().getId())
+				responsibleNode = new Node(node.getSuccessor().getId(),node.getSuccessor().getIp(),node.getSuccessor().getPortNo());
+			}
+			else{
+			
 			for(Finger finger : fingerTable){
-				boolean check = Operation.checkSpanRange(finger.getKey(),finger.getSpan(),keyTobeValidate,true,M);
+				boolean check = Operation.checkSpanRange(finger.getKey(),finger.getSpan(),keyTobeValidate,false,M);
 				if(check){
-					responsibleNode = new Node(finger.getKey(),finger.getIp(),finger.getPort());
+					responsibleNode = new Node(finger.getSuccessor(),finger.getIp(),finger.getPort());
 					break;
 				}
 			}
+		 }
 		}
 		else if(validate){
 			responsibleNode = new Node(node.getId(),node.getIp(),node.getPortNo());
 		}
 
-		String response_string = node.getId()+"/"+node.getIp()+"/"+node.getPortNo();
+		String response_string = responsibleNode.getId()+"/"+responsibleNode.getIp()+"/"+responsibleNode.getPortNo();
 		//System.out.println("fixFinger_validateRange responsible node found : " +responsibleNode.getId());
 		//System.out.println("response_string "+response_string);
+        System.out.println("sendRequest : "+response_string+" keyTobeValidate "+keyTobeValidate);
+
 		return response_string;
 
 	}

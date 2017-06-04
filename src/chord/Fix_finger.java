@@ -30,9 +30,8 @@ public class Fix_finger extends Thread{
 
 	  while(true){
 		  fix_finger_update();
-		  Operation.writeInLogFiles(local_fingerTable, path);
 		  try {
-			Thread.sleep(5000);
+			Thread.sleep(10000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -74,6 +73,9 @@ public class Fix_finger extends Thread{
 	          }
 
 	      }
+	      
+		  Operation.writeInLogFiles(local_fingerTable, path);
+
 		  }
   }
 
