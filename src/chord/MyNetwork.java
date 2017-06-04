@@ -23,4 +23,6 @@ public class MyNetwork implements Serializable{
 	public int respondedNodeId;
 	public String respondedNodeIp;
 	public int respondedNodeport;
+	public List<String> dataList; // for passing set of data
+
 }

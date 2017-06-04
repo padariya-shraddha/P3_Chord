@@ -16,18 +16,21 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 public class Operation {
-	
+
 	private static Logger logger = Logger.getLogger(Operation.class.getSimpleName());  
 	private static String filename = "/tmp/log.log";
 	private static FileHandler fh ; 
 	private static int M = 6;
-    
+   
 
-    
-    
-	public static void deleteMethod(MyNetwork networkObj, Node node,List<Finger> fingerTable  ){
+
+
+
+	public static void deleteMethod(MyNetwork networkObj, Node node,List<Finger> fingerTable,List<String> dataList  ){
 		int nodeToFind = networkObj.nodeToDeleteId;
 		if (node.getId() == nodeToFind) {
+			 
+			
 			if (node.getId() == node.getSuccessor().getId() && node.getId() == node.getPredecessor().getId()) {
 				System.exit(0);
 			}
@@ -41,6 +44,8 @@ public class Operation {
 				
 				// notifying successor the deletion of the current node
 				if(node.getId() != node.getSuccessor().getId()) {
+					// for transferring of data when deleting to successor node
+					networkObj.dataList = dataList;
 					sendMessage(node.getSuccessor().getIp(), node.getSuccessor().getPortNo(), networkObj);
 				}
 				// notifying predecessor the deletion of the current node
@@ -82,7 +87,7 @@ public class Operation {
 			}
 		}
 	}
-	
+
 	public static void sendMessage(String ip,int portNo, MyNetwork networkObj) {
 		try {
 			Socket s = new Socket(ip, portNo);
@@ -96,15 +101,14 @@ public class Operation {
 	}
 
 	public static boolean checkSpanRange(int start,int end,int searchKey,boolean flag,int M) {
-		
+
 		if (start==end) {
 			return true;
 		}
-		
+
 		boolean result = false;
 		int keyStart = -1;
 		int keyEnd = -1;
-
 		if(start>end){
 			keyStart = start;
 			keyEnd = (int) (end + Math.pow(2, M));
@@ -134,21 +138,27 @@ public class Operation {
 				}
 		}
 		
+		keyEnd = (start<end) ? end : (int) (end + Math.pow(2, M));
+
+		System.out.println("KeyStart"+keyStart+" KeyEnd " +keyEnd+ "searchKey "+searchKey);
+		if(flag && (searchKey >= start && searchKey <= end)) {result = true;}
+		if(!flag && (searchKey >= start && searchKey < end)) {result = true;}
+
 		return result;
 	}
-	
+
 	public static boolean checkSpanRange1(int start,int end,int searchKey,boolean flag,int M) {
-		
+
 		if (start==end) {
 			return true;
 		}
-		
+
 		int finalEndNode = ((int) Math.pow(2, M))-1;
-		
+
 		if (start>end) {
 			boolean b1 = checkSpanRange1(start,finalEndNode,searchKey,flag,M);
 			boolean b2 = checkSpanRange1(0,end,searchKey,flag,M);
-			
+
 			if (b1 || b2) {
 				return true;
 			}
@@ -171,6 +181,7 @@ public class Operation {
 		ObjectOutputStream out=null;
 		ObjectInputStream in=null;
 		try {
+
 			s1 = new Socket(ip, port);
 			out = new ObjectOutputStream(s1.getOutputStream());
 			in = new ObjectInputStream(s1.getInputStream());
@@ -207,53 +218,53 @@ public class Operation {
 		} catch (NumberFormatException e) {
 			return false;
 		}
-		
+
 	}
-	
+
 	public static int getmd5Modulo(String lineNoSpace,int M){
 		String s=lineNoSpace;
-	    MessageDigest m;
+		MessageDigest m;
 		try {
 			m = MessageDigest.getInstance("MD5");
 			m.update(s.getBytes(),0,s.length());
 			BigInteger bi = new BigInteger(1,m.digest());
 			int count = (int) Math.pow(2, M);
-			
+
 			if (count>0) {
 				BigInteger modulo = new BigInteger(""+count+"");
 				bi = bi.remainder(modulo);
 				return bi.intValue();
-				
+
 			} else {
 				return -1;
 			}
-			
+
 		} catch (NoSuchAlgorithmException e) {
 			System.out.println("Error in getmd5Modulo");
 			return -1;
 		} 
 	}
-	
+
 	public static void outMethod(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<String> dataList){
-		
+
 		if (networkObj != null && (!networkObj.dataString.equals(""))) {
 			String line = networkObj.dataString.trim();
 			int NodeId = Operation.getmd5Modulo(line,M);
-			
+
 			if (NodeId>=0) {
-				
+
 				//************ we can also use anti- finger table
-				
+
 				String ip ;
 				int port;
-				
+
 				//check if NodeId is in range of predecessorID and self
 				int selfId = node.getId();
 				int predecessorID = node.getPredecessor().getId();
 				predecessorID = (predecessorID+1)%((int) Math.pow(2, M));
-				
+
 				if (checkSpanRange(predecessorID, selfId, NodeId, true, M)) {
-					
+
 					//add to self
 					dataList.add(networkObj.dataString);
 					System.out.println("The data "+ networkObj.dataString +"is added in "+node.getId());
@@ -266,60 +277,60 @@ public class Operation {
 					}
 					return;
 				}
-				
+
 				//check if NodeId resides between self and successor *****
 				selfId= (selfId+1)%((int) Math.pow(2, M));
 				int successorID = node.getSuccessor().getId();
-				
+
 				if (Operation.checkSpanRange(selfId,successorID,NodeId,true,M)) {
 					//send request to successor
 					ip = node.getSuccessor().getIp();
 					port = node.getSuccessor().getPortNo();
-					
+
 					sendMessage(ip, port, networkObj);
-					
+
 					return;
 				}
-				
+
 				for (Finger finger : fingerTable) {
 					int start = finger.getKey();
 					int end = finger.getSpan();
-					
+
 					if (Operation.checkSpanRange(start,end,NodeId,false,M)) {
 						//send request to the node to add data
-						
+
 						ip = finger.getIp();
 						port= finger.getPort();
-						
+
 						sendMessage(ip, port, networkObj);
-						
+
 						return;
 					}
 				}
 			}
 		}
 	}
-	
-public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<String> dataList){
-		
+
+	public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<String> dataList){
+
 		if (networkObj != null && (!networkObj.dataString.equals(""))) {
 			String line = networkObj.dataString.trim();
 			int NodeId = Operation.getmd5Modulo(line,M);
-			
+
 			if (NodeId>=0) {
-				
+
 				//************ we can also use anti- finger table
-				
+
 				String ip ;
 				int port;
-				
+
 				//check if NodeId is in range of predecessorID and self
 				int selfId = node.getId();
 				int predecessorID = node.getPredecessor().getId();
 				predecessorID = (predecessorID+1)%((int) Math.pow(2, M));
-				
+
 				if (checkSpanRange(predecessorID, selfId, NodeId, true, M)) {
-					
+
 					//checking in self
 					if (dataList.contains(networkObj.dataString)) {
 						System.out.println("Data key" + networkObj.dataString+ " is found in" + node.getId()); 
@@ -333,41 +344,41 @@ public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fi
 					}
 					return;
 				}
-				
+
 				//check if NodeId resides between self and successor *****
 				selfId= (selfId+1)%((int) Math.pow(2, M));
 				int successorID = node.getSuccessor().getId();
-				
+
 				if (checkSpanRange(selfId,successorID,NodeId,true,M)) {
 					//send request to successor
 					ip = node.getSuccessor().getIp();
 					port = node.getSuccessor().getPortNo();
-					
+
 					sendMessage(ip, port, networkObj);
-					
+
 					return;
 				}
-				
+
 				for (Finger finger : fingerTable) {
 					int start = finger.getKey();
 					int end = finger.getSpan();
-					
+
 					if (checkSpanRange(start,end,NodeId,false,M)) {
 						//send request to the node which has the data
-						
+
 						ip = finger.getIp();
 						port= finger.getPort();
-						
+
 						sendMessage(ip, port, networkObj);
-						
+
 						return;
 					}
 				}
 			}
 		}
 	}
-	
-	
+
+
 
 	public static void printFingerTable(List<Finger> fingerTable){
 		for (Finger finger : fingerTable) {
@@ -375,7 +386,7 @@ public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fi
 			System.out.println();
 		}
 	}
-	
+
 	public static void printDataTable(List<String> dataList){
 		System.out.println("In print dataList");
 		for (String data : dataList) {
@@ -384,16 +395,18 @@ public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fi
 	}
 	
 	//need to delete
+
 	public static void printDataInLogFile(List<Finger> fingerTable) {  
 
-	    try {  
-	    	//File fh = new File(filename);
-	    	fh = new FileHandler(filename);  
-	    	logger.addHandler(fh);
+		try {  
+			//File fh = new File(filename);
+			fh = new FileHandler(filename);  
+			logger.addHandler(fh);
 			for (Finger finger : fingerTable) {
 				String data = finger.getKey()+" "+finger.getSpan()+" "+finger.getSuccessor();
 				//logger.info(data); 
 			}
+
 
 
 	    } catch (Exception e) {  
@@ -422,7 +435,6 @@ public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fi
             File f = new File("/tmp/chord/" + hostName);
             String flag = null;
             String flag1 = null;
-
             if (f.mkdirs()) {
                 System.out.println("nets file successfully created");
                 flag = "Success";

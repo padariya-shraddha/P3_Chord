@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 
 class ServerThread extends Thread{ 
@@ -51,14 +52,14 @@ class ServerThread extends Thread{
 
 				if (modelObj.command.equals("add")) {
 					modelObj.response = addNodeToChord(modelObj);
-				} else if (modelObj.command.equals("add_PassFingerTable")){
+				} else if (modelObj.command.equals("add_PassFingerTableAndData")){
 					updateNewHostFingerTable(modelObj);
 					modelObj.response= true;
 				}
 				else if (modelObj.command.equals("fixFinger_validateRange")) {
                     modelObj.response_message =  fixFinger_validateRange(modelObj);
                 } else if (modelObj.command.equals("delete")) {
-					Operation.deleteMethod(modelObj,node,fingerTable);
+					Operation.deleteMethod(modelObj,node,fingerTable,dataList);
 				} else if (modelObj.command.equals("update after delete")) {
 					// updating the finger table after neighbour is deleted i.e., when the successor or the the predecssor is deleted
 					updateAfterDelete(modelObj);
@@ -121,9 +122,10 @@ class ServerThread extends Thread{
 				Node temp = new Node(newNodeKey,newNodeIp,newNodePort);
 				node.setPredecessor(temp); // set new node as a predecessor
 				updateFingerTable(modelObj,newNodeKey);
-				passFingerTableToNewNode(modelObj,tempPred);
+				passFingerTableAndDataToNewNode(modelObj,tempPred, newNodeKey);
 
 				//passDataToNewNode();
+				
 				//updateAntiFingerTable(modelObj,newNodeKey);
 
 				//SEND REQUEST TO PREVIOUS PREDE TO UPDATE ITS SUCCESSOR
@@ -168,16 +170,20 @@ class ServerThread extends Thread{
 
 	private void updateAfterDelete(MyNetwork modelObj) {
 
-		// updating the immediate successor if the successor node is deleted
+		// updating the immediate predecessor of the  successor node which is going to be  deleted
 		if(node.getSuccessor().getId() == modelObj.nodeToDeleteId) {
 			
 			//node.setSuccessor(modelObj.nodeToDelete.getSuccessor());
 			node.setSuccessor(modelObj.successor);
+			//node.setSuccessor(modelObj.nodeToDelete.getSuccessor());
 		}
-		// updating the immediate predecessor if the successor node is deleted
+		// updating the immediate successor node of the predecessor node which is going to be deleted.
 		else if(node.getPredecessor().getId() == modelObj.nodeToDeleteId) {
 			//node.setPredecessor(modelObj.nodeToDelete.getPredecessor());
 			node.setPredecessor(modelObj.predecessor);
+			//node.setPredecessor(modelObj.nodeToDelete.getPredecessor());
+			// adding the data strings from the predecessor which is going to be deleted.
+			dataList.addAll(modelObj.dataList);
 		}
 		for (Finger finger : fingerTable) {
 			int keyStart = finger.getKey();
@@ -238,17 +244,31 @@ class ServerThread extends Thread{
 
     }*/
 
-	public void passFingerTableToNewNode(MyNetwork modelObj,Node previousPred){
+	public void passFingerTableAndDataToNewNode(MyNetwork modelObj,Node previousPred, int newNodeKey){
 		
 		String ip = modelObj.addObject.get(1);
 		int port = Integer.parseInt(modelObj.addObject.get(2)); 
 		MyNetwork obj = new MyNetwork();
-		obj.command = "add_PassFingerTable";
+		obj.command = "add_PassFingerTableAndData";
 		obj.fingerTable = fingerTable;
 		obj.predecessor= previousPred;
 		obj.successor=node;
+		obj.dataList = passDataToNewNode(modelObj, newNodeKey);
 		
 		Operation.sendRequest(ip,port,obj);
+	}
+	// function to decide which data keys to transfer
+	public List<String> passDataToNewNode(MyNetwork modelObj, int newNodeKey) {
+		List<String> DataToTransfer = new ArrayList<String>();
+		for(String data : dataList) {
+			int hashKey = Operation.getmd5Modulo(data, M); 
+			if (hashKey <= newNodeKey) {
+				DataToTransfer.add(data);
+				dataList.remove(data);
+			}
+		}
+		return DataToTransfer;
+		
 	}
 
 	public void updateNewHostFingerTable(MyNetwork modelObj){
@@ -261,6 +281,9 @@ class ServerThread extends Thread{
 
 		//update succ
 		node.setSuccessor(modelObj.successor);
+		
+		// transferring the data from the successor when a new node is added
+		dataList.addAll(modelObj.dataList);
 
 		//update finger table
 		int updateRangeStart =( node.getId()+1)% totalNodes ;

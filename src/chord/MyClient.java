@@ -51,7 +51,7 @@ public class MyClient extends Thread{
 						addMethod(networkObj);
 					} else if (command.equals("delete")) {
 
-						Operation.deleteMethod(networkObj, node, fingerTable);
+						Operation.deleteMethod(networkObj, node, fingerTable,dataList);
 
 					} else if(command.equals("out")) {
 						Operation.outMethod(networkObj,M,node,fingerTable,dataList);
