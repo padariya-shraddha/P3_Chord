@@ -20,6 +20,7 @@ public class P3
 	static private Map<Integer,String> dataKeys = new HashMap<Integer,String>();
 	static public Finger finger;
 	static public List<Finger> fingerTable;
+	static public List<AntiFinger> antiFingerTable;
 	static private int nodeId;
 	static public Node successorNode;
 	static public Node predecessorNode;
@@ -27,7 +28,9 @@ public class P3
 	private static void initialise (String ip, int portNo) {
 		successorNode = new Node(nodeId,ip,portNo);
 		predecessorNode = new Node(nodeId,ip,portNo);
+		
 		for(int i = 0; i < M; i++) {
+			// for finger table
 			int gap = (int) (nodeId+ Math.pow(2,i));
 			
 			if (gap> Math.pow(2, M)) {
@@ -40,6 +43,26 @@ public class P3
 			}
 			Finger finger = new Finger(gap, range , nodeId, ip ,portNo );
 			fingerTable.add(finger);
+			
+			// for anti finger table
+			
+			gap = (int) (nodeId - Math.pow(2, i));
+			
+			if (gap < 0) {
+				gap = (int) Math.pow(2, M) + gap;
+			}
+			// storing only the lower limit
+			 range = (int) (gap - Math.pow(2, i));
+			 
+			 if (range < 0) {
+				 range = (int) Math.pow(2, M) + range;
+			 }
+			 
+			 AntiFinger antiFinger = new AntiFinger(gap, range, nodeId,ip,portNo);
+			 antiFingerTable.add(antiFinger);
+
+			
+			
 		}
 	}
 
@@ -49,6 +72,7 @@ public class P3
 		local_host_key = scan.nextInt(); // assign unique indentifier to host
 		nodeId = local_host_key;
 		fingerTable = new ArrayList<Finger>();
+		antiFingerTable = new ArrayList<AntiFinger>();
 		serversocket = new ServerSocket(0);
 		
 		local_ip = InetAddress.getLocalHost().getHostAddress();
