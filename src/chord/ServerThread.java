@@ -74,12 +74,17 @@ class ServerThread extends Thread{
 				} else if (modelObj.command.equals("out")) {
 					Operation.outMethod(modelObj,M,node,fingerTable,dataList);
 					modelObj.response=true;
+					output_disable = true;
 				} else if(modelObj.command.equals("in")) {
 					Operation.inMethod(modelObj, M, node, fingerTable, dataList);
+					modelObj.response=true;
+					output_disable = true;
 				} else if(modelObj.command.equals("successfully added")) {
 					outSuccess(modelObj);
+					output_disable = true;
 				} else if (modelObj.command.equals("successfully found")) {
 					inSuccess(modelObj);
+					output_disable = true;
 				}
 			}
 			
@@ -384,11 +389,13 @@ class ServerThread extends Thread{
     }*/
 
 	public void outSuccess(MyNetwork modelObj) {
-		System.out.println("The data "+modelObj.dataString +"is successfully added in"+ modelObj.respondedNodeId);
+		System.out.println("The data "+modelObj.dataString +" is successfully added on node "+ modelObj.respondedNodeId);
+		System.out.println("chord>");
 	}
 	
 	public void inSuccess(MyNetwork modelObj) {
-		System.out.println("The data "+modelObj.dataString +"is successfully found in"+ modelObj.respondedNodeId);
+		System.out.println("The data "+modelObj.dataString +" is successfully found on node "+ modelObj.respondedNodeId);
+		System.out.println("chord>");
 	}
 
 

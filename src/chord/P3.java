@@ -76,7 +76,7 @@ public class P3
 		  Operation.writeInLogFiles(fingerTable, path);
 
 		Fix_finger fixFinger = new Fix_finger(local_host_key, local_ip,local_port,fingerTable,node,path);
-		fixFinger.start();
+		//fixFinger.start();
 		
 		/*while(true)
 		{
