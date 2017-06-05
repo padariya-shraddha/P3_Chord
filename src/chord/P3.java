@@ -51,11 +51,12 @@ public class P3
 			if (gap < 0) {
 				gap = (int) Math.pow(2, M) + gap;
 			}
-			// storing only the lower limit
-			 range = (int) (gap - Math.pow(2, i));
+			// storing only the upper limit
+			 range = (int) (gap + Math.pow(2, i));
 			 
-			 if (range < 0) {
-				 range = (int) Math.pow(2, M) + range;
+			 if (range < Math.pow(2, M)) {
+				 range = (int) (range % Math.pow(2, M));
+
 			 }
 			 
 			 AntiFinger antiFinger = new AntiFinger(gap, range, nodeId,ip,portNo);
