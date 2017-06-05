@@ -21,13 +21,15 @@ public class MyClient extends Thread{
 	private Node node;
 	public int M;
 	List<String> dataList;
+	List<AntiFinger> antiFingerTable;
 
-	public MyClient(List<Finger> fingerTable,Node node,int M,List<String> dataList){
+	public MyClient(List<Finger> fingerTable,Node node,int M,List<String> dataList,List<AntiFinger> antiFingerTable){
 		//it will have finger table, successor, predecessor as arguments
 		this.fingerTable = fingerTable;
 		this.node = node;
 		this.M = M;
 		this.dataList = dataList;
+		this.antiFingerTable=antiFingerTable;
 	}
 
 	public void run(){
@@ -61,6 +63,9 @@ public class MyClient extends Thread{
 					}
 					else if(command.equals("printFinger")) {
 						Operation.printFingerTable(fingerTable);
+					} 
+					else if(command.equals("printAntiFinger")) {
+						Operation.printAntiFingerTable(antiFingerTable);
 					} 
 					else if(command.equals("printData")) {
 						Operation.printDataTable(dataList);
@@ -122,6 +127,10 @@ public class MyClient extends Thread{
 			obj = new MyNetwork();
 			obj.command = "printFinger";
 		} 
+		else if(line.contains("printAntiFinger")) {
+			obj = new MyNetwork();
+			obj.command = "printAntiFinger";
+		} 
 		else if(line.contains("printData")) {
 			obj = new MyNetwork();
 			obj.command ="printData";
@@ -134,7 +143,6 @@ public class MyClient extends Thread{
 				obj.requestedNodeId = node.getId();
 				obj.requestedNodeIp = node.getIp();
 				obj.requestedNodeport = node.getPortNo();
-
 			}
 		}else if(line.contains("nodeDetail")) {
 			obj = new MyNetwork();
@@ -180,5 +188,4 @@ public class MyClient extends Thread{
 			}
 		}
 	}
-
 }

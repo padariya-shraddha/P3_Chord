@@ -380,8 +380,6 @@ public class Operation {
 		}
 	}
 
-
-
 	public static void printFingerTable(List<Finger> fingerTable){
 		for (Finger finger : fingerTable) {
 			finger.print();
@@ -389,6 +387,13 @@ public class Operation {
 		}
 	}
 
+	public static void printAntiFingerTable(List<AntiFinger> fingerTable){
+		for (AntiFinger antiFinger : fingerTable) {
+			antiFinger.print();
+			System.out.println();
+		}
+	}
+	
 	public static void printDataTable(List<String> dataList){
 		System.out.println("In print dataList");
 		for (String data : dataList) {
@@ -397,7 +402,6 @@ public class Operation {
 	}
 	
 	//need to delete
-
 	public static void printDataInLogFile(List<Finger> fingerTable) {  
 
 		try {  
@@ -423,11 +427,11 @@ public class Operation {
 			Node tempPredecessor = node.getPredecessor();
 			
 			if (tempSuccessor != null) {
-				System.out.println("Node Successor:"+tempSuccessor.getId());
+				System.out.println("Node Successor:"+tempSuccessor.getId()+", ip: "+tempSuccessor.getIp()+", port: "+tempSuccessor.getPortNo());
 			}
 			
 			if (tempPredecessor != null) {
-				System.out.println("Node Predecessor:"+tempPredecessor.getId());
+				System.out.println("Node Predecessor:"+tempPredecessor.getId() + ", ip: "+tempPredecessor.getIp()+", port: "+tempPredecessor.getPortNo());
 			}
 		}
 	}
@@ -477,4 +481,5 @@ public class Operation {
             System.out.println("log file : failed");
         }
     }
+
 }

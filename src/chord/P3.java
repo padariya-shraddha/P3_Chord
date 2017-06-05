@@ -61,8 +61,6 @@ public class P3
 			 AntiFinger antiFinger = new AntiFinger(gap, range, nodeId,ip,portNo);
 			 antiFingerTable.add(antiFinger);
 
-			
-			
 		}
 	}
 
@@ -88,8 +86,8 @@ public class P3
 		
 		List<String> dataList = new ArrayList<>();
 		
-		MyServer server = new MyServer(serversocket, local_host_key, local_ip,local_port,fingerTable,node,finger,successorNode,predecessorNode,M,dataList);
-		MyClient client = new MyClient(fingerTable,node,M,dataList);
+		MyServer server = new MyServer(serversocket, local_host_key, local_ip,local_port,fingerTable,node,finger,successorNode,predecessorNode,M,dataList,antiFingerTable);
+		MyClient client = new MyClient(fingerTable,node,M,dataList,antiFingerTable);
 		server.start();
 		client.start();   
 		

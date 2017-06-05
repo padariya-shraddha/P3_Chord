@@ -21,8 +21,9 @@ class ServerThread extends Thread{
 	int M;
 	List<String> dataList;
 	boolean output_disable = false;
+	List<AntiFinger> antiFingerTable;
 
-	public ServerThread(Socket s,int portNumber,int hostKey,String ipAddr,Node node,Finger finger,Node successorNode,Node predecessorNode,List<Finger> fingerTable,int M,List<String> dataList){
+	public ServerThread(Socket s,int portNumber,int hostKey,String ipAddr,Node node,Finger finger,Node successorNode,Node predecessorNode,List<Finger> fingerTable,int M,List<String> dataList,List<AntiFinger> antiFingerTable){
 		this.s = s;
 		this.portNumber = portNumber;
 		this.hostKey = hostKey;
@@ -35,6 +36,7 @@ class ServerThread extends Thread{
 		this.M = M;
 		totalNodes =  (int) Math.pow(2, M);
 		this.dataList=dataList;
+		this.antiFingerTable=antiFingerTable;
 	}
 
 	public void run() {
@@ -67,7 +69,7 @@ class ServerThread extends Thread{
 				}else if(modelObj.command.equals("updateSuccessor")){
 					
 					if (modelObj.successor != null) {
-						System.out.println("updateSuccessor : "+modelObj.successor.getId());
+						//System.out.println("updateSuccessor : "+modelObj.successor.getId());
 						node.setSuccessor(modelObj.successor);
 					}
 					modelObj.response= true;
@@ -140,9 +142,9 @@ class ServerThread extends Thread{
 				obj.successor= temp;
 				returnFlag = Operation.sendRequest(tempPred.getIp(), tempPred.getPortNo(), obj);
 				
-				System.out.println("Successor "+node.getSuccessor().getId()+" "+node.getSuccessor().getIp()+" "+node.getSuccessor().getPortNo()+
+				/*System.out.println("Successor "+node.getSuccessor().getId()+" "+node.getSuccessor().getIp()+" "+node.getSuccessor().getPortNo()+
 						" predecessor "+node.getPredecessor().getId()+" "+node.getPredecessor().getIp()+" "+node.getPredecessor().getPortNo());
-				Operation.printFingerTable(fingerTable);
+				Operation.printFingerTable(fingerTable);*/
 			}
 			catch(Exception e){
 				returnFlag = false;
@@ -322,9 +324,9 @@ class ServerThread extends Thread{
 			}	
 		}
 		
-		System.out.println("Successor "+node.getSuccessor().getId()+" "+node.getSuccessor().getIp()+" "+node.getSuccessor().getPortNo()+
+		/*System.out.println("Successor "+node.getSuccessor().getId()+" "+node.getSuccessor().getIp()+" "+node.getSuccessor().getPortNo()+
 				" predecessor "+node.getPredecessor().getId()+" "+node.getPredecessor().getIp()+" "+node.getPredecessor().getPortNo());
-		Operation.printFingerTable(fingerTable);
+		Operation.printFingerTable(fingerTable);*/
 		System.out.println("added in Chord Network");
 		System.out.print("chord >");
 	}
