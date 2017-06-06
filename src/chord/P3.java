@@ -28,7 +28,7 @@ public class P3
 	private static void initialise (String ip, int portNo) {
 		successorNode = new Node(nodeId,ip,portNo);
 		predecessorNode = new Node(nodeId,ip,portNo);
-		
+		int previousGap = -1;
 		for(int i = 0; i < M; i++) {
 			// for finger table
 			int gap = (int) (nodeId+ Math.pow(2,i));
@@ -52,15 +52,20 @@ public class P3
 				gap = (int) Math.pow(2, M) + gap;
 			}
 			// storing only the upper limit
-			 range = (int) (gap + Math.pow(2, i));
+			if(previousGap == -1) {
+				range = (int) (gap + Math.pow(2, i));
 			 
-			 if (range < Math.pow(2, M)) {
-				 range = (int) (range % Math.pow(2, M));
+				if (range > Math.pow(2, M)) {
+					range = (int) (range % Math.pow(2, M));
 
-			 }
+				}
+			} else {
+				range = previousGap;
+			}
 			 
 			 AntiFinger antiFinger = new AntiFinger(gap, range, nodeId,ip,portNo);
 			 antiFingerTable.add(antiFinger);
+			 previousGap = gap;
 
 		}
 	}
@@ -81,6 +86,8 @@ public class P3
 		System.out.println();
 
 		initialise(local_ip, local_port);
+		Operation.printFingerTable(fingerTable);
+		Operation.printAntiFingerTable(antiFingerTable);
 		
 		Node node = new Node(local_host_key, local_ip, local_port);
 		String path = Operation.createLogFile(local_host_key);
