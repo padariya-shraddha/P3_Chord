@@ -309,25 +309,44 @@ class ServerThread extends Thread{
 		System.out.println("in passDataToNewNode 1");
 		List<String> DataToTransfer = new ArrayList<String>();
 		List<String> newDataList = new ArrayList<String>();
+		
+		System.out.println("dataList size :"+dataList.size());
+		printList(dataList);
+		
 		for(String data : dataList) {
-			int hashKey = Operation.getmd5Modulo(data, M); 
-			if (hashKey <= newNodeKey) {
+			int hashKey = Operation.getmd5Modulo(data, M);
+			if (Operation.checkSpanRange1(newNodeKey, node.getId(), hashKey, true, M)) {
+				newDataList.add(data);
+			} else {
+				DataToTransfer.add(data);
+			}
+			/*if (hashKey <= newNodeKey) {
 				DataToTransfer.add(data);
 				//dataList.remove(data);
 			}
 			else{
 				newDataList.add(data);
-			}
+			}*/
 		}
 		
 		dataList = newDataList;
 		
+		System.out.println("dataList size :"+dataList.size());
+		printList(dataList);
+		
 		System.out.println("in passDataToNewNode 2");
 		System.out.println("DataToTransfer size :"+DataToTransfer.size());
+		printList(DataToTransfer);
 		return DataToTransfer;
 		
 	}
 
+	public void printList(List<String> list){
+		for (String string : list) {
+			System.out.println(string);
+		}
+	}
+	
 	public void updateNewHostFingerTable(MyNetwork modelObj){
 		
 		//get successor's finger table 
