@@ -48,14 +48,23 @@ class ServerThread extends Thread{
 			out= new ObjectOutputStream(s.getOutputStream());
 			in=new ObjectInputStream(s.getInputStream());
 			modelObj = (MyNetwork) in.readObject();
-
+			//System.out.println("Message Recieved");
 			if (modelObj != null) {
-				//System.out.println("Request received for command " + modelObj.command);
-
+				System.out.println("Request received for command " + modelObj.command);
+				
 				if (modelObj.command.equals("add")) {
+					int newNodeKey = Integer.parseInt(modelObj.addObject.get(0));
+					String newNodeIp  = modelObj.addObject.get(1);
+					int newNodePort = Integer.parseInt(modelObj.addObject.get(2));
+					
+					System.out.println("newNodeKey :"+newNodeKey);
+					System.out.println("newNodeIp :"+newNodeIp);
+					System.out.println("newNodePort :"+newNodePort);
+					
 					modelObj.response = addNodeToChord(modelObj);
 				} else if (modelObj.command.equals("add_PassFingerTableAndData")){
 					updateNewHostFingerTable(modelObj);
+					System.out.println("updateNewHostFingerTable");
 					modelObj.response= true;
 				}
 				else if (modelObj.command.equals("fixFinger_validateRange")) {
@@ -78,6 +87,7 @@ class ServerThread extends Thread{
 					modelObj.response=true;
 					output_disable = true;
 				} else if(modelObj.command.equals("in")) {
+					Operation.printDataTable(dataList);
 					Operation.inMethod(modelObj, M, node, fingerTable, dataList);
 					modelObj.response=true;
 					output_disable = true;
@@ -87,6 +97,9 @@ class ServerThread extends Thread{
 				} else if (modelObj.command.equals("successfully found")) {
 					inSuccess(modelObj);
 					output_disable = true;
+				}
+				else{
+					System.out.println("serverThread : else part");
 				}
 			}
 			
@@ -114,7 +127,7 @@ class ServerThread extends Thread{
 	}
 
 	public boolean addNodeToChord(MyNetwork modelObj){
-		
+		System.out.println("OLA 1");
 		boolean returnFlag = true;
 		int newNodeKey = Integer.parseInt(modelObj.addObject.get(0));
 		String newNodeIp  = modelObj.addObject.get(1);
@@ -125,23 +138,30 @@ class ServerThread extends Thread{
 		int currentNodePredKey = node.getPredecessor().getId();
 
 		if (Operation.checkSpanRange1(currentNodePredKey,currentNodeKey,newNodeKey,true, M)) {
+			System.out.println("OLA 2");
 			try{
+				
+				System.out.println("OLA 3..");
+				
 				Node tempPred = node.getPredecessor();
 				Node temp = new Node(newNodeKey,newNodeIp,newNodePort);
 				node.setPredecessor(temp); // set new node as a predecessor
 				updateFingerTable(modelObj,newNodeKey);
+				
+				System.out.println("OLA 4..");
+				
 				passFingerTableAndDataToNewNode(modelObj,tempPred, newNodeKey);
 
 				//passDataToNewNode();
 				
 				//updateAntiFingerTable(modelObj,newNodeKey);
-
+				System.out.println("OLA 5...");
 				//SEND REQUEST TO PREVIOUS PREDE TO UPDATE ITS SUCCESSOR
 				MyNetwork obj = new MyNetwork();
 				obj.command = "updateSuccessor";
 				obj.successor= temp;
 				returnFlag = Operation.sendRequest(tempPred.getIp(), tempPred.getPortNo(), obj);
-				
+				System.out.println("OLA 6...");
 				/*System.out.println("Successor "+node.getSuccessor().getId()+" "+node.getSuccessor().getIp()+" "+node.getSuccessor().getPortNo()+
 						" predecessor "+node.getPredecessor().getId()+" "+node.getPredecessor().getIp()+" "+node.getPredecessor().getPortNo());
 				Operation.printFingerTable(fingerTable);*/
@@ -152,16 +172,18 @@ class ServerThread extends Thread{
 			returnFlag = true;
 		}
 		else{	//else pass it to next Successor;
-
+			System.out.println("OLA 3");
 			String ip = null;
 			int port = -1;
 
 			if(Operation.checkSpanRange1(currentNodeKey,currentNodeScrKey,newNodeKey,true,M))
 			{
+				System.out.println("OLA 4");
 				ip = node.getSuccessor().getIp();
 				port = node.getSuccessor().getPortNo();
 			}
 			else{
+				System.out.println("OLA 5");
 				for (Finger finger : fingerTable) {
 					int keyStart = finger.getKey();
 					int keyEnd = (finger.getSpan() < keyStart) ? finger.getSpan() : (int) (finger.getSpan() + Math.pow(2, M));
@@ -172,6 +194,8 @@ class ServerThread extends Thread{
 					}
 				}
 			}
+			System.out.println("IP"+ip);
+			System.out.println("port"+port);
 			//reroute add node request 
 			returnFlag= Operation.sendRequest(ip,port,modelObj);
 		}
@@ -182,6 +206,7 @@ class ServerThread extends Thread{
 
 	private void updateAfterDelete(MyNetwork modelObj) {
 
+		System.out.println("updateAfterDelete :Currsucc "+node.getSuccessor().getId()+" currPred"+node.getPredecessor().getId() +" modelObj.nodeToDeleteId "+modelObj.nodeToDeleteId);
 		// updating the immediate predecessor of the  successor node which is going to be  deleted
 		if(node.getSuccessor().getId() == modelObj.nodeToDeleteId) {
 			
@@ -190,7 +215,7 @@ class ServerThread extends Thread{
 			//node.setSuccessor(modelObj.nodeToDelete.getSuccessor());
 		}
 		// updating the immediate successor node of the predecessor node which is going to be deleted.
-		else if(node.getPredecessor().getId() == modelObj.nodeToDeleteId) {
+		if(node.getPredecessor().getId() == modelObj.nodeToDeleteId) {
 			//node.setPredecessor(modelObj.nodeToDelete.getPredecessor());
 			node.setPredecessor(modelObj.predecessor);
 			//node.setPredecessor(modelObj.nodeToDelete.getPredecessor());
@@ -259,9 +284,14 @@ class ServerThread extends Thread{
     }*/
 
 	public void passFingerTableAndDataToNewNode(MyNetwork modelObj,Node previousPred, int newNodeKey){
-		
+	
+	
 		String ip = modelObj.addObject.get(1);
 		int port = Integer.parseInt(modelObj.addObject.get(2)); 
+		
+		System.out.println("ip :"+ip);
+		System.out.println("newNodeIp :"+port);
+		
 		MyNetwork obj = new MyNetwork();
 		obj.command = "add_PassFingerTableAndData";
 		obj.fingerTable = fingerTable;
@@ -269,18 +299,31 @@ class ServerThread extends Thread{
 		obj.successor=node;
 		obj.dataList = passDataToNewNode(modelObj, newNodeKey);
 		
+		System.out.println("before request send");
 		Operation.sendRequest(ip,port,obj);
+		System.out.println("after request send");
 	}
+	
 	// function to decide which data keys to transfer
 	public List<String> passDataToNewNode(MyNetwork modelObj, int newNodeKey) {
+		System.out.println("in passDataToNewNode 1");
 		List<String> DataToTransfer = new ArrayList<String>();
+		List<String> newDataList = new ArrayList<String>();
 		for(String data : dataList) {
 			int hashKey = Operation.getmd5Modulo(data, M); 
 			if (hashKey <= newNodeKey) {
 				DataToTransfer.add(data);
-				dataList.remove(data);
+				//dataList.remove(data);
+			}
+			else{
+				newDataList.add(data);
 			}
 		}
+		
+		dataList = newDataList;
+		
+		System.out.println("in passDataToNewNode 2");
+		System.out.println("DataToTransfer size :"+DataToTransfer.size());
 		return DataToTransfer;
 		
 	}
@@ -297,8 +340,12 @@ class ServerThread extends Thread{
 		node.setSuccessor(modelObj.successor);
 		
 		// transferring the data from the successor when a new node is added
-		dataList.addAll(modelObj.dataList);
-
+		//dataList.addAll(modelObj.dataList);
+		dataList = modelObj.dataList;
+		System.out.println("Size "+ dataList.size());
+		System.out.println("Network Size "+ modelObj.dataList.size());
+		Operation.printDataTable(dataList);
+		
 		//update finger table
 		int updateRangeStart =( node.getId()+1)% totalNodes ;
 		int updateRangeEnd = node.getSuccessor().getId();

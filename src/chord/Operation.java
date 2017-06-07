@@ -42,6 +42,7 @@ public class Operation {
 				networkObj.predecessor = pred;
 				networkObj.successor = succ;
 				
+				System.out.println("deleteMethod : succ "+succ.getId()+" pred "+pred.getId());
 				// notifying successor the deletion of the current node
 				if(node.getId() != node.getSuccessor().getId()) {
 					// for transferring of data when deleting to successor node
@@ -124,7 +125,18 @@ public class Operation {
 				 result = true;
 			 }
 			 else{
-					result = false;
+				 
+				 if(keyEnd >= 64 ){
+					 if((searchKey >= keyStart && searchKey <=63) || (searchKey >=0 && searchKey <= end ) ){
+						 result = true;
+					 }
+				 }
+				 else{
+					 
+					 result = false;
+					 
+				 }
+					
 				}
 			
 			}
@@ -134,7 +146,16 @@ public class Operation {
 				 result = true;
 			 }
 			 else{
-					result = false;
+				 if(keyEnd >= 64 ){
+					 if((searchKey >= keyStart && searchKey <=63) || (searchKey >=0 && searchKey < end ) ){
+						 result = true;
+					 }
+				 }
+				 else{
+					 
+					 result = false;
+					 
+				 }
 				}
 		}
 		
@@ -181,13 +202,15 @@ public class Operation {
 		ObjectOutputStream out=null;
 		ObjectInputStream in=null;
 		try {
-
+			System.out.println("sendRequest.command"+modelObj.command);
+			System.out.println("connecting ...+"+ip+" port "+port);
 			s1 = new Socket(ip, port);
 			out = new ObjectOutputStream(s1.getOutputStream());
 			in = new ObjectInputStream(s1.getInputStream());
 			out.writeObject(modelObj);
 			MyNetwork response = (MyNetwork) in.readObject();
 			returnFlag = response.response;
+			System.out.println("response:"+returnFlag);
 
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
@@ -315,6 +338,9 @@ public class Operation {
 
 	public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<String> dataList){
 
+		System.out.println("IN method");
+		Operation.printDataTable(dataList);
+		
 		if (networkObj != null && (!networkObj.dataString.equals(""))) {
 			String line = networkObj.dataString.trim();
 			int NodeId = Operation.getmd5Modulo(line,M);
@@ -335,7 +361,7 @@ public class Operation {
 
 					//checking in self
 					if (dataList.contains(networkObj.dataString)) {
-						System.out.println("Data key" + networkObj.dataString+ " is found in" + node.getId()); 
+						System.out.println("Data key " + networkObj.dataString+ " is found in" + node.getId()); 
 						if(networkObj.requestedNodeId != node.getId()) {
 							networkObj.command ="successfully found";
 							networkObj.respondedNodeId= node.getId();
