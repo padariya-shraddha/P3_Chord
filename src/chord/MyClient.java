@@ -59,7 +59,7 @@ public class MyClient extends Thread{
 						Operation.outMethod(networkObj,M,node,fingerTable,antiFingerTable,dataList);
 					} 
 					else if(command.equals("in")) {
-						Operation.inMethod(networkObj, M, node, fingerTable, dataList);
+						Operation.inMethod(networkObj, M, node, fingerTable,antiFingerTable, dataList);
 					}
 					else if(command.equals("printFinger")) {
 						Operation.printFingerTable(fingerTable);

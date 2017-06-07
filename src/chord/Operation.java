@@ -350,6 +350,8 @@ public class Operation {
 					ip = node.getSuccessor().getIp();
 					port = node.getSuccessor().getPortNo();
 
+					networkObj.hopCount =networkObj.hopCount+1;
+					
 					sendMessage(ip, port, networkObj);
 					//return;
 				}else{
@@ -364,12 +366,11 @@ public class Operation {
 
 							if (Operation.checkSpanRange1(start,end,NodeId,false,M)) {
 								//send request to the node to add data
-
 								ip = finger.getIp();
 								port= finger.getPort();
-
+								networkObj.hopCount =networkObj.hopCount+1;
 								sendMessage(ip, port, networkObj);
-								//return;
+								return;	//break
 							}
 						}
 					} else {
@@ -383,9 +384,9 @@ public class Operation {
 
 								ip = antiFinger.getIp();
 								port= antiFinger.getPort();
-
+								networkObj.hopCount =networkObj.hopCount+1;
 								sendMessage(ip, port, networkObj);
-								//return;
+								return;	//break
 							}
 						}
 					}
@@ -394,7 +395,90 @@ public class Operation {
 		}
 	}
 	
-	public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<String> dataList){
+	public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList){
+
+		if (networkObj != null && (!networkObj.dataString.equals(""))) {
+			String line = networkObj.dataString.trim();
+			int NodeId = Operation.getmd5Modulo(line,M);
+			int totalNodes = (int) Math.pow(2, M);
+			int selfId = node.getId();
+			if (NodeId>=0) {
+
+				String ip ;
+				int port;
+
+				//check if NodeId is in range of predecessorID and self
+				int predecessorID = node.getPredecessor().getId();
+				predecessorID = (predecessorID+1)%((int) Math.pow(2, M));
+
+				//check if NodeId resides between self and successor
+				selfId= (selfId+1)%((int) Math.pow(2, M));
+				int successorID = node.getSuccessor().getId();
+				
+				if (checkSpanRange1(predecessorID, selfId, NodeId, true, M)) {
+					//checking in self
+					if (dataList.contains(networkObj.dataString)) {
+						System.out.println("Data key" + networkObj.dataString+ " is found in" + node.getId()); 
+						if(networkObj.requestedNodeId != node.getId()) {
+							networkObj.command ="successfully found";
+							networkObj.respondedNodeId= node.getId();
+							networkObj.respondedNodeIp = node.getIp();
+							networkObj.respondedNodeport = node.getPortNo();
+							sendMessage(networkObj.requestedNodeIp, networkObj.requestedNodeport, networkObj);
+						}
+					}
+					return;
+				}
+				else if (checkSpanRange1(selfId,successorID,NodeId,true,M)) {
+					//send request to successor
+					ip = node.getSuccessor().getIp();
+					port = node.getSuccessor().getPortNo();
+					networkObj.hopCount =networkObj.hopCount+1;
+					sendMessage(ip, port, networkObj);
+					return;
+				}
+				else{
+					//find exact opposite node
+					int oppoNode= (selfId + (totalNodes/2))%totalNodes;
+					boolean clockwise = checkSpanRange1(selfId, oppoNode, NodeId, true, M);
+					
+					if (clockwise) {
+						for (Finger finger : fingerTable) {
+							int start = finger.getKey();
+							int end = finger.getSpan();
+
+							if (checkSpanRange1(start,end,NodeId,false,M)) {
+								//send request to the node which has the data
+								ip = finger.getIp();
+								port= finger.getPort();
+								networkObj.hopCount =networkObj.hopCount+1;
+								sendMessage(ip, port, networkObj);
+								return;	//break
+							}
+						}
+					} else {
+						//explore anti-clock wise
+						for (AntiFinger antiFinger : antiFingerTable) {
+							int start = antiFinger.getKey();
+							int end = antiFinger.getSpan();
+
+							if (Operation.checkSpanRange1(start,end,NodeId,false,M)) {
+								//send request to the node to add data
+
+								ip = antiFinger.getIp();
+								port= antiFinger.getPort();
+								networkObj.hopCount =networkObj.hopCount+1;
+								sendMessage(ip, port, networkObj);
+								return;	//break
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public static void inMethod_proto(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<String> dataList){
 
 		if (networkObj != null && (!networkObj.dataString.equals(""))) {
 			String line = networkObj.dataString.trim();
@@ -460,7 +544,7 @@ public class Operation {
 			}
 		}
 	}
-
+	
 	public static void printFingerTable(List<Finger> fingerTable){
 		for (Finger finger : fingerTable) {
 			finger.print();
