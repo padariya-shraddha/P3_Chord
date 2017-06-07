@@ -245,7 +245,7 @@ public class Operation {
 		} 
 	}
 
-	public static void outMethod(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<String> dataList){
+	public static void outMethod_proto(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<String> dataList){
 
 		if (networkObj != null && (!networkObj.dataString.equals(""))) {
 			String line = networkObj.dataString.trim();
@@ -313,6 +313,87 @@ public class Operation {
 		}
 	}
 
+	public static void outMethod(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList){
+
+		if (networkObj != null && (!networkObj.dataString.equals(""))) {
+			String line = networkObj.dataString.trim();
+			int NodeId = Operation.getmd5Modulo(line,M);
+			int totalNodes = (int) Math.pow(2, M);
+			int selfId = node.getId();
+			if (NodeId>=0) {
+
+				String ip ;
+				int port;
+				
+				//check if NodeId is in range of predecessorID and self
+				int predecessorID = node.getPredecessor().getId();
+				predecessorID = (predecessorID+1)%totalNodes;
+				
+				//check if NodeId resides between self and successor
+				int tempselfId= (selfId+1)%totalNodes;
+				int successorID = node.getSuccessor().getId();
+				
+				if (checkSpanRange1(predecessorID, selfId, NodeId, true, M)) {
+					//add to self
+					dataList.add(networkObj.dataString);
+					System.out.println("The data "+ networkObj.dataString +"is added in "+node.getId());
+					if(networkObj.requestedNodeId != node.getId()) {
+						networkObj.command ="successfully added";
+						networkObj.respondedNodeId= node.getId();
+						networkObj.respondedNodeIp = node.getIp();
+						networkObj.respondedNodeport = node.getPortNo();
+						sendMessage(networkObj.requestedNodeIp, networkObj.requestedNodeport, networkObj);
+					}
+					//return;
+				}else if (Operation.checkSpanRange1(tempselfId,successorID,NodeId,true,M)) {
+					//send request to successor
+					ip = node.getSuccessor().getIp();
+					port = node.getSuccessor().getPortNo();
+
+					sendMessage(ip, port, networkObj);
+					//return;
+				}else{
+					//find exact opposite node
+					int oppoNode= (selfId + (totalNodes/2))%totalNodes;
+					boolean clockwise = checkSpanRange1(selfId, oppoNode, NodeId, true, M);
+					
+					if (clockwise) {
+						for (Finger finger : fingerTable) {
+							int start = finger.getKey();
+							int end = finger.getSpan();
+
+							if (Operation.checkSpanRange1(start,end,NodeId,false,M)) {
+								//send request to the node to add data
+
+								ip = finger.getIp();
+								port= finger.getPort();
+
+								sendMessage(ip, port, networkObj);
+								//return;
+							}
+						}
+					} else {
+						//explore anti-clock wise
+						for (AntiFinger antiFinger : antiFingerTable) {
+							int start = antiFinger.getKey();
+							int end = antiFinger.getSpan();
+
+							if (Operation.checkSpanRange1(start,end,NodeId,false,M)) {
+								//send request to the node to add data
+
+								ip = antiFinger.getIp();
+								port= antiFinger.getPort();
+
+								sendMessage(ip, port, networkObj);
+								//return;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<String> dataList){
 
 		if (networkObj != null && (!networkObj.dataString.equals(""))) {

@@ -74,7 +74,7 @@ class ServerThread extends Thread{
 					}
 					modelObj.response= true;
 				} else if (modelObj.command.equals("out")) {
-					Operation.outMethod(modelObj,M,node,fingerTable,dataList);
+					Operation.outMethod(modelObj,M,node,fingerTable,antiFingerTable,dataList);
 					modelObj.response=true;
 					output_disable = true;
 				} else if(modelObj.command.equals("in")) {
