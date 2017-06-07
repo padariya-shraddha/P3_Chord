@@ -380,22 +380,8 @@ public class Operation {
 					//return;
 				}else{
 					
-					for (Finger finger : fingerTable) {
-						int start = finger.getKey();
-						int end = finger.getSpan();
-
-						if (Operation.checkSpanRange1(start,end,NodeId,false,M)) {
-							//send request to the node to add data
-							ip = finger.getIp();
-							port= finger.getPort();
-							networkObj.hopCount =networkObj.hopCount+1;
-							sendMessage(ip, port, networkObj);
-							return;	//break
-						}
-					}
-					
 					//find exact opposite node
-					/*int oppoNode= (selfId + (totalNodes/2))%totalNodes;
+					int oppoNode= (selfId + (totalNodes/2))%totalNodes;
 					boolean clockwise = checkSpanRange1(selfId, oppoNode, NodeId, true, M);
 					
 					if (clockwise) {
@@ -429,7 +415,7 @@ public class Operation {
 							}
 						}
 					}
-					*/
+					
 				}
 			}
 		}
@@ -479,22 +465,8 @@ public class Operation {
 				}
 				else{
 					
-					for (Finger finger : fingerTable) {
-						int start = finger.getKey();
-						int end = finger.getSpan();
-
-						if (checkSpanRange1(start,end,NodeId,false,M)) {
-							//send request to the node which has the data
-							ip = finger.getIp();
-							port= finger.getPort();
-							networkObj.hopCount =networkObj.hopCount+1;
-							sendMessage(ip, port, networkObj);
-							return;	//break
-						}
-					}
-					
 					//find exact opposite node
-					/*int oppoNode= (selfId + (totalNodes/2))%totalNodes;
+					int oppoNode= (selfId + (totalNodes/2))%totalNodes;
 					boolean clockwise = checkSpanRange1(selfId, oppoNode, NodeId, true, M);
 					
 					if (clockwise) {
@@ -527,7 +499,7 @@ public class Operation {
 								return;	//break
 							}
 						}
-					}*/
+					}
 				}
 			}
 		}
