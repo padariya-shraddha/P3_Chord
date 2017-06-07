@@ -56,10 +56,10 @@ public class MyClient extends Thread{
 						Operation.deleteMethod(networkObj, node, fingerTable,dataList);
 
 					} else if(command.equals("out")) {
-						Operation.outMethod(networkObj,M,node,fingerTable,dataList);
+						Operation.outMethod(networkObj,M,node,fingerTable,antiFingerTable,dataList);
 					} 
 					else if(command.equals("in")) {
-						Operation.inMethod(networkObj, M, node, fingerTable, dataList);
+						Operation.inMethod(networkObj, M, node, fingerTable,antiFingerTable, dataList);
 					}
 					else if(command.equals("printFinger")) {
 						Operation.printFingerTable(fingerTable);

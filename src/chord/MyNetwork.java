@@ -24,5 +24,5 @@ public class MyNetwork implements Serializable{
 	public String respondedNodeIp;
 	public int respondedNodeport;
 	public List<String> dataList; // for passing set of data
-
+	public int hopCount;
 }
