@@ -87,7 +87,6 @@ class ServerThread extends Thread{
 					modelObj.response=true;
 					output_disable = true;
 				} else if(modelObj.command.equals("in")) {
-					Operation.printDataTable(dataList);
 					Operation.inMethod(modelObj, M, node, fingerTable,antiFingerTable, dataList);
 					modelObj.response=true;
 					output_disable = true;
@@ -311,12 +310,14 @@ class ServerThread extends Thread{
 		List<String> newDataList = new ArrayList<String>();
 		for(String data : dataList) {
 			int hashKey = Operation.getmd5Modulo(data, M); 
-			if (hashKey <= newNodeKey) {
-				DataToTransfer.add(data);
+			//if (hashKey <= newNodeKey) 
+			if(Operation.checkSpanRange(newNodeKey, node.getId(),hashKey,true,M)){
+				newDataList.add(data);
+				
 				//dataList.remove(data);
 			}
 			else{
-				newDataList.add(data);
+				DataToTransfer.add(data);
 			}
 		}
 		
