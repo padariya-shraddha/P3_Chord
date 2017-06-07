@@ -341,6 +341,7 @@ public class Operation {
 		if (networkObj != null && (!networkObj.dataString.equals(""))) {
 			String line = networkObj.dataString.trim();
 			int NodeId = Operation.getmd5Modulo(line,M);
+			System.out.println("NodeId :"+NodeId);
 			int totalNodes = (int) Math.pow(2, M);
 			int selfId = node.getId();
 			if (NodeId>=0) {
@@ -378,6 +379,7 @@ public class Operation {
 					sendMessage(ip, port, networkObj);
 					//return;
 				}else{
+					
 					//find exact opposite node
 					int oppoNode= (selfId + (totalNodes/2))%totalNodes;
 					boolean clockwise = checkSpanRange1(selfId, oppoNode, NodeId, true, M);
@@ -413,6 +415,7 @@ public class Operation {
 							}
 						}
 					}
+					
 				}
 			}
 		}
@@ -461,6 +464,7 @@ public class Operation {
 					return;
 				}
 				else{
+					
 					//find exact opposite node
 					int oppoNode= (selfId + (totalNodes/2))%totalNodes;
 					boolean clockwise = checkSpanRange1(selfId, oppoNode, NodeId, true, M);
