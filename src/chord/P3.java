@@ -86,8 +86,8 @@ public class P3
 		System.out.println();
 
 		initialise(local_ip, local_port);
-		Operation.printFingerTable(fingerTable);
-		Operation.printAntiFingerTable(antiFingerTable);
+		//Operation.printFingerTable(fingerTable);
+		//Operation.printAntiFingerTable(antiFingerTable);
 		
 		Node node = new Node(local_host_key, local_ip, local_port);
 		String path = Operation.createLogFile(local_host_key);

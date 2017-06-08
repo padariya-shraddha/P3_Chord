@@ -22,10 +22,6 @@ public class Operation {
 	private static FileHandler fh ; 
 	private static int M = 6;
    
-
-
-
-
 	public static void deleteMethod(MyNetwork networkObj, Node node,List<Finger> fingerTable,List<String> dataList  ){
 		int nodeToFind = networkObj.nodeToDeleteId;
 		if (node.getId() == nodeToFind) {
@@ -65,11 +61,11 @@ public class Operation {
 
 				// checkSpanRange
 				//if (nodeToFind >= tempKey || nodeToFind < tempRange) {
-				System.out.println("tempKey "+tempKey+"tempRange"+tempRange+"nodeToFind"+nodeToFind+"result"+checkSpanRange(tempKey,tempRange,nodeToFind,true,M));
+				//System.out.println("tempKey "+tempKey+"tempRange"+tempRange+"nodeToFind"+nodeToFind+"result"+checkSpanRange(tempKey,tempRange,nodeToFind,true,M));
 
 				if(checkSpanRange(tempKey,tempRange,nodeToFind,true,M))
 				{
-					System.out.println(finger.getIp()+" "+finger.getPort());
+					//System.out.println(finger.getIp()+" "+finger.getPort());
 
 					//send request to this node
 					String ip = finger.getIp();
@@ -161,7 +157,7 @@ public class Operation {
 		
 		keyEnd = (start<end) ? end : (int) (end + Math.pow(2, M));
 
-		System.out.println("KeyStart"+keyStart+" KeyEnd " +keyEnd+ "searchKey "+searchKey);
+		//System.out.println("KeyStart"+keyStart+" KeyEnd " +keyEnd+ "searchKey "+searchKey);
 		if(flag && (searchKey >= start && searchKey <= end)) {result = true;}
 		if(!flag && (searchKey >= start && searchKey < end)) {result = true;}
 
@@ -202,15 +198,15 @@ public class Operation {
 		ObjectOutputStream out=null;
 		ObjectInputStream in=null;
 		try {
-			System.out.println("sendRequest.command"+modelObj.command);
-			System.out.println("connecting ...+"+ip+" port "+port);
+			//System.out.println("sendRequest.command"+modelObj.command);
+			//System.out.println("connecting ...+"+ip+" port "+port);
 			s1 = new Socket(ip, port);
 			out = new ObjectOutputStream(s1.getOutputStream());
 			in = new ObjectInputStream(s1.getInputStream());
 			out.writeObject(modelObj);
 			MyNetwork response = (MyNetwork) in.readObject();
 			returnFlag = response.response;
-			System.out.println("response:"+returnFlag);
+			//System.out.println("response:"+returnFlag);
 
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
@@ -295,7 +291,7 @@ public class Operation {
 
 					//add to self
 					dataList.add(networkObj.dataString);
-					System.out.println("The data "+ networkObj.dataString +"is added in "+node.getId());
+					System.out.println("The data '"+ networkObj.dataString +"' is added in "+node.getId());
 					if(networkObj.requestedNodeId != node.getId()) {
 						networkObj.command ="successfully added";
 						networkObj.respondedNodeId= node.getId();
@@ -380,8 +376,22 @@ public class Operation {
 					//return;
 				}else{
 					
+					for (Finger finger : fingerTable) {
+						int start = finger.getKey();
+						int end = finger.getSpan();
+
+						if (Operation.checkSpanRange1(start,end,NodeId,false,M)) {
+							//send request to the node to add data
+							ip = finger.getIp();
+							port= finger.getPort();
+							networkObj.hopCount =networkObj.hopCount+1;
+							sendMessage(ip, port, networkObj);
+							return;	//break
+						}
+					}
+					
 					//find exact opposite node
-					int oppoNode= (selfId + (totalNodes/2))%totalNodes;
+					/*int oppoNode= (selfId + (totalNodes/2))%totalNodes;
 					boolean clockwise = checkSpanRange1(selfId, oppoNode, NodeId, true, M);
 					
 					if (clockwise) {
@@ -414,7 +424,7 @@ public class Operation {
 								return;	//break
 							}
 						}
-					}
+					}*/
 					
 				}
 			}
@@ -444,7 +454,7 @@ public class Operation {
 				if (checkSpanRange1(predecessorID, selfId, NodeId, true, M)) {
 					//checking in self
 					if (dataList.contains(networkObj.dataString)) {
-						System.out.println("Data key" + networkObj.dataString+ " is found in" + node.getId()); 
+						//System.out.println("Data key" + networkObj.dataString+ " is found in" + node.getId()); 
 						if(networkObj.requestedNodeId != node.getId()) {
 							networkObj.command ="successfully found";
 							networkObj.respondedNodeId= node.getId();
@@ -465,8 +475,22 @@ public class Operation {
 				}
 				else{
 					
+					for (Finger finger : fingerTable) {
+						int start = finger.getKey();
+						int end = finger.getSpan();
+
+						if (checkSpanRange1(start,end,NodeId,false,M)) {
+							//send request to the node which has the data
+							ip = finger.getIp();
+							port= finger.getPort();
+							networkObj.hopCount =networkObj.hopCount+1;
+							sendMessage(ip, port, networkObj);
+							return;	//break
+						}
+					}
+					
 					//find exact opposite node
-					int oppoNode= (selfId + (totalNodes/2))%totalNodes;
+					/*int oppoNode= (selfId + (totalNodes/2))%totalNodes;
 					boolean clockwise = checkSpanRange1(selfId, oppoNode, NodeId, true, M);
 					
 					if (clockwise) {
@@ -499,7 +523,7 @@ public class Operation {
 								return;	//break
 							}
 						}
-					}
+					}*/
 				}
 			}
 		}
@@ -507,8 +531,8 @@ public class Operation {
 
 	public static void inMethod_proto(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<String> dataList){
 
-		System.out.println("IN method");
-		Operation.printDataTable(dataList);
+		//System.out.println("IN method");
+		//Operation.printDataTable(dataList);
 		
 		if (networkObj != null && (!networkObj.dataString.equals(""))) {
 			String line = networkObj.dataString.trim();
@@ -590,7 +614,7 @@ public class Operation {
 	}
 	
 	public static void printDataTable(List<String> dataList){
-		System.out.println("In print dataList");
+		System.out.println("Data :");
 		for (String data : dataList) {
 			System.out.println(data);
 		}
