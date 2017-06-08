@@ -209,6 +209,20 @@ class ServerThread extends Thread{
 				finger.setPort(modelObj.successor.getPortNo());
 			}
 		}
+		
+		for (AntiFinger antifinger : antiFingerTable) {
+			int keyStart = antifinger.getKey();
+			int keyEnd = antifinger.getSpan();
+
+			if(antifinger.getSuccessor() == modelObj.nodeToDeleteId){
+				antifinger.setSuccessorNode(modelObj.successor.getId());
+				antifinger.setip(modelObj.successor.getIp());
+				antifinger.setPort(modelObj.successor.getPortNo());
+			}
+		}
+
+		
+		
 	}
 	
 	//need to delete it...just kept it for reference
