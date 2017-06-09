@@ -53,16 +53,16 @@ public class LRUCache {
     }
  
     //call when no data available in cache and insert the new da
-    public void set(String key,NodeInfo nodeInfo) {
+    public void set(String key, String ip , int port , int nodeId) {
         if(map.containsKey(key)){
         	NodeInfo old = map.get(key);
-            old = nodeInfo;
+            //old = nodeInfo;
             remove(old);
             setHead(old);
         }else{
-        	NodeInfo created = new NodeInfo(key, nodeInfo.ip,nodeInfo.port,nodeInfo.nodeId);
+        	NodeInfo created = new NodeInfo(ip,port,nodeId);
             if(map.size()>=capacity){
-                map.remove(end.key);
+                map.remove(key);
                 remove(end);
                 setHead(created);
  

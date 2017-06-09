@@ -27,4 +27,7 @@ public class MyNetwork implements Serializable{
 	public List<String> dataList; // for passing set of data
 	public int hopCount;
 	public Node sendResponseToNode;
+	public boolean dataFound;
+	public int analysisNodeId;
+	public boolean analysisFlag;
 }

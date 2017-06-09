@@ -22,8 +22,9 @@ class ServerThread extends Thread{
 	List<String> dataList;
 	boolean output_disable = false;
 	List<AntiFinger> antiFingerTable;
+	LRUCache cache;
 
-	public ServerThread(Socket s,int portNumber,int hostKey,String ipAddr,Node node,Finger finger,Node successorNode,Node predecessorNode,List<Finger> fingerTable,int M,List<String> dataList,List<AntiFinger> antiFingerTable){
+	public ServerThread(Socket s,int portNumber,int hostKey,String ipAddr,Node node,Finger finger,Node successorNode,Node predecessorNode,List<Finger> fingerTable,int M,List<String> dataList,List<AntiFinger> antiFingerTable, LRUCache cache){
 		this.s = s;
 		this.portNumber = portNumber;
 		this.hostKey = hostKey;
@@ -37,6 +38,7 @@ class ServerThread extends Thread{
 		totalNodes =  (int) Math.pow(2, M);
 		this.dataList=dataList;
 		this.antiFingerTable=antiFingerTable;
+		this.cache = cache;
 	}
 
 	public void run() {
@@ -97,7 +99,7 @@ class ServerThread extends Thread{
 					modelObj.response=true;
 					output_disable = true;
 				} else if(modelObj.command.equals("in")) {
-					Operation.inMethod(modelObj, M, node, fingerTable,antiFingerTable, dataList);
+					Operation.inMethod(modelObj, M, node, fingerTable,antiFingerTable, dataList,cache,false);
 					modelObj.response=true;
 					output_disable = true;
 				} else if(modelObj.command.equals("successfully added")) {
@@ -106,6 +108,9 @@ class ServerThread extends Thread{
 				} else if (modelObj.command.equals("successfully found")) {
 					inSuccess(modelObj);
 					output_disable = true;
+				}
+				else if(modelObj.command.equals("cache")) {
+					checkDataList(modelObj,out);
 				}
 				else{
 					System.out.println("serverThread : else part");
@@ -133,6 +138,27 @@ class ServerThread extends Thread{
 				}
 			}
 		}
+	}
+
+
+
+	private void checkDataList(MyNetwork modelObj, ObjectOutputStream out) throws IOException {
+		// TODO Auto-generated method stub
+		System.out.println("Checking for the key");
+		if(dataList.contains(modelObj.dataString)) {
+			modelObj.dataFound = true;
+			out.writeObject(modelObj);
+			System.out.println("The data string" + modelObj.dataString+ "is found");
+		}
+		
+		else {
+			modelObj.dataFound = false;
+			System.out.println("The data string" + modelObj.dataString+ "is not found");
+			out.writeObject(modelObj);
+			
+
+		}
+		
 	}
 
 	public boolean addNodeToChord(MyNetwork modelObj){
@@ -589,9 +615,15 @@ class ServerThread extends Thread{
 	}
 	
 	public void inSuccess(MyNetwork modelObj) {
-		System.out.println("The data "+modelObj.dataString +" is successfully found on node "+ modelObj.respondedNodeId);
-		System.out.println("Hop count :"+modelObj.hopCount);
-		System.out.println("chord>");
+		if (modelObj.analysisFlag) {
+			System.out.println("The data key "+modelObj.analysisNodeId +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount);
+			
+		} else {
+			System.out.println("The data "+modelObj.dataString +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount);
+			//System.out.println("Hop count :"+modelObj.hopCount);
+		}
+		cache.set(modelObj.dataString, modelObj.respondedNodeIp, modelObj.respondedNodeport, modelObj.respondedNodeId );
+		System.out.print("chord > ");
 	}
 
 
