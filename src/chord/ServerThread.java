@@ -90,6 +90,9 @@ class ServerThread extends Thread{
 					inSuccess(modelObj);
 					output_disable = true;
 				}
+				else if(modelObj.command.equals("cache")) {
+					checkDataList(modelObj,out);
+				}
 				else{
 					System.out.println("serverThread : else part");
 				}
@@ -116,6 +119,27 @@ class ServerThread extends Thread{
 				}
 			}
 		}
+	}
+
+
+
+	private void checkDataList(MyNetwork modelObj, ObjectOutputStream out) throws IOException {
+		// TODO Auto-generated method stub
+		System.out.println("Checking for the key");
+		if(dataList.contains(modelObj.dataString)) {
+			modelObj.dataFound = true;
+			out.writeObject(modelObj);
+			System.out.println("The data string" + modelObj.dataString+ "is found");
+		}
+		
+		else {
+			modelObj.dataFound = false;
+			System.out.println("The data string" + modelObj.dataString+ "is not found");
+			out.writeObject(modelObj);
+			
+
+		}
+		
 	}
 
 	public boolean addNodeToChord(MyNetwork modelObj){

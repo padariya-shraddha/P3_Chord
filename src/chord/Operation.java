@@ -26,12 +26,12 @@ public class Operation {
 	private static String filename = "/tmp/log.log";
 	private static FileHandler fh ; 
 	private static int M = 6;
-   
+
 	public static void deleteMethod(MyNetwork networkObj, Node node,List<Finger> fingerTable,List<String> dataList  ){
 		int nodeToFind = networkObj.nodeToDeleteId;
 		if (node.getId() == nodeToFind) {
-			 
-			
+
+
 			if (node.getId() == node.getSuccessor().getId() && node.getId() == node.getPredecessor().getId()) {
 				System.exit(0);
 			}
@@ -39,10 +39,10 @@ public class Operation {
 				networkObj.command = "update after delete";
 				Node pred = new Node(node.getPredecessor().getId(),node.getPredecessor().getIp(),node.getPredecessor().getPortNo());
 				Node succ = new Node(node.getSuccessor().getId(),node.getSuccessor().getIp(),node.getSuccessor().getPortNo());
-				
+
 				networkObj.predecessor = pred;
 				networkObj.successor = succ;
-				
+
 				System.out.println("deleteMethod : succ "+succ.getId()+" pred "+pred.getId());
 				// notifying successor the deletion of the current node
 				if(node.getId() != node.getSuccessor().getId()) {
@@ -59,7 +59,7 @@ public class Operation {
 			}
 		}
 		else {
-			
+
 			for (Finger finger : fingerTable) {
 				int tempKey = finger.getKey();
 				int tempRange = finger.getSpan();
@@ -119,47 +119,47 @@ public class Operation {
 			keyStart = start;
 			keyEnd = end;
 		}
-		
+
 		if(flag)
-			{
-			 if(searchKey >= keyStart && searchKey <= keyEnd) {
-				 result = true;
-			 }
-			 else{
-				 
-				 if(keyEnd >= 64 ){
-					 if((searchKey >= keyStart && searchKey <=63) || (searchKey >=0 && searchKey <= end ) ){
-						 result = true;
-					 }
-				 }
-				 else{
-					 
-					 result = false;
-					 
-				 }
-					
-				}
-			
+		{
+			if(searchKey >= keyStart && searchKey <= keyEnd) {
+				result = true;
 			}
-		else{
-			
-			if(searchKey >= keyStart && searchKey < keyEnd) {
-				 result = true;
-			 }
-			 else{
-				 if(keyEnd >= 64 ){
-					 if((searchKey >= keyStart && searchKey <=63) || (searchKey >=0 && searchKey < end ) ){
-						 result = true;
-					 }
-				 }
-				 else{
-					 
-					 result = false;
-					 
-				 }
+			else{
+
+				if(keyEnd >= 64 ){
+					if((searchKey >= keyStart && searchKey <=63) || (searchKey >=0 && searchKey <= end ) ){
+						result = true;
+					}
 				}
+				else{
+
+					result = false;
+
+				}
+
+			}
+
 		}
-		
+		else{
+
+			if(searchKey >= keyStart && searchKey < keyEnd) {
+				result = true;
+			}
+			else{
+				if(keyEnd >= 64 ){
+					if((searchKey >= keyStart && searchKey <=63) || (searchKey >=0 && searchKey < end ) ){
+						result = true;
+					}
+				}
+				else{
+
+					result = false;
+
+				}
+			}
+		}
+
 		keyEnd = (start<end) ? end : (int) (end + Math.pow(2, M));
 
 		//System.out.println("KeyStart"+keyStart+" KeyEnd " +keyEnd+ "searchKey "+searchKey);
@@ -197,7 +197,7 @@ public class Operation {
 	}
 
 	public static  boolean sendRequest(String ip, int port,MyNetwork modelObj){
-	
+
 		Socket s1=null;
 		boolean returnFlag;
 		ObjectOutputStream out=null;
@@ -218,7 +218,7 @@ public class Operation {
 			returnFlag= false;
 		}finally{
 			/*try {
-				
+
 				if (in!=null) {
 					in.close();
 				}
@@ -227,7 +227,7 @@ public class Operation {
 				}
 				if (s1!=null) {
 					s1.close();
-				
+
 			} catch (IOException e) {
 				e.printStackTrace();
 			}}*/
@@ -286,7 +286,7 @@ public class Operation {
 				int selfId = node.getId();
 				int predecessorID = node.getPredecessor().getId();
 				predecessorID = (predecessorID+1)%((int) Math.pow(2, M));
-				
+
 				//check if NodeId resides between self and successor *****
 				selfId= (selfId+1)%((int) Math.pow(2, M));
 				int successorID = node.getSuccessor().getId();
@@ -318,20 +318,20 @@ public class Operation {
 
 				else {
 					for (Finger finger : fingerTable) {
-					int start = finger.getKey();
-					int end = finger.getSpan();
+						int start = finger.getKey();
+						int end = finger.getSpan();
 
-					if (Operation.checkSpanRange1(start,end,NodeId,false,M)) {
-						//send request to the node to add data
+						if (Operation.checkSpanRange1(start,end,NodeId,false,M)) {
+							//send request to the node to add data
 
-						ip = finger.getIp();
-						port= finger.getPort();
+							ip = finger.getIp();
+							port= finger.getPort();
 
-						sendMessage(ip, port, networkObj);
+							sendMessage(ip, port, networkObj);
 
-						//return;
+							//return;
+						}
 					}
-				}
 				}
 			}
 		}
@@ -349,15 +349,15 @@ public class Operation {
 
 				String ip ;
 				int port;
-				
+
 				//check if NodeId is in range of predecessorID and self
 				int predecessorID = node.getPredecessor().getId();
 				predecessorID = (predecessorID+1)%totalNodes;
-				
+
 				//check if NodeId resides between self and successor
 				int tempselfId= (selfId+1)%totalNodes;
 				int successorID = node.getSuccessor().getId();
-				
+
 				if (checkSpanRange1(predecessorID, selfId, NodeId, true, M)) {
 					//add to self
 					dataList.add(networkObj.dataString);
@@ -376,11 +376,11 @@ public class Operation {
 					port = node.getSuccessor().getPortNo();
 
 					networkObj.hopCount =networkObj.hopCount+1;
-					
+
 					sendMessage(ip, port, networkObj);
 					//return;
 				}else{
-					
+
 					for (Finger finger : fingerTable) {
 						int start = finger.getKey();
 						int end = finger.getSpan();
@@ -394,11 +394,11 @@ public class Operation {
 							return;	//break
 						}
 					}
-					
+
 					//find exact opposite node
 					/*int oppoNode= (selfId + (totalNodes/2))%totalNodes;
 					boolean clockwise = checkSpanRange1(selfId, oppoNode, NodeId, true, M);
-					
+
 					if (clockwise) {
 						for (Finger finger : fingerTable) {
 							int start = finger.getKey();
@@ -430,15 +430,16 @@ public class Operation {
 							}
 						}
 					}*/
-					
+
 				}
 			}
 		}
 	}
-	
-	public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList, LRUCache cache){
+
+	public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList, LRUCache cache) throws ClassNotFoundException{
 
 		if (networkObj != null && (!networkObj.dataString.equals(""))) {
+			boolean catch1 = true;
 			String line = networkObj.dataString.trim();
 			int NodeId = Operation.getmd5Modulo(line,M);
 			int totalNodes = (int) Math.pow(2, M);
@@ -457,15 +458,43 @@ public class Operation {
 				int successorID = node.getSuccessor().getId();
 				NodeInfo nodeInfo;
 				if ( (nodeInfo = cache.get(networkObj.dataString)) != null) {
-					
+
 					// contact node Indo
 					System.out.println(" The data string " +networkObj.dataString + "is found in cache and its present in node id" +nodeInfo.nodeId);
-					sendMessage(nodeInfo.ip, nodeInfo.port, networkObj);
+					try {
+						networkObj.command = "cache";
+						Socket s = new Socket(nodeInfo.ip, nodeInfo.port);
+						ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
+						out.writeObject(networkObj);
+						
+						ObjectInputStream in = new ObjectInputStream(s.getInputStream());
+						MyNetwork response = (MyNetwork) in.readObject();
+						System.out.println("got the response");
+						out.close();
+						s.close();
+						
+						if(response.dataFound) {
+							return;
+						}
+						else {
+							cache.remove(nodeInfo);
+							networkObj.command = "in";
+							System.out.println("Key not found using normal method to find data");
+						}
+						
+					} catch (IOException e) {
+						cache.remove(nodeInfo);
+						// resetting command
+						networkObj.command = "in";
+						System.out.println("Node deleted. Using normal method to find data");
+
+
+					}
 				}
-				else if (checkSpanRange1(predecessorID, selfId, NodeId, true, M)) {
+				if (checkSpanRange1(predecessorID, selfId, NodeId, true, M)) {
 					//checking in self
 					if (dataList.contains(networkObj.dataString)) {
-						//System.out.println("Data key" + networkObj.dataString+ " is found in" + node.getId()); 
+						System.out.println("Data key" + networkObj.dataString+ " is found in" + node.getId()); 
 						if(networkObj.requestedNodeId != node.getId()) {
 							networkObj.command ="successfully found";
 							networkObj.respondedNodeId= node.getId();
@@ -485,7 +514,7 @@ public class Operation {
 					return;
 				}
 				else{
-					
+
 					for (Finger finger : fingerTable) {
 						int start = finger.getKey();
 						int end = finger.getSpan();
@@ -499,11 +528,11 @@ public class Operation {
 							return;	//break
 						}
 					}
-					
+
 					//find exact opposite node
 					/*int oppoNode= (selfId + (totalNodes/2))%totalNodes;
 					boolean clockwise = checkSpanRange1(selfId, oppoNode, NodeId, true, M);
-					
+
 					if (clockwise) {
 						for (Finger finger : fingerTable) {
 							int start = finger.getKey();
@@ -540,11 +569,12 @@ public class Operation {
 		}
 	}
 
+
 	public static void inMethod_proto(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<String> dataList){
 
 		//System.out.println("IN method");
 		//Operation.printDataTable(dataList);
-		
+
 		if (networkObj != null && (!networkObj.dataString.equals(""))) {
 			String line = networkObj.dataString.trim();
 			int NodeId = Operation.getmd5Modulo(line,M);
@@ -609,7 +639,7 @@ public class Operation {
 			}
 		}
 	}
-	
+
 	public static void printFingerTable(List<Finger> fingerTable){
 		for (Finger finger : fingerTable) {
 			finger.print();
@@ -623,14 +653,14 @@ public class Operation {
 			System.out.println();
 		}
 	}
-	
+
 	public static void printDataTable(List<String> dataList){
 		System.out.println("Data :");
 		for (String data : dataList) {
 			System.out.println(data);
 		}
 	}
-	
+
 	//need to delete
 	public static void printDataInLogFile(List<Finger> fingerTable) {  
 
@@ -645,128 +675,128 @@ public class Operation {
 
 
 
-	    } catch (Exception e) {  
-	        e.printStackTrace();  
-	    }  
+		} catch (Exception e) {  
+			e.printStackTrace();  
+		}  
 	}
-	    
+
 	public static void nodeDeatil(Node node){
 		if (node != null) {
 			System.out.println("Node id: "+node.getId() + ", ip: "+node.getIp()+", port: "+node.getPortNo());
 			Node tempSuccessor = node.getSuccessor();
 			Node tempPredecessor = node.getPredecessor();
-			
+
 			if (tempSuccessor != null) {
 				System.out.println("Node Successor:"+tempSuccessor.getId()+", ip: "+tempSuccessor.getIp()+", port: "+tempSuccessor.getPortNo());
 			}
-			
+
 			if (tempPredecessor != null) {
 				System.out.println("Node Predecessor:"+tempPredecessor.getId() + ", ip: "+tempPredecessor.getIp()+", port: "+tempPredecessor.getPortNo());
 			}
 		}
 	}
-	
+
 	public static String createLogFileFinger(int hostName) {
-        try {
-            File f = new File("/tmp/chord/" + hostName);
-            String flag = null;
-            String flag1 = null;
-            if (f.mkdirs()) {
-                System.out.println("nets file successfully created");
-                flag = "Success";
-            } else {
-                flag = "notsuccess";
-            }
+		try {
+			File f = new File("/tmp/chord/" + hostName);
+			String flag = null;
+			String flag1 = null;
+			if (f.mkdirs()) {
+				System.out.println("nets file successfully created");
+				flag = "Success";
+			} else {
+				flag = "notsuccess";
+			}
 
-            if (flag == "Success") {
-                File file = new File(f.getAbsolutePath() + "/Finger_host_"+hostName+".txt");
-                if (file.createNewFile()) {
-                    flag1 = "Success";
-                } else {
-                    flag1 = "notsuccess";
-                }
-                return file.getAbsolutePath();
-            }
-        } catch (Exception e) {
-            System.out.println("createDirectory : failed");
-        }
-        return "NotSuccess";
-    }
-	
-	
+			if (flag == "Success") {
+				File file = new File(f.getAbsolutePath() + "/Finger_host_"+hostName+".txt");
+				if (file.createNewFile()) {
+					flag1 = "Success";
+				} else {
+					flag1 = "notsuccess";
+				}
+				return file.getAbsolutePath();
+			}
+		} catch (Exception e) {
+			System.out.println("createDirectory : failed");
+		}
+		return "NotSuccess";
+	}
+
+
 	public static String createLogFileAntiFinger(int hostName) {
-        try {
-            File f = new File("/tmp/chord/" + hostName);
-            String flag = null;
-            String flag1 = null;
-            if (f.mkdirs()) {
-                System.out.println("nets file successfully created");
-                flag = "Success";
-            }
+		try {
+			File f = new File("/tmp/chord/" + hostName);
+			String flag = null;
+			String flag1 = null;
+			if (f.mkdirs()) {
+				System.out.println("nets file successfully created");
+				flag = "Success";
+			}
 
-            
-                File file = new File(f.getAbsolutePath() + "/AntiFinger_host_"+hostName+".txt");
-                if (file.createNewFile()) {
-                    flag1 = "Success";
-                } else {
-                    flag1 = "notsuccess";
-                }
-                return file.getAbsolutePath();
-           
-        } catch (Exception e) {
-            System.out.println("createDirectory : failed");
-        }
-        return "NotSuccess";
-    }
-	
+
+			File file = new File(f.getAbsolutePath() + "/AntiFinger_host_"+hostName+".txt");
+			if (file.createNewFile()) {
+				flag1 = "Success";
+			} else {
+				flag1 = "notsuccess";
+			}
+			return file.getAbsolutePath();
+
+		} catch (Exception e) {
+			System.out.println("createDirectory : failed");
+		}
+		return "NotSuccess";
+	}
+
 	public static void writeInLogFilesFinger(List<Finger> fingerTable, String filePath) {
-        try {
-        	//Date date = new Date();
-        	DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
-        	Calendar calobj = Calendar.getInstance();
-        	//System.out.println(df.format(calobj.getTime()));
+		try {
+			//Date date = new Date();
+			DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+			Calendar calobj = Calendar.getInstance();
+			//System.out.println(df.format(calobj.getTime()));
 
-            String data = null;
-        	FileWriter writer = new FileWriter(filePath, true);
-        	writer.write("---------------------------"+df.format(calobj.getTime())+"----------------------------------------------");
-        	writer.write("\r\n");
-        	//writer.write(df.format(calobj.getTime()));
-        	//writer.write("\r\n");
-        	for (Finger finger : fingerTable) {
+			String data = null;
+			FileWriter writer = new FileWriter(filePath, true);
+			writer.write("---------------------------"+df.format(calobj.getTime())+"----------------------------------------------");
+			writer.write("\r\n");
+			//writer.write(df.format(calobj.getTime()));
+			//writer.write("\r\n");
+			for (Finger finger : fingerTable) {
 				data = finger.getKey()+" "+finger.getSpan()+" "+finger.getSuccessor();
 				writer.write(data);
-	            writer.write("\r\n");			
-	        }
-        			
-            writer.close();
-        } catch (IOException e) {
-            System.out.println("log file : failed");
-        }
-    }
-	
+				writer.write("\r\n");			
+			}
+
+			writer.close();
+		} catch (IOException e) {
+			System.out.println("log file : failed");
+		}
+	}
+
 	public static void writeInLogFilesAntiFinger(List<AntiFinger> fingerTable, String filePath) {
-        try {
-        	
-        	DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
-        	Calendar calobj = Calendar.getInstance();
-        	//System.out.println(df.format(calobj.getTime()));
-        	
-            String data = null;
-        	FileWriter writer = new FileWriter(filePath, true);
-        	writer.write("---------------------------"+df.format(calobj.getTime())+"----------------------------------------------");
-        	writer.write("\r\n");
-        	//writer.write(df.format(calobj.getTime()));
-        	//writer.write("\r\n");
-        	for (AntiFinger finger : fingerTable) {
+		try {
+
+			DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+			Calendar calobj = Calendar.getInstance();
+			//System.out.println(df.format(calobj.getTime()));
+
+			String data = null;
+			FileWriter writer = new FileWriter(filePath, true);
+			writer.write("---------------------------"+df.format(calobj.getTime())+"----------------------------------------------");
+			writer.write("\r\n");
+			//writer.write(df.format(calobj.getTime()));
+			//writer.write("\r\n");
+			for (AntiFinger finger : fingerTable) {
 				data = finger.getKey()+" "+finger.getSpan()+" "+finger.getSuccessor();
 				writer.write(data);
-	            writer.write("\r\n");			
-	        }
-        			
-            writer.close();
-        } catch (IOException e) {
-            System.out.println("log file : failed");
-        }
-    }
+				writer.write("\r\n");			
+			}
+
+			writer.close();
+		} catch (IOException e) {
+			System.out.println("log file : failed");
+		}
+	}
 
 }
