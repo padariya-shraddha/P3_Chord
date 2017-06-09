@@ -9,7 +9,12 @@ import java.math.BigInteger;
 import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.Timestamp;
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
@@ -691,11 +696,9 @@ public class Operation {
             if (f.mkdirs()) {
                 System.out.println("nets file successfully created");
                 flag = "Success";
-            } else {
-                flag = "notsuccess";
             }
 
-            if (flag == "Success") {
+            
                 File file = new File(f.getAbsolutePath() + "/AntiFinger_host_"+hostName+".txt");
                 if (file.createNewFile()) {
                     flag1 = "Success";
@@ -703,7 +706,7 @@ public class Operation {
                     flag1 = "notsuccess";
                 }
                 return file.getAbsolutePath();
-            }
+           
         } catch (Exception e) {
             System.out.println("createDirectory : failed");
         }
@@ -712,11 +715,17 @@ public class Operation {
 	
 	public static void writeInLogFilesFinger(List<Finger> fingerTable, String filePath) {
         try {
-        	
+        	//Date date = new Date();
+        	DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+        	Calendar calobj = Calendar.getInstance();
+        	//System.out.println(df.format(calobj.getTime()));
+
             String data = null;
         	FileWriter writer = new FileWriter(filePath, true);
-        	writer.write("-------------------------------------------------------------------------");
+        	writer.write("---------------------------"+df.format(calobj.getTime())+"----------------------------------------------");
         	writer.write("\r\n");
+        	//writer.write(df.format(calobj.getTime()));
+        	//writer.write("\r\n");
         	for (Finger finger : fingerTable) {
 				data = finger.getKey()+" "+finger.getSpan()+" "+finger.getSuccessor();
 				writer.write(data);
@@ -732,10 +741,16 @@ public class Operation {
 	public static void writeInLogFilesAntiFinger(List<AntiFinger> fingerTable, String filePath) {
         try {
         	
+        	DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+        	Calendar calobj = Calendar.getInstance();
+        	//System.out.println(df.format(calobj.getTime()));
+        	
             String data = null;
         	FileWriter writer = new FileWriter(filePath, true);
-        	writer.write("-------------------------------------------------------------------------");
+        	writer.write("---------------------------"+df.format(calobj.getTime())+"----------------------------------------------");
         	writer.write("\r\n");
+        	//writer.write(df.format(calobj.getTime()));
+        	//writer.write("\r\n");
         	for (AntiFinger finger : fingerTable) {
 				data = finger.getKey()+" "+finger.getSpan()+" "+finger.getSuccessor();
 				writer.write(data);

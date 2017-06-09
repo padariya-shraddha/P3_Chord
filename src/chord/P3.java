@@ -108,7 +108,7 @@ public class P3
 		Operation.writeInLogFilesAntiFinger(antiFingerTable, AntiFinger_path);
 
 		Fix_finger fixFinger = new Fix_finger(local_host_key, local_ip,local_port,fingerTable,node,finger_path,antiFingerTable,AntiFinger_path);
-		//fixFinger.start();
+		fixFinger.start();
 		
 		//do not include below commented code
 		/*while(true)

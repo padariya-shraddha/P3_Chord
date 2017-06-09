@@ -33,6 +33,10 @@ public class Fix_finger extends Thread{
 	  System.out.println();
 
 	  while(true){
+		  boolean msgPrinted = false;
+		  if(node.getId() == node.getSuccessor().getId() && node.getId() == node.getPredecessor().getId()){
+			  
+		  }
 		  fix_finger_update();
 		  fix_Antifinger_update();
 		  try {
@@ -74,7 +78,7 @@ public class Fix_finger extends Thread{
 
 
               } catch (Exception e) {
-                  e.printStackTrace();
+                  //e.printStackTrace();
               }
 
           }
@@ -141,7 +145,8 @@ public class Fix_finger extends Thread{
 
 
       } catch (IOException | ClassNotFoundException e) {
-          e.printStackTrace();
+          //e.printStackTrace();
+    	  System.out.println("fix_finger : connection error");
           returnFlag= false;
       }finally{
           try {
