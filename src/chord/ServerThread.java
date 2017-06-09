@@ -80,7 +80,7 @@ class ServerThread extends Thread{
 					modelObj.response=true;
 					output_disable = true;
 				} else if(modelObj.command.equals("in")) {
-					Operation.inMethod(modelObj, M, node, fingerTable,antiFingerTable, dataList,cache);
+					Operation.inMethod(modelObj, M, node, fingerTable,antiFingerTable, dataList,cache,false);
 					modelObj.response=true;
 					output_disable = true;
 				} else if(modelObj.command.equals("successfully added")) {
@@ -511,11 +511,15 @@ class ServerThread extends Thread{
 	}
 	
 	public void inSuccess(MyNetwork modelObj) {
-		System.out.println("The data "+modelObj.dataString +" is successfully found on node "+ modelObj.respondedNodeId);
-		
+		if (modelObj.analysisFlag) {
+			System.out.println("The data key "+modelObj.analysisNodeId +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount);
+			
+		} else {
+			System.out.println("The data "+modelObj.dataString +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount);
+			//System.out.println("Hop count :"+modelObj.hopCount);
+		}
 		cache.set(modelObj.dataString, modelObj.respondedNodeIp, modelObj.respondedNodeport, modelObj.respondedNodeId );
-		System.out.println("Hop count :"+modelObj.hopCount);
-		System.out.println("chord>");
+		System.out.print("chord > ");
 	}
 
 

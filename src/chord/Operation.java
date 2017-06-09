@@ -436,12 +436,20 @@ public class Operation {
 		}
 	}
 
-	public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList, LRUCache cache) throws ClassNotFoundException{
+	public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList, LRUCache cache,boolean analysisFlag){
 
-		if (networkObj != null && (!networkObj.dataString.equals(""))) {
+		if ((networkObj != null && (!networkObj.dataString.equals(""))) ||analysisFlag) {
 			boolean catch1 = true;
-			String line = networkObj.dataString.trim();
-			int NodeId = Operation.getmd5Modulo(line,M);
+			String line;
+			int NodeId;
+			if (analysisFlag) {
+				line = "";
+				NodeId = networkObj.analysisNodeId;
+			} else {
+				line = networkObj.dataString.trim();
+				NodeId = Operation.getmd5Modulo(line,M);
+			}
+			
 			int totalNodes = (int) Math.pow(2, M);
 			int selfId = node.getId();
 			if (NodeId>=0) {
@@ -457,7 +465,7 @@ public class Operation {
 				selfId= (selfId+1)%((int) Math.pow(2, M));
 				int successorID = node.getSuccessor().getId();
 				NodeInfo nodeInfo;
-				if ( (nodeInfo = cache.get(networkObj.dataString)) != null) {
+				if ( (nodeInfo = cache.get(networkObj.dataString)) != null && analysisFlag == false) {
 
 					// contact node Indo
 					System.out.println(" The data string " +networkObj.dataString + "is found in cache and its present in node id" +nodeInfo.nodeId);
@@ -487,21 +495,22 @@ public class Operation {
 						// resetting command
 						networkObj.command = "in";
 						System.out.println("Node deleted. Using normal method to find data");
-
-
+					} catch (ClassNotFoundException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
 				}
 				if (checkSpanRange1(predecessorID, selfId, NodeId, true, M)) {
 					//checking in self
-					if (dataList.contains(networkObj.dataString)) {
-						System.out.println("Data key" + networkObj.dataString+ " is found in" + node.getId()); 
-						if(networkObj.requestedNodeId != node.getId()) {
+					if (dataList.contains(networkObj.dataString) || analysisFlag) {
+						//System.out.println("Data key" + networkObj.dataString+ " is found in" + node.getId()); 
+						//if(networkObj.requestedNodeId != node.getId()) {
 							networkObj.command ="successfully found";
 							networkObj.respondedNodeId= node.getId();
 							networkObj.respondedNodeIp = node.getIp();
 							networkObj.respondedNodeport = node.getPortNo();
 							sendMessage(networkObj.requestedNodeIp, networkObj.requestedNodeport, networkObj);
-						}
+						//}
 					}
 					return;
 				}
@@ -798,5 +807,22 @@ public class Operation {
 			System.out.println("log file : failed");
 		}
 	}
-
+	public static void printAnalysis(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList,LRUCache cache){
+		int totalNodes= (int) Math.pow(2, M);
+		//System.out.println("node.getId() :"+node.getId()+" , node.getIp() :"+node.getIp()+""+node.getId()+" ,node.getPortNo() :"+node.getPortNo());
+		for (int i = 0; i < totalNodes; i++) {
+			//System.out.println("send request for node :"+i);
+			
+			MyNetwork temp = new MyNetwork();
+			
+			temp.requestedNodeId= node.getId();
+			temp.requestedNodeIp= node.getIp();
+			temp.requestedNodeport = node.getPortNo();
+			temp.analysisNodeId= i;
+			temp.dataString= "";
+			temp.command= "in";
+			temp.analysisFlag = true;
+			inMethod(temp, M, node, fingerTable, antiFingerTable, dataList, cache,true);
+		}
+	}
 }
