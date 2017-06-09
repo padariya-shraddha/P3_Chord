@@ -666,7 +666,6 @@ public class Operation {
             String flag = null;
             String flag1 = null;
             if (f.mkdirs()) {
-                System.out.println("nets file successfully created");
                 flag = "Success";
             } else {
                 flag = "notsuccess";
@@ -694,11 +693,9 @@ public class Operation {
             String flag = null;
             String flag1 = null;
             if (f.mkdirs()) {
-                System.out.println("nets file successfully created");
                 flag = "Success";
             }
 
-            
                 File file = new File(f.getAbsolutePath() + "/AntiFinger_host_"+hostName+".txt");
                 if (file.createNewFile()) {
                     flag1 = "Success";

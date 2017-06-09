@@ -110,20 +110,6 @@ public class P3
 		Fix_finger fixFinger = new Fix_finger(local_host_key, local_ip,local_port,fingerTable,node,finger_path,antiFingerTable,AntiFinger_path);
 		fixFinger.start();
 		
-		//do not include below commented code
-		/*while(true)
-		{
-		Fix_finger fixFinger = new Fix_finger(local_host_key, local_ip,local_port,fingerTable,node,path);
-		fixFinger.start();
-		try {
-			fixFinger.join(50000000);
-			//System.out.println("fixFinger Thread is alive : "+fixFinger.isAlive());
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		}*/
-		
 	}
 	
 	public void printFingerTable(){

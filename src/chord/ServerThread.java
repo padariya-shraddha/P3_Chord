@@ -59,10 +59,29 @@ class ServerThread extends Thread{
 				}
 				else if (modelObj.command.equals("fixFinger_validateRange")) {
                     modelObj.response_message =  fixFinger_validateRange(modelObj);
+                    
                 }else if (modelObj.command.equals("fixAntiFinger_validateRange")) {
                     modelObj.response_message =  fixAntiFinger_validateRange(modelObj);
-                } else if (modelObj.command.equals("delete")) {
+                    
+                }else if (modelObj.command.equals("searchKeyForFixAntiFinger")) {
+                    searchKeyForFixAntiFinger(modelObj);
+                    output_disable = true;
+                    
+                }else if (modelObj.command.equals("searchKeyForFixFinger")) {
+                    searchKeyForFixAntiFinger(modelObj);
+                    output_disable = true;
+                    
+                } else if (modelObj.command.equals("FoundSearchKeyForFixFinger")) {
+                	FoundSearchKeyForFixFinger(modelObj);
+                    output_disable = true;
+                    
+                } else if (modelObj.command.equals("FoundSearchKeyForFixAntiFinger")) {
+                	FoundSearchKeyForFixAntiFinger(modelObj);
+                    output_disable = true;
+                    
+                }else if (modelObj.command.equals("delete")) {
 					Operation.deleteMethod(modelObj,node,fingerTable,dataList);
+					
 				} else if (modelObj.command.equals("update after delete")) {
 					// updating the finger table after neighbour is deleted i.e., when the successor or the the predecssor is deleted
 					updateAfterDelete(modelObj);
@@ -420,7 +439,11 @@ class ServerThread extends Thread{
 			responsibleNode = new Node(node.getId(),node.getIp(),node.getPortNo());
 		}
 
-		String response_string = responsibleNode.getId()+"/"+responsibleNode.getIp()+"/"+responsibleNode.getPortNo();
+		String response_string = null;
+		if(responsibleNode != null){
+			response_string = responsibleNode.getId()+"/"+responsibleNode.getIp()+"/"+responsibleNode.getPortNo();
+		}
+		
 		//System.out.println("fixFinger_validateRange responsible node found : " +responsibleNode.getId());
 		//System.out.println("response_string "+response_string);
         //System.out.println("sendRequest : "+response_string+" keyTobeValidate "+keyTobeValidate);
@@ -468,7 +491,11 @@ class ServerThread extends Thread{
 			responsibleNode = new Node(node.getId(),node.getIp(),node.getPortNo());
 		}
 
-		String response_string = responsibleNode.getId()+"/"+responsibleNode.getIp()+"/"+responsibleNode.getPortNo();
+		String response_string = null;
+		if(responsibleNode != null){
+			response_string = responsibleNode.getId()+"/"+responsibleNode.getIp()+"/"+responsibleNode.getPortNo();
+		}
+		
 		//System.out.println("fixFinger_validateRange responsible node found : " +responsibleNode.getId());
 		//System.out.println("response_string "+response_string);
         //System.out.println("sendRequest : "+response_string+" keyTobeValidate "+keyTobeValidate);
@@ -477,6 +504,83 @@ class ServerThread extends Thread{
 
 	}
 	
+	
+	public void searchKeyForFixAntiFinger(MyNetwork modelObj){
+		System.out.println("Inside searchKeyForFixAntiFinger");
+		Node responsibleNode = null;
+		if(Operation.checkSpanRange1(node.getId(),node.getSuccessor().getId(),modelObj.keyTobeValidate,true,M)){
+			responsibleNode = new Node(node.getSuccessor().getId(),node.getSuccessor().getIp(),node.getSuccessor().getPortNo());
+			MyNetwork newObj = new MyNetwork();
+			newObj.command = "FoundSearchKeyForFixAntiFinger";
+			newObj.keyTobeValidate = modelObj.keyTobeValidate;
+			newObj.responsibleNode = responsibleNode;
+			String modelObjIp = modelObj.sendResponseToNode.getIp();
+			int modelObjPort = modelObj.sendResponseToNode.getPortNo();
+			Operation.sendRequest(modelObjIp,modelObjPort,newObj);
+		}
+		else{
+			
+			MyNetwork newObj = new MyNetwork();
+			String succIp = node.getSuccessor().getIp();
+			int succPort = node.getSuccessor().getPortNo();
+			Operation.sendRequest(succIp,succPort,modelObj);
+		}
+		
+	}
+	
+	public void searchKeyForFixFinger(MyNetwork modelObj){
+		System.out.println("Inside searchKeyForFixFinger");
+		
+		Node responsibleNode = null;
+		if(Operation.checkSpanRange1(node.getId(),node.getSuccessor().getId(),modelObj.keyTobeValidate,true,M)){
+			responsibleNode = new Node(node.getSuccessor().getId(),node.getSuccessor().getIp(),node.getSuccessor().getPortNo());
+			MyNetwork newObj = new MyNetwork();
+			newObj.command = "FoundSearchKeyForFixFinger";
+			newObj.keyTobeValidate = modelObj.keyTobeValidate;
+			newObj.responsibleNode = responsibleNode;
+			String modelObjIp = modelObj.sendResponseToNode.getIp();
+			int modelObjPort = modelObj.sendResponseToNode.getPortNo();
+			Operation.sendRequest(modelObjIp,modelObjPort,newObj);
+		}
+		else{
+			
+			MyNetwork newObj = new MyNetwork();
+			String succIp = node.getSuccessor().getIp();
+			int succPort = node.getSuccessor().getPortNo();
+			Operation.sendRequest(succIp,succPort,modelObj);
+		}
+		
+	}
+	
+	public void FoundSearchKeyForFixFinger(MyNetwork modelObj){
+		System.out.println("Inside FoundSearchKeyForFixFinger");
+		
+		for(Finger finger : fingerTable)
+		{
+			if(finger.getKey() == modelObj.keyTobeValidate){
+				finger.setSuccessorNode(modelObj.responsibleNode.getId());
+				finger.setip(modelObj.responsibleNode.getIp());
+				finger.setPort(modelObj.responsibleNode.getPortNo());
+			}
+			
+		}
+		
+	}
+	
+	public void FoundSearchKeyForFixAntiFinger(MyNetwork modelObj){
+		System.out.println("Inside FoundSearchKeyForFixAntiFinger");
+		
+		for(AntiFinger finger : antiFingerTable)
+		{
+			if(finger.getKey() == modelObj.keyTobeValidate){
+				finger.setSuccessorNode(modelObj.responsibleNode.getId());
+				finger.setip(modelObj.responsibleNode.getIp());
+				finger.setPort(modelObj.responsibleNode.getPortNo());
+			}
+			
+		}
+		
+	}
 
 	public void outSuccess(MyNetwork modelObj) {
 		System.out.println("The data "+modelObj.dataString +" is successfully added on node "+ modelObj.respondedNodeId);
