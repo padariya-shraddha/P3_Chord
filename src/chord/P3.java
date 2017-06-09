@@ -90,7 +90,8 @@ public class P3
 		//Operation.printAntiFingerTable(antiFingerTable);
 		
 		Node node = new Node(local_host_key, local_ip, local_port);
-		String path = Operation.createLogFile(local_host_key);
+		String finger_path = Operation.createLogFileFinger(local_host_key);
+		String AntiFinger_path = Operation.createLogFileAntiFinger(local_host_key);
 		
 		List<String> dataList = new ArrayList<>();
 		
@@ -103,11 +104,13 @@ public class P3
 		/*System.out.println("Initialize finger table");
 		Operation.printFingerTable(fingerTable);
 		System.out.println();*/		
-		  Operation.writeInLogFiles(fingerTable, path);
+		Operation.writeInLogFilesFinger(fingerTable, finger_path);
+		Operation.writeInLogFilesAntiFinger(antiFingerTable, AntiFinger_path);
 
-		Fix_finger fixFinger = new Fix_finger(local_host_key, local_ip,local_port,fingerTable,node,path);
+		Fix_finger fixFinger = new Fix_finger(local_host_key, local_ip,local_port,fingerTable,node,finger_path,antiFingerTable,AntiFinger_path);
 		//fixFinger.start();
 		
+		//do not include below commented code
 		/*while(true)
 		{
 		Fix_finger fixFinger = new Fix_finger(local_host_key, local_ip,local_port,fingerTable,node,path);

@@ -655,7 +655,7 @@ public class Operation {
 		}
 	}
 	
-	public static String createLogFile(int hostName) {
+	public static String createLogFileFinger(int hostName) {
         try {
             File f = new File("/tmp/chord/" + hostName);
             String flag = null;
@@ -668,7 +668,7 @@ public class Operation {
             }
 
             if (flag == "Success") {
-                File file = new File(f.getAbsolutePath() + "/host_"+hostName+".txt");
+                File file = new File(f.getAbsolutePath() + "/Finger_host_"+hostName+".txt");
                 if (file.createNewFile()) {
                     flag1 = "Success";
                 } else {
@@ -682,7 +682,35 @@ public class Operation {
         return "NotSuccess";
     }
 	
-	public static void writeInLogFiles(List<Finger> fingerTable, String filePath) {
+	
+	public static String createLogFileAntiFinger(int hostName) {
+        try {
+            File f = new File("/tmp/chord/" + hostName);
+            String flag = null;
+            String flag1 = null;
+            if (f.mkdirs()) {
+                System.out.println("nets file successfully created");
+                flag = "Success";
+            } else {
+                flag = "notsuccess";
+            }
+
+            if (flag == "Success") {
+                File file = new File(f.getAbsolutePath() + "/AntiFinger_host_"+hostName+".txt");
+                if (file.createNewFile()) {
+                    flag1 = "Success";
+                } else {
+                    flag1 = "notsuccess";
+                }
+                return file.getAbsolutePath();
+            }
+        } catch (Exception e) {
+            System.out.println("createDirectory : failed");
+        }
+        return "NotSuccess";
+    }
+	
+	public static void writeInLogFilesFinger(List<Finger> fingerTable, String filePath) {
         try {
         	
             String data = null;
@@ -690,6 +718,25 @@ public class Operation {
         	writer.write("-------------------------------------------------------------------------");
         	writer.write("\r\n");
         	for (Finger finger : fingerTable) {
+				data = finger.getKey()+" "+finger.getSpan()+" "+finger.getSuccessor();
+				writer.write(data);
+	            writer.write("\r\n");			
+	        }
+        			
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("log file : failed");
+        }
+    }
+	
+	public static void writeInLogFilesAntiFinger(List<AntiFinger> fingerTable, String filePath) {
+        try {
+        	
+            String data = null;
+        	FileWriter writer = new FileWriter(filePath, true);
+        	writer.write("-------------------------------------------------------------------------");
+        	writer.write("\r\n");
+        	for (AntiFinger finger : fingerTable) {
 				data = finger.getKey()+" "+finger.getSpan()+" "+finger.getSuccessor();
 				writer.write(data);
 	            writer.write("\r\n");			

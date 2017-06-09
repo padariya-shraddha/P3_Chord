@@ -52,7 +52,6 @@ class ServerThread extends Thread{
 				//System.out.println("Request received for command " + modelObj.command);
 				
 				if (modelObj.command.equals("add")) {
-					
 					modelObj.response = addNodeToChord(modelObj);
 				} else if (modelObj.command.equals("add_PassFingerTableAndData")){
 					updateNewHostFingerTable(modelObj);
@@ -60,6 +59,8 @@ class ServerThread extends Thread{
 				}
 				else if (modelObj.command.equals("fixFinger_validateRange")) {
                     modelObj.response_message =  fixFinger_validateRange(modelObj);
+                }else if (modelObj.command.equals("fixAntiFinger_validateRange")) {
+                    modelObj.response_message =  fixAntiFinger_validateRange(modelObj);
                 } else if (modelObj.command.equals("delete")) {
 					Operation.deleteMethod(modelObj,node,fingerTable,dataList);
 				} else if (modelObj.command.equals("update after delete")) {
@@ -67,7 +68,7 @@ class ServerThread extends Thread{
 					updateAfterDelete(modelObj);
 					output_disable = true;
 				}else if(modelObj.command.equals("updateSuccessor")){
-					
+					System.out.println("updateSuccessor : "+modelObj.successor.getId());
 					if (modelObj.successor != null) {
 						node.setSuccessor(modelObj.successor);
 					}
@@ -132,16 +133,14 @@ class ServerThread extends Thread{
 				Node temp = new Node(newNodeKey,newNodeIp,newNodePort);
 				node.setPredecessor(temp); // set new node as a predecessor
 				updateFingerTable(modelObj,newNodeKey);
+				updateAntiFingerTable(modelObj,newNodeKey);
 				
-				passFingerTableAndDataToNewNode(modelObj,tempPred, newNodeKey);
-
-				//passDataToNewNode();
-				
-				//updateAntiFingerTable(modelObj,newNodeKey);
-				
+				passFingerTableAndDataToNewNode(modelObj,tempPred, newNodeKey); //this will pass both finger and anti finger
+							
 				MyNetwork obj = new MyNetwork();
 				obj.command = "updateSuccessor";
 				obj.successor= temp;
+				System.out.println("Key"+tempPred.getId()+"tempPred.getIp() "+tempPred.getIp()+"tempPred.getPortNo()"+tempPred.getPortNo());
 				returnFlag = Operation.sendRequest(tempPred.getIp(), tempPred.getPortNo(), obj);
 				
 			}
@@ -220,8 +219,6 @@ class ServerThread extends Thread{
 				antifinger.setPort(modelObj.successor.getPortNo());
 			}
 		}
-
-		
 		
 	}
 	
@@ -253,10 +250,24 @@ class ServerThread extends Thread{
 		}
 	}
 
-	//To-Do
-	/*public void updateAntiFingerTable(MyNetwork modelObj,int newNodeKey){
+	public void updateAntiFingerTable(MyNetwork modelObj,int newNodeKey){
+		int selfId =node.getId();
+		//Operation.printAntiFingerTable(antiFingerTable);
+		for (AntiFinger antifinger : antiFingerTable) {
+			int successorNodeId = antifinger.getSuccessor();
+			int temp_newNodeKey = (newNodeKey+1)%((int)Math.pow(2, M));
+			boolean rangeCheckFlag = Operation.checkSpanRange1(temp_newNodeKey, selfId, antifinger.getKey(), true, M);
 
-    }*/
+			if (successorNodeId ==selfId && (rangeCheckFlag==false)) {
+				antifinger.setSuccessorNode(newNodeKey);
+				antifinger.setip(modelObj.addObject.get(1));
+				antifinger.setPort(Integer.parseInt(modelObj.addObject.get(2)));
+			}
+		}
+		//Operation.printAntiFingerTable(antiFingerTable);
+
+
+    }
 
 	public void passFingerTableAndDataToNewNode(MyNetwork modelObj,Node previousPred, int newNodeKey){
 	
@@ -267,6 +278,7 @@ class ServerThread extends Thread{
 		MyNetwork obj = new MyNetwork();
 		obj.command = "add_PassFingerTableAndData";
 		obj.fingerTable = fingerTable;
+		obj.antiFingerTable = antiFingerTable;
 		obj.predecessor= previousPred;
 		obj.successor=node;
 		obj.dataList = passDataToNewNode(modelObj, newNodeKey);
@@ -307,6 +319,7 @@ class ServerThread extends Thread{
 		
 		//get successor's finger table 
 		List<Finger> succFingerTable = modelObj.fingerTable;
+		List<AntiFinger> succAntiFingerTable = modelObj.antiFingerTable;
 
 		//update pred
 		node.setPredecessor(modelObj.predecessor);
@@ -330,6 +343,27 @@ class ServerThread extends Thread{
 				finger.setPort(node.getSuccessor().getPortNo());
 			}else{	//calculate it from successor's finger table
 				for (Finger finger2 : succFingerTable) {
+					int temp_start = finger2.getKey();
+					int temp_end = finger2.getSpan();
+					boolean flag = Operation.checkSpanRange1(temp_start,temp_end,tempKey,false,M);
+					if (flag) {
+						finger.setSuccessorNode(finger2.getSuccessor());
+						finger.setip(finger2.getIp());
+						finger.setPort(finger2.getPort());
+						break;
+					}
+				}
+			}	
+		}
+		
+		for (AntiFinger finger : antiFingerTable) {
+			int tempKey =finger.getKey();
+			if (Operation.checkSpanRange1(updateRangeStart,updateRangeEnd,tempKey,true,M)) {	//if key falls between span
+				finger.setSuccessorNode(updateRangeEnd);
+				finger.setip(node.getSuccessor().getIp());
+				finger.setPort(node.getSuccessor().getPortNo());
+			}else{	//calculate it from successor's finger table
+				for (AntiFinger finger2 : succAntiFingerTable) {
 					int temp_start = finger2.getKey();
 					int temp_end = finger2.getSpan();
 					boolean flag = Operation.checkSpanRange1(temp_start,temp_end,tempKey,false,M);
@@ -398,13 +432,54 @@ class ServerThread extends Thread{
 
 	}
 
-	public void passDataToNewHost(MyNetwork modelObj){
+	public String fixAntiFinger_validateRange(MyNetwork modelObj){
+
+		Node responsibleNode = null;
+		int keyTobeValidate = modelObj.keyTobeValidate;
+		boolean validate = false;
+		if(node.getPredecessor().getId() == node.getId()){
+			validate = true;
+		}
+		else{
+			validate = Operation.checkSpanRange(node.getPredecessor().getId(),node.getId(),keyTobeValidate,true, M);
+
+		}
+
+		System.out.println("fixAntiFinger_validateRange "+modelObj.keyTobeValidate+ " validate "+validate);
+
+		//if Key range to be validated doesn't fall into local host range then check the finger table
+		if(!validate){
+			
+			System.out.println(" checkSpan "+Operation.checkSpanRange(node.getId(),node.getSuccessor().getId(),keyTobeValidate,true,M));
+
+			if(Operation.checkSpanRange(node.getId(),node.getSuccessor().getId(),keyTobeValidate,false,M)){
+					//keyTobeValidate > node.getId() && keyTobeValidate <= node.getSuccessor().getId())
+				responsibleNode = new Node(node.getSuccessor().getId(),node.getSuccessor().getIp(),node.getSuccessor().getPortNo());
+			}
+			else{
+			
+			for(AntiFinger finger : antiFingerTable){
+				boolean check = Operation.checkSpanRange(finger.getKey(),finger.getSpan(),keyTobeValidate,false,M);
+				if(check){
+					responsibleNode = new Node(finger.getSuccessor(),finger.getIp(),finger.getPort());
+					break;
+				}
+			}
+		 }
+		}
+		else if(validate){
+			responsibleNode = new Node(node.getId(),node.getIp(),node.getPortNo());
+		}
+
+		String response_string = responsibleNode.getId()+"/"+responsibleNode.getIp()+"/"+responsibleNode.getPortNo();
+		//System.out.println("fixFinger_validateRange responsible node found : " +responsibleNode.getId());
+		//System.out.println("response_string "+response_string);
+        System.out.println("sendRequest : "+response_string+" keyTobeValidate "+keyTobeValidate);
+
+		return response_string;
 
 	}
-
-	/*public void passAntiFingerTableToNewNode(int newNodeKey){
-
-    }*/
+	
 
 	public void outSuccess(MyNetwork modelObj) {
 		System.out.println("The data "+modelObj.dataString +" is successfully added on node "+ modelObj.respondedNodeId);

@@ -13,15 +13,19 @@ public class Fix_finger extends Thread{
   private String local_ip;
   private int local_port;
   private List<Finger> local_fingerTable;
+  private List<AntiFinger> local_antiFingerTable;
   private Node node;
-  private String path;
-  public Fix_finger(int local_host_key,String local_ip,int local_port,List<Finger> local_fingerTable,Node node,String path){
+  private String finger_path;
+  private String AntiFinger_path;
+  public Fix_finger(int local_host_key,String local_ip,int local_port,List<Finger> local_fingerTable,Node node,String finger_path,List<AntiFinger> local_antiFingerTable,String AntiFinger_path){
       this.local_host_key = local_host_key;
       this.local_ip = local_ip;
       this.local_port = local_port;
       this.local_fingerTable = local_fingerTable;
       this.node = node;
-      this.path = path;
+      this.finger_path = finger_path;
+      this.local_antiFingerTable = local_antiFingerTable;
+      this.AntiFinger_path = AntiFinger_path;
 
   }
 
@@ -75,7 +79,7 @@ public class Fix_finger extends Thread{
 
           }
 
-          Operation.writeInLogFiles(local_fingerTable, path);
+          Operation.writeInLogFilesFinger(local_fingerTable, finger_path);
 
       }
   }
@@ -83,14 +87,14 @@ public class Fix_finger extends Thread{
   public void fix_Antifinger_update(){
 
       if(node.getId() != node.getSuccessor().getId() && node.getId() != node.getPredecessor().getId()){
-          for(Finger finger : local_fingerTable)
+          for(AntiFinger antifinger : local_antiFingerTable)
           {
               try
               {
-                  int other_node_id = finger.getSuccessor();
-                  String other_node_ip = finger.getIp();
-                  int other_node_port = finger.getPort();
-                  int finger_key = finger.getKey(); //this key range we need to confirm
+                  int other_node_id = antifinger.getSuccessor();
+                  String other_node_ip = antifinger.getIp();
+                  int other_node_port = antifinger.getPort();
+                  int finger_key = antifinger.getKey(); //this key range we need to confirm
 
                   MyNetwork obj = new MyNetwork();
                   obj.command = "fixAntiFinger_validateRange";
@@ -99,9 +103,9 @@ public class Fix_finger extends Thread{
                   String response_message = sendRequest(other_node_ip,other_node_port, obj);
                   String[] parsedArray = response_message.split("/");
                   if(Integer.parseInt(parsedArray[0]) != other_node_id){
-                      finger.setSuccessorNode(Integer.parseInt(parsedArray[0]));
-                      finger.setip(parsedArray[1]);
-                      finger.setPort(Integer.parseInt(parsedArray[2]));
+                	  antifinger.setSuccessorNode(Integer.parseInt(parsedArray[0]));
+                	  antifinger.setip(parsedArray[1]);
+                	  antifinger.setPort(Integer.parseInt(parsedArray[2]));
                   }
 
 
@@ -112,7 +116,7 @@ public class Fix_finger extends Thread{
 
           }
 
-          Operation.writeInLogFiles(local_fingerTable, path);
+          Operation.writeInLogFilesAntiFinger(local_antiFingerTable, AntiFinger_path);
 
       }
   }

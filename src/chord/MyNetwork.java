@@ -10,6 +10,7 @@ public class MyNetwork implements Serializable{
 	public boolean response; 
 	public String response_message; 
 	public List<Finger> fingerTable;
+	public List<AntiFinger> antiFingerTable;
 	public Node responsibleNode; // used by fix_finger class
 	public int nodeToDeleteId;
 	public int keyTobeValidate; //key to be validate in case of fix finger
