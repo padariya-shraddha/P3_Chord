@@ -31,12 +31,19 @@ public class Fix_finger extends Thread{
 
   public void run(){
 	  System.out.println();
+	  boolean msgPrinted = false;
 
 	  while(true){
-		  boolean msgPrinted = false;
 		  if(node.getId() == node.getSuccessor().getId() && node.getId() == node.getPredecessor().getId()){
-			  
+			  if(!msgPrinted){
+			  Operation.writeInLogFilesFinger(local_fingerTable, finger_path);
+			  msgPrinted = true;
+			  }
 		  }
+		  else if(node.getId() != node.getSuccessor().getId() && node.getId() != node.getPredecessor().getId()){
+			  msgPrinted = false;
+		  }
+		  
 		  fix_finger_update();
 		  fix_Antifinger_update();
 		  try {

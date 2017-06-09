@@ -68,7 +68,7 @@ class ServerThread extends Thread{
 					updateAfterDelete(modelObj);
 					output_disable = true;
 				}else if(modelObj.command.equals("updateSuccessor")){
-					System.out.println("updateSuccessor : "+modelObj.successor.getId());
+					//System.out.println("updateSuccessor : "+modelObj.successor.getId());
 					if (modelObj.successor != null) {
 						node.setSuccessor(modelObj.successor);
 					}
@@ -399,16 +399,16 @@ class ServerThread extends Thread{
 		//if Key range to be validated doesn't fall into local host range then check the finger table
 		if(!validate){
 			
-			System.out.println(" checkSpan "+Operation.checkSpanRange(node.getId(),node.getSuccessor().getId(),keyTobeValidate,true,M));
+			//System.out.println(" checkSpan "+Operation.checkSpanRange(node.getId(),node.getSuccessor().getId(),keyTobeValidate,true,M));
 
-			if(Operation.checkSpanRange1(node.getId(),node.getSuccessor().getId(),keyTobeValidate,false,M)){
+			if(Operation.checkSpanRange1(node.getId(),node.getSuccessor().getId(),keyTobeValidate,true,M)){
 					//keyTobeValidate > node.getId() && keyTobeValidate <= node.getSuccessor().getId())
 				responsibleNode = new Node(node.getSuccessor().getId(),node.getSuccessor().getIp(),node.getSuccessor().getPortNo());
 			}
 			else{
 			
 			for(Finger finger : fingerTable){
-				boolean check = Operation.checkSpanRange1(finger.getKey(),finger.getSpan(),keyTobeValidate,false,M);
+				boolean check = Operation.checkSpanRange1(finger.getKey(),finger.getSpan(),keyTobeValidate,true,M);
 				if(check){
 					responsibleNode = new Node(finger.getSuccessor(),finger.getIp(),finger.getPort());
 					break;
@@ -447,16 +447,16 @@ class ServerThread extends Thread{
 		//if Key range to be validated doesn't fall into local host range then check the finger table
 		if(!validate){
 			
-			System.out.println(" checkSpan "+Operation.checkSpanRange1(node.getId(),node.getSuccessor().getId(),keyTobeValidate,true,M));
+			//System.out.println(" checkSpan "+Operation.checkSpanRange1(node.getId(),node.getSuccessor().getId(),keyTobeValidate,true,M));
 
-			if(Operation.checkSpanRange(node.getId(),node.getSuccessor().getId(),keyTobeValidate,false,M)){
+			if(Operation.checkSpanRange1(node.getId(),node.getSuccessor().getId(),keyTobeValidate,true,M)){
 					//keyTobeValidate > node.getId() && keyTobeValidate <= node.getSuccessor().getId())
 				responsibleNode = new Node(node.getSuccessor().getId(),node.getSuccessor().getIp(),node.getSuccessor().getPortNo());
 			}
 			else{
 			
 			for(AntiFinger finger : antiFingerTable){
-				boolean check = Operation.checkSpanRange1(finger.getKey(),finger.getSpan(),keyTobeValidate,false,M);
+				boolean check = Operation.checkSpanRange1(finger.getKey(),finger.getSpan(),keyTobeValidate,true,M);
 				if(check){
 					responsibleNode = new Node(finger.getSuccessor(),finger.getIp(),finger.getPort());
 					break;

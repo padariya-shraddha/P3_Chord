@@ -8,10 +8,7 @@ public class Node implements Serializable{
 	private int portNo;
 	private Node successor;
 	private Node predecessor;
-	String key;
-    Node nodeInfo;//for caching we are using to store node information
-    Node pre; //for caching we are using to store node information
-    Node next;//for caching we are using to store node information
+    
  
 	
 	public Node(int id, String ip, int portNo) {
@@ -23,10 +20,6 @@ public class Node implements Serializable{
 	}
 	    
 
-	public Node(String key, Node nodeInfo){
-	        this.key = key;
-	        this.nodeInfo = nodeInfo;
-	}
 	
 
 	public void setId(int id) {

@@ -4,17 +4,17 @@ import java.util.HashMap;
 
 public class LRUCache {
     int capacity;
-    HashMap<String, Node> map = new HashMap<String, Node>();
-    Node head=null;
-    Node end=null;
+    HashMap<String, NodeInfo> map = new HashMap<String, NodeInfo>();
+    NodeInfo head=null;
+    NodeInfo end=null;
  
     public LRUCache(int capacity) {
         this.capacity = capacity;
     }
  
-    public Node get(String key) {
+    public NodeInfo get(String key) {
         if(map.containsKey(key)){
-            Node n = map.get(key);
+        	NodeInfo n = map.get(key);
             remove(n);
             setHead(n);
             return n;
@@ -24,7 +24,7 @@ public class LRUCache {
         }
     }
  
-    public void remove(Node n){
+    public void remove(NodeInfo n){
         if(n.pre!=null){
             n.pre.next = n.next;
         }else{
@@ -39,7 +39,7 @@ public class LRUCache {
  
     }
  
-    public void setHead(Node n){
+    public void setHead(NodeInfo n){
         n.next = head;
         n.pre = null;
  
@@ -52,15 +52,15 @@ public class LRUCache {
             end = head;
     }
  
-    //call when no data available in cache and insert the new data
-    public void set(String key,Node nodeInfo) {
+    //call when no data available in cache and insert the new da
+    public void set(String key,NodeInfo nodeInfo) {
         if(map.containsKey(key)){
-            Node old = map.get(key);
-            old.nodeInfo = nodeInfo;
+        	NodeInfo old = map.get(key);
+            old = nodeInfo;
             remove(old);
             setHead(old);
         }else{
-            Node created = new Node(key, nodeInfo);
+        	NodeInfo created = new NodeInfo(key, nodeInfo.ip,nodeInfo.port,nodeInfo.nodeId);
             if(map.size()>=capacity){
                 map.remove(end.key);
                 remove(end);
