@@ -24,6 +24,7 @@ public class P3
 	static private int nodeId;
 	static public Node successorNode;
 	static public Node predecessorNode;
+	static public LRUCache cache;
 
 	private static void initialise (String ip, int portNo) {
 		successorNode = new Node(nodeId,ip,portNo);
@@ -94,9 +95,10 @@ public class P3
 		String AntiFinger_path = Operation.createLogFileAntiFinger(local_host_key);
 		
 		List<String> dataList = new ArrayList<>();
-		
-		MyServer server = new MyServer(serversocket, local_host_key, local_ip,local_port,fingerTable,node,finger,successorNode,predecessorNode,M,dataList,antiFingerTable);
-		MyClient client = new MyClient(fingerTable,node,M,dataList,antiFingerTable);
+		cache = new LRUCache(10);
+
+		MyServer server = new MyServer(serversocket, local_host_key, local_ip,local_port,fingerTable,node,finger,successorNode,predecessorNode,M,dataList,antiFingerTable,cache);
+		MyClient client = new MyClient(fingerTable,node,M,dataList,antiFingerTable, cache);
 		server.start();
 		client.start();   
 		

@@ -22,8 +22,9 @@ public class MyServer extends Thread{
 	int M;
 	List<String> dataList;
 	List<AntiFinger> antiFingerTable;
+	LRUCache cache;
 
-	public MyServer(ServerSocket serverSocket,int hostKey,String ipAddr,int portNumber,List<Finger> fingerTable,Node node,Finger finger,Node successorNode,Node predecessorNode,int M,List<String> dataList,List<AntiFinger> antiFingerTable){
+	public MyServer(ServerSocket serverSocket,int hostKey,String ipAddr,int portNumber,List<Finger> fingerTable,Node node,Finger finger,Node successorNode,Node predecessorNode,int M,List<String> dataList,List<AntiFinger> antiFingerTable, LRUCache cache){
 		//it will have finger table, successor, predecessor as arguments
 		this.serverSocket = serverSocket;
 		this.portNumber = portNumber;
@@ -38,6 +39,7 @@ public class MyServer extends Thread{
 		totalNodes =  (int) Math.pow(2, M);
 		this.dataList=dataList;
 		this.antiFingerTable=antiFingerTable;
+		this.cache = cache;
 	} 
 
 	public void run(){
@@ -47,7 +49,7 @@ public class MyServer extends Thread{
 		try{
 			while(true){
 				s= serverSocket.accept();
-				ServerThread st=new ServerThread(s,portNumber,hostKey,ipAddr,node,finger,successorNode,predecessorNode,fingerTable,M,dataList,antiFingerTable);
+				ServerThread st=new ServerThread(s,portNumber,hostKey,ipAddr,node,finger,successorNode,predecessorNode,fingerTable,M,dataList,antiFingerTable,cache);
 				st.start();
 			}
 		}

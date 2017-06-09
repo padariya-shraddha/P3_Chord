@@ -436,7 +436,7 @@ public class Operation {
 		}
 	}
 	
-	public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList){
+	public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList, LRUCache cache){
 
 		if (networkObj != null && (!networkObj.dataString.equals(""))) {
 			String line = networkObj.dataString.trim();
@@ -455,8 +455,14 @@ public class Operation {
 				//check if NodeId resides between self and successor
 				selfId= (selfId+1)%((int) Math.pow(2, M));
 				int successorID = node.getSuccessor().getId();
-				
-				if (checkSpanRange1(predecessorID, selfId, NodeId, true, M)) {
+				NodeInfo nodeInfo;
+				if ( (nodeInfo = cache.get(networkObj.dataString)) != null) {
+					
+					// contact node Indo
+					System.out.println(" The data string " +networkObj.dataString + "is found in cache and its present in node id" +nodeInfo.nodeId);
+					sendMessage(nodeInfo.ip, nodeInfo.port, networkObj);
+				}
+				else if (checkSpanRange1(predecessorID, selfId, NodeId, true, M)) {
 					//checking in self
 					if (dataList.contains(networkObj.dataString)) {
 						//System.out.println("Data key" + networkObj.dataString+ " is found in" + node.getId()); 

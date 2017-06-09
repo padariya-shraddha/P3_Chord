@@ -22,14 +22,16 @@ public class MyClient extends Thread{
 	public int M;
 	List<String> dataList;
 	List<AntiFinger> antiFingerTable;
+	LRUCache cache;
 
-	public MyClient(List<Finger> fingerTable,Node node,int M,List<String> dataList,List<AntiFinger> antiFingerTable){
+	public MyClient(List<Finger> fingerTable,Node node,int M,List<String> dataList,List<AntiFinger> antiFingerTable, LRUCache cache){
 		//it will have finger table, successor, predecessor as arguments
 		this.fingerTable = fingerTable;
 		this.node = node;
 		this.M = M;
 		this.dataList = dataList;
 		this.antiFingerTable=antiFingerTable;
+		this.cache = cache;
 	}
 
 	public void run(){
@@ -59,7 +61,7 @@ public class MyClient extends Thread{
 						Operation.outMethod(networkObj,M,node,fingerTable,antiFingerTable,dataList);
 					} 
 					else if(command.equals("in")) {
-						Operation.inMethod(networkObj, M, node, fingerTable,antiFingerTable, dataList);
+						Operation.inMethod(networkObj, M, node, fingerTable,antiFingerTable, dataList,cache);
 					}
 					else if(command.equals("printFinger")) {
 						Operation.printFingerTable(fingerTable);

@@ -22,8 +22,9 @@ class ServerThread extends Thread{
 	List<String> dataList;
 	boolean output_disable = false;
 	List<AntiFinger> antiFingerTable;
+	LRUCache cache;
 
-	public ServerThread(Socket s,int portNumber,int hostKey,String ipAddr,Node node,Finger finger,Node successorNode,Node predecessorNode,List<Finger> fingerTable,int M,List<String> dataList,List<AntiFinger> antiFingerTable){
+	public ServerThread(Socket s,int portNumber,int hostKey,String ipAddr,Node node,Finger finger,Node successorNode,Node predecessorNode,List<Finger> fingerTable,int M,List<String> dataList,List<AntiFinger> antiFingerTable, LRUCache cache){
 		this.s = s;
 		this.portNumber = portNumber;
 		this.hostKey = hostKey;
@@ -37,6 +38,7 @@ class ServerThread extends Thread{
 		totalNodes =  (int) Math.pow(2, M);
 		this.dataList=dataList;
 		this.antiFingerTable=antiFingerTable;
+		this.cache = cache;
 	}
 
 	public void run() {
@@ -78,7 +80,7 @@ class ServerThread extends Thread{
 					modelObj.response=true;
 					output_disable = true;
 				} else if(modelObj.command.equals("in")) {
-					Operation.inMethod(modelObj, M, node, fingerTable,antiFingerTable, dataList);
+					Operation.inMethod(modelObj, M, node, fingerTable,antiFingerTable, dataList,cache);
 					modelObj.response=true;
 					output_disable = true;
 				} else if(modelObj.command.equals("successfully added")) {
@@ -486,6 +488,8 @@ class ServerThread extends Thread{
 	
 	public void inSuccess(MyNetwork modelObj) {
 		System.out.println("The data "+modelObj.dataString +" is successfully found on node "+ modelObj.respondedNodeId);
+		
+		cache.set(modelObj.dataString, modelObj.respondedNodeIp, modelObj.respondedNodeport, modelObj.respondedNodeId );
 		System.out.println("Hop count :"+modelObj.hopCount);
 		System.out.println("chord>");
 	}
