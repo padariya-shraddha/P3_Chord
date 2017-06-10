@@ -55,10 +55,10 @@ public void remove(NodeInfo n,int delete) {
         map.remove(n.key);
     }
     public void print() {
-    	System.out.println("Printing cache");
+    	//System.out.println("Printing cache");
     	NodeInfo iterator = head;
     	while(iterator != null) {
-    		System.out.println(iterator.key + " " + iterator.nodeId);
+    		//System.out.println(iterator.key + " " + iterator.nodeId);
     		iterator = iterator.next;
 
     	}

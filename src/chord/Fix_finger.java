@@ -29,7 +29,7 @@ public class Fix_finger extends Thread{
 	}
 
 	public void run(){
-		System.out.println();
+		//System.out.println();
 		boolean msgPrinted = false;
 
 		while(true){
@@ -46,7 +46,7 @@ public class Fix_finger extends Thread{
 			fix_finger_update();
 			fix_Antifinger_update();
 			try {
-				Thread.sleep(10000);
+				Thread.sleep(5000);
 			} catch (InterruptedException e) {
 				//e.printStackTrace();
 				//System.out.println("fix_finger : connection error --1");	//commented by shraddha

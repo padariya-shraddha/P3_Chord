@@ -144,16 +144,15 @@ class ServerThread extends Thread{
 
 	private void checkDataList(MyNetwork modelObj, ObjectOutputStream out) throws IOException {
 		// TODO Auto-generated method stub
-		System.out.println("Checking for the key");
 		if(dataList.contains(modelObj.dataString)) {
 			modelObj.dataFound = true;
 			out.writeObject(modelObj);
-			System.out.println("The data string " + modelObj.dataString+ "is found in"+ node.getId());
+			System.out.println("The data string " + modelObj.dataString+ " is found on "+ node.getId());
 		}
 		
 		else {
 			modelObj.dataFound = false;
-			System.out.println("The data string " + modelObj.dataString+ "is not found");
+			System.out.println("The data string " + modelObj.dataString+ " is not found");
 			out.writeObject(modelObj);
 			
 
@@ -611,7 +610,7 @@ class ServerThread extends Thread{
 	public void outSuccess(MyNetwork modelObj) {
 		System.out.println("The data "+modelObj.dataString +" is successfully added on node "+ modelObj.respondedNodeId);
 		System.out.println("Hop count :"+modelObj.hopCount);
-		System.out.println("chord>");
+		System.out.print("chord>");
 	}
 	
 	public void inSuccess(MyNetwork modelObj) {
@@ -628,7 +627,7 @@ class ServerThread extends Thread{
 		System.out.println("Responded id :" +modelObj.respondedNodeId);
 		cache.print();
 		System.out.println("Hop count :"+modelObj.hopCount);
-		System.out.println("chord>");
+		System.out.print("chord>");
 	}
 
 }

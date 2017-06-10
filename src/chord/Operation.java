@@ -43,7 +43,7 @@ public class Operation {
 				networkObj.predecessor = pred;
 				networkObj.successor = succ;
 
-				System.out.println("deleteMethod : succ "+succ.getId()+" pred "+pred.getId());
+				//System.out.println("deleteMethod : succ "+succ.getId()+" pred "+pred.getId());
 				// notifying successor the deletion of the current node
 				if(node.getId() != node.getSuccessor().getId()) {
 					// for transferring of data when deleting to successor node
@@ -296,7 +296,7 @@ public class Operation {
 
 					//add to self
 					dataList.add(networkObj.dataString);
-					System.out.println("The data '"+ networkObj.dataString +"' is added in "+node.getId());
+					System.out.println("The data '"+ networkObj.dataString +"' is added on "+node.getId());
 					if(networkObj.requestedNodeId != node.getId()) {
 						networkObj.command ="successfully added";
 						networkObj.respondedNodeId= node.getId();
@@ -361,7 +361,7 @@ public class Operation {
 				if (checkSpanRange1(predecessorID, selfId, NodeId, true, M)) {
 					//add to self
 					dataList.add(networkObj.dataString);
-					System.out.println("The data "+ networkObj.dataString +"is added in "+node.getId());
+					System.out.println("The data "+ networkObj.dataString +" is added on "+node.getId());
 					if(networkObj.requestedNodeId != node.getId()) {
 						networkObj.command ="successfully added";
 						networkObj.respondedNodeId= node.getId();
@@ -469,7 +469,7 @@ public class Operation {
 
 						// contact node Indo
 						cache.print();
-						System.out.println(" The data string " +networkObj.dataString + "is found in cache and its present in node id" +nodeInfo.nodeId);
+						System.out.println(" The data string " +networkObj.dataString + " is found in cache and it's present on node id" +nodeInfo.nodeId);
 						try {
 							networkObj.command = "cache";
 							Socket s = new Socket(nodeInfo.ip, nodeInfo.port);
@@ -491,7 +491,7 @@ public class Operation {
 								cache.print();
 								networkObj.command = "in";
 								System.out.println("The data must have been transferrred during add or delete operation");
-								System.out.println("using normal method to find data");
+								System.out.println("using normal chord lookup to find data");
 							}
 
 						} catch (IOException e) {
@@ -500,8 +500,8 @@ public class Operation {
 							// resetting command
 							cache.print();
 							networkObj.command = "in";
-							System.out.println("Node deleted. Using normal method to find data");
-							System.out.println("using normal method to find data");
+							System.out.println("Node deleted. Using normal chord lookup to find data");
+							System.out.println("using normal chord lookup to find data");
 						} 				
 					}
 				}
