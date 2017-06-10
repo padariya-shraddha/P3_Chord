@@ -577,7 +577,7 @@ class ServerThread extends Thread{
 	}
 	
 	public void FoundSearchKeyForFixFinger(MyNetwork modelObj){
-		System.out.println("Inside FoundSearchKeyForFixFinger");
+		//System.out.println("Inside FoundSearchKeyForFixFinger");
 		
 		for(Finger finger : fingerTable)
 		{
@@ -593,7 +593,7 @@ class ServerThread extends Thread{
 	}
 	
 	public void FoundSearchKeyForFixAntiFinger(MyNetwork modelObj){
-		System.out.println("Inside FoundSearchKeyForFixAntiFinger");
+		//System.out.println("Inside FoundSearchKeyForFixAntiFinger");
 		
 		for(AntiFinger finger : antiFingerTable)
 		{
