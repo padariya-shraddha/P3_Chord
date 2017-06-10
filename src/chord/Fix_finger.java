@@ -49,7 +49,8 @@ public class Fix_finger extends Thread{
 			try {
 				Thread.sleep(10000);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
+				System.out.println("fix_finger : connection error --1");
 			}
 		}
 
