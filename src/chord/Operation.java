@@ -20,6 +20,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+
 public class Operation {
 
 	private static Logger logger = Logger.getLogger(Operation.class.getSimpleName());  
@@ -43,7 +44,6 @@ public class Operation {
 				networkObj.predecessor = pred;
 				networkObj.successor = succ;
 
-				//System.out.println("deleteMethod : succ "+succ.getId()+" pred "+pred.getId());
 				// notifying successor the deletion of the current node
 				if(node.getId() != node.getSuccessor().getId()) {
 					// for transferring of data when deleting to successor node
@@ -142,7 +142,6 @@ public class Operation {
 
 		}
 		else{
-
 			if(searchKey >= keyStart && searchKey < keyEnd) {
 				result = true;
 			}
@@ -153,9 +152,7 @@ public class Operation {
 					}
 				}
 				else{
-
 					result = false;
-
 				}
 			}
 		}
@@ -174,9 +171,7 @@ public class Operation {
 		if (start==end) {
 			return true;
 		}
-
 		int finalEndNode = ((int) Math.pow(2, M))-1;
-
 		if (start>end) {
 			boolean b1 = checkSpanRange1(start,finalEndNode,searchKey,flag,M);
 			boolean b2 = checkSpanRange1(0,end,searchKey,flag,M);
@@ -203,34 +198,15 @@ public class Operation {
 		ObjectOutputStream out=null;
 		ObjectInputStream in=null;
 		try {
-			//System.out.println("sendRequest.command"+modelObj.command);
-			//System.out.println("connecting ...+"+ip+" port "+port);
 			s1 = new Socket(ip, port);
 			out = new ObjectOutputStream(s1.getOutputStream());
 			in = new ObjectInputStream(s1.getInputStream());
 			out.writeObject(modelObj);
 			MyNetwork response = (MyNetwork) in.readObject();
 			returnFlag = response.response;
-			//System.out.println("response:"+returnFlag);
-
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 			returnFlag= false;
-		}finally{
-			/*try {
-
-				if (in!=null) {
-					in.close();
-				}
-				if (out!=null) {
-					out.close();
-				}
-				if (s1!=null) {
-					s1.close();
-
-			} catch (IOException e) {
-				e.printStackTrace();
-			}}*/
 		}
 		return returnFlag;
 	}
@@ -242,7 +218,6 @@ public class Operation {
 		} catch (NumberFormatException e) {
 			return false;
 		}
-
 	}
 
 	public static int getmd5Modulo(String lineNoSpace,int M){
@@ -277,8 +252,6 @@ public class Operation {
 
 			if (NodeId>=0) {
 
-				//************ we can also use anti- finger table
-
 				String ip ;
 				int port;
 
@@ -290,7 +263,6 @@ public class Operation {
 				//check if NodeId resides between self and successor *****
 				selfId= (selfId+1)%((int) Math.pow(2, M));
 				int successorID = node.getSuccessor().getId();
-
 
 				if (checkSpanRange1(predecessorID, selfId, NodeId, true, M)) {
 

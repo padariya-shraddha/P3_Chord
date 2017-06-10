@@ -610,7 +610,7 @@ class ServerThread extends Thread{
 	public void outSuccess(MyNetwork modelObj) {
 
 		System.out.println("The data "+modelObj.dataString +" is successfully added on node "+ modelObj.respondedNodeId+" , Hop count :"+modelObj.hopCount);
-		System.out.print("chord>");
+		System.out.print("chord > ");
 	}
 	
 	public void inSuccess(MyNetwork modelObj) {
@@ -619,15 +619,11 @@ class ServerThread extends Thread{
 			
 		} else {
 			System.out.println("The data "+modelObj.dataString +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
-			//System.out.println("Hop count :"+modelObj.hopCount);
 		}
-		System.out.println("Checking");
 		cache.set(modelObj.dataString, modelObj.respondedNodeIp, modelObj.respondedNodeport, modelObj.respondedNodeId );
-		System.out.print("chord > ");
 		System.out.println("Responded id :" +modelObj.respondedNodeId);
 		cache.print();
-		System.out.println("Hop count :"+modelObj.hopCount);
-		System.out.print("chord>");
+		System.out.print("chord > ");
 	}
 
 }
