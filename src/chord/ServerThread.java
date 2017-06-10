@@ -148,12 +148,12 @@ class ServerThread extends Thread{
 		if(dataList.contains(modelObj.dataString)) {
 			modelObj.dataFound = true;
 			out.writeObject(modelObj);
-			System.out.println("The data string" + modelObj.dataString+ "is found");
+			System.out.println("The data string " + modelObj.dataString+ "is found in"+ node.getId());
 		}
 		
 		else {
 			modelObj.dataFound = false;
-			System.out.println("The data string" + modelObj.dataString+ "is not found");
+			System.out.println("The data string " + modelObj.dataString+ "is not found");
 			out.writeObject(modelObj);
 			
 
@@ -622,8 +622,13 @@ class ServerThread extends Thread{
 			System.out.println("The data "+modelObj.dataString +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount);
 			//System.out.println("Hop count :"+modelObj.hopCount);
 		}
+		System.out.println("Checking");
 		cache.set(modelObj.dataString, modelObj.respondedNodeIp, modelObj.respondedNodeport, modelObj.respondedNodeId );
 		System.out.print("chord > ");
+		System.out.println("Responded id :" +modelObj.respondedNodeId);
+		cache.print();
+		System.out.println("Hop count :"+modelObj.hopCount);
+		System.out.println("chord>");
 	}
 
 }

@@ -435,8 +435,8 @@ public class Operation {
 		}
 	}
 
-	public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList, LRUCache cache,boolean analysisFlag){
-		
+	public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList, LRUCache cache,boolean analysisFlag) throws ClassNotFoundException{
+
 		if ((networkObj != null && (!networkObj.dataString.equals(""))) ||analysisFlag) {
 			boolean catch1 = true;
 			String line;
@@ -448,7 +448,7 @@ public class Operation {
 				line = networkObj.dataString.trim();
 				NodeId = Operation.getmd5Modulo(line,M);
 			}
-			
+
 			int totalNodes = (int) Math.pow(2, M);
 			int selfId = node.getId();
 			if (NodeId>=0) {
@@ -464,42 +464,48 @@ public class Operation {
 				int temp = (selfId+1)%((int) Math.pow(2, M));
 				int successorID = node.getSuccessor().getId();
 				NodeInfo nodeInfo;
-				if ( (nodeInfo = cache.get(networkObj.dataString)) != null && analysisFlag == false) {
+				if (networkObj.requestedNodeId == node.getId()) {
+					if ( (nodeInfo = cache.get(networkObj.dataString)) != null && analysisFlag == false) {
 
-					// contact node Indo
-					System.out.println(" The data string " +networkObj.dataString + "is found in cache and its present in node id" +nodeInfo.nodeId);
-					try {
-						networkObj.command = "cache";
-						Socket s = new Socket(nodeInfo.ip, nodeInfo.port);
-						ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
-						out.writeObject(networkObj);
-						
-						ObjectInputStream in = new ObjectInputStream(s.getInputStream());
-						MyNetwork response = (MyNetwork) in.readObject();
-						System.out.println("got the response");
-						out.close();
-						s.close();
-						
-						if(response.dataFound) {
-							return;
-						}
-						else {
-							cache.remove(nodeInfo);
+						// contact node Indo
+						cache.print();
+						System.out.println(" The data string " +networkObj.dataString + "is found in cache and its present in node id" +nodeInfo.nodeId);
+						try {
+							networkObj.command = "cache";
+							Socket s = new Socket(nodeInfo.ip, nodeInfo.port);
+							ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
+							out.writeObject(networkObj);
+
+							ObjectInputStream in = new ObjectInputStream(s.getInputStream());
+							MyNetwork response = (MyNetwork) in.readObject();
+							out.close();
+							s.close();
+
+							if(response.dataFound) {
+								System.out.println("The data" +networkObj.dataString+" is found");
+								return;
+							}
+							else {
+								cache.print();
+								cache.remove(nodeInfo,0);
+								cache.print();
+								networkObj.command = "in";
+								System.out.println("The data must have been transferrred during add or delete operation");
+								System.out.println("using normal method to find data");
+							}
+
+						} catch (IOException e) {
+							cache.print();
+							cache.remove(nodeInfo,0);
+							// resetting command
+							cache.print();
 							networkObj.command = "in";
-							System.out.println("Key not found using normal method to find data");
-						}
-						
-					} catch (IOException e) {
-						cache.remove(nodeInfo);
-						// resetting command
-						networkObj.command = "in";
-						System.out.println("Node deleted. Using normal method to find data");
-					} catch (ClassNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+							System.out.println("Node deleted. Using normal method to find data");
+							System.out.println("using normal method to find data");
+						} 				
 					}
 				}
-				else if (checkSpanRange1(predecessorID, selfId, NodeId, true, M)) {
+				if (checkSpanRange1(predecessorID, selfId, NodeId, true, M)) {
 					//checking in self
 					if (dataList.contains(networkObj.dataString) || analysisFlag) {
 						//System.out.println("Data key" + networkObj.dataString+ " is found in" + node.getId()); 
@@ -705,53 +711,53 @@ public class Operation {
 	}
 
 	public static String createLogFileFinger(int hostName) {
-        try {
-            File f = new File("/tmp/chord/" + hostName);
-            String flag = null;
-            String flag1 = null;
-            if (f.mkdirs()) {
-                flag = "Success";
-            } else {
-                flag = "notsuccess";
-            }
+		try {
+			File f = new File("/tmp/chord/" + hostName);
+			String flag = null;
+			String flag1 = null;
+			if (f.mkdirs()) {
+				flag = "Success";
+			} else {
+				flag = "notsuccess";
+			}
 
-            if (flag == "Success") {
-                File file = new File(f.getAbsolutePath() + "/Finger_host_"+hostName+".txt");
-                if (file.createNewFile()) {
-                    flag1 = "Success";
-                } else {
-                    flag1 = "notsuccess";
-                }
-                return file.getAbsolutePath();
-            }
-        } catch (Exception e) {
-            System.out.println("createDirectory : failed");
-        }
-        return "NotSuccess";
-    }
-	
+			if (flag == "Success") {
+				File file = new File(f.getAbsolutePath() + "/Finger_host_"+hostName+".txt");
+				if (file.createNewFile()) {
+					flag1 = "Success";
+				} else {
+					flag1 = "notsuccess";
+				}
+				return file.getAbsolutePath();
+			}
+		} catch (Exception e) {
+			System.out.println("createDirectory : failed");
+		}
+		return "NotSuccess";
+	}
+
 	public static String createLogFileAntiFinger(int hostName) {
-        try {
-            File f = new File("/tmp/chord/" + hostName);
-            String flag = null;
-            String flag1 = null;
-            if (f.mkdirs()) {
-                flag = "Success";
-            }
+		try {
+			File f = new File("/tmp/chord/" + hostName);
+			String flag = null;
+			String flag1 = null;
+			if (f.mkdirs()) {
+				flag = "Success";
+			}
 
-                File file = new File(f.getAbsolutePath() + "/AntiFinger_host_"+hostName+".txt");
-                if (file.createNewFile()) {
-                    flag1 = "Success";
-                } else {
-                    flag1 = "notsuccess";
-                }
-                return file.getAbsolutePath();
-           
-        } catch (Exception e) {
-            System.out.println("createDirectory : failed");
-        }
-        return "NotSuccess";
-    }
+			File file = new File(f.getAbsolutePath() + "/AntiFinger_host_"+hostName+".txt");
+			if (file.createNewFile()) {
+				flag1 = "Success";
+			} else {
+				flag1 = "notsuccess";
+			}
+			return file.getAbsolutePath();
+
+		} catch (Exception e) {
+			System.out.println("createDirectory : failed");
+		}
+		return "NotSuccess";
+	}
 
 	public static void writeInLogFilesFinger(List<Finger> fingerTable, String filePath) {
 		try {
@@ -802,15 +808,15 @@ public class Operation {
 			System.out.println("log file : failed");
 		}
 	}
-	
-	public static void printAnalysis(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList,LRUCache cache){
+
+	public static void printAnalysis(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList,LRUCache cache) throws ClassNotFoundException{
 		int totalNodes= (int) Math.pow(2, M);
 		//System.out.println("node.getId() :"+node.getId()+" , node.getIp() :"+node.getIp()+""+node.getId()+" ,node.getPortNo() :"+node.getPortNo());
 		for (int i = 0; i < totalNodes; i++) {
 			//System.out.println("send request for node :"+i);
-			
+
 			MyNetwork temp = new MyNetwork();
-			
+
 			temp.requestedNodeId= node.getId();
 			temp.requestedNodeIp= node.getIp();
 			temp.requestedNodeport = node.getPortNo();
