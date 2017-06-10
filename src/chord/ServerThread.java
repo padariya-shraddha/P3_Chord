@@ -142,8 +142,6 @@ class ServerThread extends Thread{
 		}
 	}
 
-
-
 	private void checkDataList(MyNetwork modelObj, ObjectOutputStream out) throws IOException {
 		// TODO Auto-generated method stub
 		System.out.println("Checking for the key");
@@ -225,7 +223,6 @@ class ServerThread extends Thread{
 		
 		return returnFlag;
 	}
-
 
 	private void updateAfterDelete(MyNetwork modelObj) {
 
@@ -532,7 +529,6 @@ class ServerThread extends Thread{
 
 	}
 	
-	
 	public void searchKeyForFixAntiFinger(MyNetwork modelObj){
 		//System.out.println("Inside searchKeyForFixAntiFinger");
 		Node responsibleNode = null;
@@ -629,7 +625,6 @@ class ServerThread extends Thread{
 		cache.set(modelObj.dataString, modelObj.respondedNodeIp, modelObj.respondedNodeport, modelObj.respondedNodeId );
 		System.out.print("chord > ");
 	}
-
 
 }
 
