@@ -49,7 +49,7 @@ public class Fix_finger extends Thread{
 				Thread.sleep(10000);
 			} catch (InterruptedException e) {
 				//e.printStackTrace();
-				System.out.println("fix_finger : connection error --1");
+				//System.out.println("fix_finger : connection error --1");	//commented by shraddha
 			}
 		}
 	}
@@ -92,7 +92,7 @@ public class Fix_finger extends Thread{
 						continue;
 					}
 				} catch (Exception e) {
-					System.out.println("fix_finger_update : error");
+					//System.out.println("fix_finger_update : error");	//commented by shraddha
 					continue;
 				}
 			}
@@ -160,7 +160,7 @@ public class Fix_finger extends Thread{
 			response = (MyNetwork) in.readObject();
 			response_message = response.response_message;
 		} catch (IOException | ClassNotFoundException e) {
-			System.out.println("fix_finger : connection error");
+			//System.out.println("fix_finger : connection error");
 			returnFlag= false;
 			response_message = null;
 			return response_message;
