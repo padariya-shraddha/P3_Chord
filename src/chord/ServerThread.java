@@ -99,14 +99,15 @@ class ServerThread extends Thread{
 					modelObj.response=true;
 					output_disable = true;
 				} else if(modelObj.command.equals("in")) {
-					Operation.inMethod(modelObj, M, node, fingerTable,antiFingerTable, dataList,cache,false);
+					
+					Operation.inMethod(modelObj, M, node, fingerTable,antiFingerTable, dataList,cache,modelObj.analysisFlag);
 					modelObj.response=true;
 					output_disable = true;
 				} else if(modelObj.command.equals("successfully added")) {
 					outSuccess(modelObj);
 					output_disable = true;
 				} else if (modelObj.command.equals("successfully found")) {
-					System.out.println("successfully found"+modelObj.analysisNodeId);
+					//System.out.println("successfully found"+modelObj.analysisNodeId);
 					inSuccess(modelObj);
 					output_disable = true;
 				}

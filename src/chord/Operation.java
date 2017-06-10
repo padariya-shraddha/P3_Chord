@@ -437,7 +437,7 @@ public class Operation {
 	}
 
 	public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList, LRUCache cache,boolean analysisFlag){
-
+		
 		if ((networkObj != null && (!networkObj.dataString.equals(""))) ||analysisFlag) {
 			boolean catch1 = true;
 			String line;
@@ -516,7 +516,7 @@ public class Operation {
 				}
 				else if (checkSpanRange1(temp,successorID,NodeId,true,M)) {
 					//send request to successor
-					System.out.println("in successor for node "+networkObj.analysisNodeId);
+					//System.out.println("in successor for node "+networkObj.analysisNodeId);
 					ip = node.getSuccessor().getIp();
 					port = node.getSuccessor().getPortNo();
 					networkObj.hopCount =networkObj.hopCount+1;
