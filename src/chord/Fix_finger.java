@@ -138,7 +138,7 @@ public class Fix_finger extends Thread{
 						continue;
 					}
 				} catch (Exception e) {
-					System.out.println("fix_Antifinger_update : error");
+					//System.out.println("fix_Antifinger_update : error");
 					continue;
 				}
 			}
