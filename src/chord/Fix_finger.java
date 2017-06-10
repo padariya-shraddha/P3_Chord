@@ -26,7 +26,6 @@ public class Fix_finger extends Thread{
 		this.finger_path = finger_path;
 		this.local_antiFingerTable = local_antiFingerTable;
 		this.AntiFinger_path = AntiFinger_path;
-
 	}
 
 	public void run(){
@@ -53,13 +52,10 @@ public class Fix_finger extends Thread{
 				System.out.println("fix_finger : connection error --1");
 			}
 		}
-
-
-
 	}
 
 	public void fix_finger_update(){
-
+		
 		if(node.getId() != node.getSuccessor().getId() && node.getId() != node.getPredecessor().getId()){
 			for(Finger finger : local_fingerTable)
 			{
@@ -86,7 +82,6 @@ public class Fix_finger extends Thread{
 						}
 					}
 					else{
-
 						MyNetwork newObj = new MyNetwork();
 						newObj.command = "searchKeyForFixFinger";
 						newObj.keyTobeValidate = finger_key;
@@ -95,18 +90,13 @@ public class Fix_finger extends Thread{
 						int succPort = node.getSuccessor().getPortNo();
 						Operation.sendMessage(succIp,succPort,newObj);
 						continue;
-
 					}
-
 				} catch (Exception e) {
 					System.out.println("fix_finger_update : error");
 					continue;
 				}
-
 			}
-
 			Operation.writeInLogFilesFinger(local_fingerTable, finger_path);
-
 		}
 	}
 
@@ -138,7 +128,6 @@ public class Fix_finger extends Thread{
 						}
 					}
 					else{
-
 						MyNetwork newObj = new MyNetwork();
 						newObj.command = "searchKeyForFixAntiFinger";
 						newObj.keyTobeValidate = finger_key;
@@ -147,21 +136,13 @@ public class Fix_finger extends Thread{
 						int succPort = node.getSuccessor().getPortNo();
 						Operation.sendMessage(succIp,succPort,newObj);
 						continue;
-
 					}
-
-
-
 				} catch (Exception e) {
-					//e.printStackTrace();
 					System.out.println("fix_Antifinger_update : error");
 					continue;
 				}
-
 			}
-
 			Operation.writeInLogFilesAntiFinger(local_antiFingerTable, AntiFinger_path);
-
 		}
 	}
 	public String sendRequest(String ip, int port,MyNetwork modelObj){
@@ -169,7 +150,6 @@ public class Fix_finger extends Thread{
 		boolean returnFlag;
 		ObjectOutputStream out=null;
 		ObjectInputStream in=null;
-		//Node response = null;
 		String response_message = null;
 		try {
 			s1 = new Socket(ip, port);
@@ -177,20 +157,13 @@ public class Fix_finger extends Thread{
 			in = new ObjectInputStream(s1.getInputStream());
 			out.writeObject(modelObj);
 			MyNetwork response = new MyNetwork();
-			//response = (Node) in.readObject();
 			response = (MyNetwork) in.readObject();
 			response_message = response.response_message;
-			//returnFlag = response.response;
-
-
-
 		} catch (IOException | ClassNotFoundException e) {
-			//e.printStackTrace();
 			System.out.println("fix_finger : connection error");
 			returnFlag= false;
 			response_message = null;
 			return response_message;
-
 		}finally{
 			try {
 				if (in!=null) {
@@ -206,11 +179,7 @@ public class Fix_finger extends Thread{
 				e.printStackTrace();
 			}
 		}
-
-		//return response;
-
 		return response_message;
-
 	}
 }
 

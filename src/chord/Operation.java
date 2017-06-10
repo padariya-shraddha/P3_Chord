@@ -381,7 +381,7 @@ public class Operation {
 					//return;
 				}else{
 
-					for (Finger finger : fingerTable) {
+					/*for (Finger finger : fingerTable) {
 						int start = finger.getKey();
 						int end = finger.getSpan();
 
@@ -393,10 +393,10 @@ public class Operation {
 							sendMessage(ip, port, networkObj);
 							return;	//break
 						}
-					}
+					}*/
 
 					//find exact opposite node
-					/*int oppoNode= (selfId + (totalNodes/2))%totalNodes;
+					int oppoNode= (selfId + (totalNodes/2))%totalNodes;
 					boolean clockwise = checkSpanRange1(selfId, oppoNode, NodeId, true, M);
 
 					if (clockwise) {
@@ -429,15 +429,14 @@ public class Operation {
 								return;	//break
 							}
 						}
-					}*/
-
+					}
 				}
 			}
 		}
 	}
 
 	public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList, LRUCache cache,boolean analysisFlag){
-
+		
 		if ((networkObj != null && (!networkObj.dataString.equals(""))) ||analysisFlag) {
 			boolean catch1 = true;
 			String line;
@@ -516,7 +515,7 @@ public class Operation {
 				}
 				else if (checkSpanRange1(temp,successorID,NodeId,true,M)) {
 					//send request to successor
-					System.out.println("in successor for node "+networkObj.analysisNodeId);
+					//System.out.println("in successor for node "+networkObj.analysisNodeId);
 					ip = node.getSuccessor().getIp();
 					port = node.getSuccessor().getPortNo();
 					networkObj.hopCount =networkObj.hopCount+1;
@@ -525,7 +524,7 @@ public class Operation {
 				}
 				else{
 
-					for (Finger finger : fingerTable) {
+					/*for (Finger finger : fingerTable) {
 						int start = finger.getKey();
 						int end = finger.getSpan();
 
@@ -537,10 +536,10 @@ public class Operation {
 							sendMessage(ip, port, networkObj);
 							return;	//break
 						}
-					}
+					}*/
 
 					//find exact opposite node
-					/*int oppoNode= (selfId + (totalNodes/2))%totalNodes;
+					int oppoNode= (selfId + (totalNodes/2))%totalNodes;
 					boolean clockwise = checkSpanRange1(selfId, oppoNode, NodeId, true, M);
 
 					if (clockwise) {
@@ -573,12 +572,11 @@ public class Operation {
 								return;	//break
 							}
 						}
-					}*/
+					}
 				}
 			}
 		}
 	}
-
 
 	public static void inMethod_proto(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<String> dataList){
 
@@ -732,7 +730,6 @@ public class Operation {
         return "NotSuccess";
     }
 	
-	
 	public static String createLogFileAntiFinger(int hostName) {
         try {
             File f = new File("/tmp/chord/" + hostName);
@@ -805,6 +802,7 @@ public class Operation {
 			System.out.println("log file : failed");
 		}
 	}
+	
 	public static void printAnalysis(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList,LRUCache cache){
 		int totalNodes= (int) Math.pow(2, M);
 		//System.out.println("node.getId() :"+node.getId()+" , node.getIp() :"+node.getIp()+""+node.getId()+" ,node.getPortNo() :"+node.getPortNo());
@@ -823,4 +821,5 @@ public class Operation {
 			inMethod(temp, M, node, fingerTable, antiFingerTable, dataList, cache,true);
 		}
 	}
+
 }

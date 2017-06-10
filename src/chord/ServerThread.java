@@ -99,14 +99,15 @@ class ServerThread extends Thread{
 					modelObj.response=true;
 					output_disable = true;
 				} else if(modelObj.command.equals("in")) {
-					Operation.inMethod(modelObj, M, node, fingerTable,antiFingerTable, dataList,cache,false);
+					
+					Operation.inMethod(modelObj, M, node, fingerTable,antiFingerTable, dataList,cache,modelObj.analysisFlag);
 					modelObj.response=true;
 					output_disable = true;
 				} else if(modelObj.command.equals("successfully added")) {
 					outSuccess(modelObj);
 					output_disable = true;
 				} else if (modelObj.command.equals("successfully found")) {
-					System.out.println("successfully found"+modelObj.analysisNodeId);
+					//System.out.println("successfully found"+modelObj.analysisNodeId);
 					inSuccess(modelObj);
 					output_disable = true;
 				}
@@ -140,8 +141,6 @@ class ServerThread extends Thread{
 			}
 		}
 	}
-
-
 
 	private void checkDataList(MyNetwork modelObj, ObjectOutputStream out) throws IOException {
 		// TODO Auto-generated method stub
@@ -224,7 +223,6 @@ class ServerThread extends Thread{
 		
 		return returnFlag;
 	}
-
 
 	private void updateAfterDelete(MyNetwork modelObj) {
 
@@ -531,7 +529,6 @@ class ServerThread extends Thread{
 
 	}
 	
-	
 	public void searchKeyForFixAntiFinger(MyNetwork modelObj){
 		//System.out.println("Inside searchKeyForFixAntiFinger");
 		Node responsibleNode = null;
@@ -628,7 +625,6 @@ class ServerThread extends Thread{
 		cache.set(modelObj.dataString, modelObj.respondedNodeIp, modelObj.respondedNodeport, modelObj.respondedNodeId );
 		System.out.print("chord > ");
 	}
-
 
 }
 
