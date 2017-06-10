@@ -533,7 +533,7 @@ class ServerThread extends Thread{
 	
 	
 	public void searchKeyForFixAntiFinger(MyNetwork modelObj){
-		System.out.println("Inside searchKeyForFixAntiFinger");
+		//System.out.println("Inside searchKeyForFixAntiFinger");
 		Node responsibleNode = null;
 		if(Operation.checkSpanRange1(node.getId(),node.getSuccessor().getId(),modelObj.keyTobeValidate,true,M)){
 			responsibleNode = new Node(node.getSuccessor().getId(),node.getSuccessor().getIp(),node.getSuccessor().getPortNo());
@@ -556,7 +556,7 @@ class ServerThread extends Thread{
 	}
 	
 	public void searchKeyForFixFinger(MyNetwork modelObj){
-		System.out.println("Inside searchKeyForFixFinger");
+		//System.out.println("Inside searchKeyForFixFinger");
 		
 		Node responsibleNode = null;
 		if(Operation.checkSpanRange1(node.getId(),node.getSuccessor().getId(),modelObj.keyTobeValidate,true,M)){
