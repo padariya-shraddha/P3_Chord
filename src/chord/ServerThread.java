@@ -543,14 +543,14 @@ class ServerThread extends Thread{
 			newObj.responsibleNode = responsibleNode;
 			String modelObjIp = modelObj.sendResponseToNode.getIp();
 			int modelObjPort = modelObj.sendResponseToNode.getPortNo();
-			Operation.sendRequest(modelObjIp,modelObjPort,newObj);
+			Operation.sendMessage(modelObjIp,modelObjPort,newObj);
 		}
 		else{
 			
 			MyNetwork newObj = new MyNetwork();
 			String succIp = node.getSuccessor().getIp();
 			int succPort = node.getSuccessor().getPortNo();
-			Operation.sendRequest(succIp,succPort,modelObj);
+			Operation.sendMessage(succIp,succPort,modelObj);
 		}
 		
 	}
@@ -567,14 +567,14 @@ class ServerThread extends Thread{
 			newObj.responsibleNode = responsibleNode;
 			String modelObjIp = modelObj.sendResponseToNode.getIp();
 			int modelObjPort = modelObj.sendResponseToNode.getPortNo();
-			Operation.sendRequest(modelObjIp,modelObjPort,newObj);
+			Operation.sendMessage(modelObjIp,modelObjPort,newObj);
 		}
 		else{
 			
 			MyNetwork newObj = new MyNetwork();
 			String succIp = node.getSuccessor().getIp();
 			int succPort = node.getSuccessor().getPortNo();
-			Operation.sendRequest(succIp,succPort,modelObj);
+			Operation.sendMessage(succIp,succPort,modelObj);
 		}
 		
 	}
@@ -588,6 +588,7 @@ class ServerThread extends Thread{
 				finger.setSuccessorNode(modelObj.responsibleNode.getId());
 				finger.setip(modelObj.responsibleNode.getIp());
 				finger.setPort(modelObj.responsibleNode.getPortNo());
+				break;
 			}
 			
 		}
@@ -603,6 +604,7 @@ class ServerThread extends Thread{
 				finger.setSuccessorNode(modelObj.responsibleNode.getId());
 				finger.setip(modelObj.responsibleNode.getIp());
 				finger.setPort(modelObj.responsibleNode.getPortNo());
+				break;
 			}
 			
 		}

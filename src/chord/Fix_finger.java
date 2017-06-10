@@ -92,7 +92,8 @@ public class Fix_finger extends Thread{
 						newObj.sendResponseToNode = new Node(node.getId(),node.getIp(),node.getPortNo());
 						String succIp = node.getSuccessor().getIp();
 						int succPort = node.getSuccessor().getPortNo();
-						Operation.sendRequest(succIp,succPort,newObj);
+						Operation.sendMessage(succIp,succPort,newObj);
+						continue;
 
 					}
 
@@ -143,7 +144,8 @@ public class Fix_finger extends Thread{
 						newObj.sendResponseToNode = new Node(node.getId(),node.getIp(),node.getPortNo());
 						String succIp = node.getSuccessor().getIp();
 						int succPort = node.getSuccessor().getPortNo();
-						Operation.sendRequest(succIp,succPort,newObj);
+						Operation.sendMessage(succIp,succPort,newObj);
+						continue;
 
 					}
 
