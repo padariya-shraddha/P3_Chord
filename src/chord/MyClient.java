@@ -144,6 +144,7 @@ public class MyClient extends Thread{
 			String[] parts = line.split(" ");
 			if (parts.length == 2) {
 				obj = new MyNetwork();
+				obj.traversalList = new ArrayList<>();
 				obj.command = "in";
 				obj.dataString = parts[1];
 				obj.requestedNodeId = node.getId();

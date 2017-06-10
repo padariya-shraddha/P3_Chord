@@ -13,6 +13,7 @@ import java.util.Scanner;
 public class P3
 {	
 	public static final int M = 6;
+	public static final int CACHESIZE = 5;
 	private static ServerSocket serversocket;
 	private static int local_host_key;
 	static String local_ip;
@@ -95,7 +96,7 @@ public class P3
 		String AntiFinger_path = Operation.createLogFileAntiFinger(local_host_key);
 		
 		List<String> dataList = new ArrayList<>();
-		cache = new LRUCache(10);
+		cache = new LRUCache(CACHESIZE);
 
 		MyServer server = new MyServer(serversocket, local_host_key, local_ip,local_port,fingerTable,node,finger,successorNode,predecessorNode,M,dataList,antiFingerTable,cache);
 		MyClient client = new MyClient(fingerTable,node,M,dataList,antiFingerTable, cache);

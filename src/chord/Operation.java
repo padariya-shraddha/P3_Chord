@@ -456,6 +456,8 @@ public class Operation {
 				String ip ;
 				int port;
 
+				networkObj.traversalList.add(""+selfId);
+				
 				//check if NodeId is in range of predecessorID and self
 				int predecessorID = node.getPredecessor().getId();
 				predecessorID = (predecessorID+1)%((int) Math.pow(2, M));
@@ -816,7 +818,9 @@ public class Operation {
 			//System.out.println("send request for node :"+i);
 
 			MyNetwork temp = new MyNetwork();
-
+			
+			temp.traversalList = new ArrayList<>();
+			
 			temp.requestedNodeId= node.getId();
 			temp.requestedNodeIp= node.getIp();
 			temp.requestedNodeport = node.getPortNo();
