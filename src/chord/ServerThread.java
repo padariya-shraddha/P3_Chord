@@ -106,6 +106,7 @@ class ServerThread extends Thread{
 					outSuccess(modelObj);
 					output_disable = true;
 				} else if (modelObj.command.equals("successfully found")) {
+					System.out.println("successfully found"+modelObj.analysisNodeId);
 					inSuccess(modelObj);
 					output_disable = true;
 				}

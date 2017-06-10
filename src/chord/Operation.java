@@ -462,7 +462,7 @@ public class Operation {
 				predecessorID = (predecessorID+1)%((int) Math.pow(2, M));
 
 				//check if NodeId resides between self and successor
-				selfId= (selfId+1)%((int) Math.pow(2, M));
+				int temp = (selfId+1)%((int) Math.pow(2, M));
 				int successorID = node.getSuccessor().getId();
 				NodeInfo nodeInfo;
 				if ( (nodeInfo = cache.get(networkObj.dataString)) != null && analysisFlag == false) {
@@ -500,22 +500,23 @@ public class Operation {
 						e.printStackTrace();
 					}
 				}
-				if (checkSpanRange1(predecessorID, selfId, NodeId, true, M)) {
+				else if (checkSpanRange1(predecessorID, selfId, NodeId, true, M)) {
 					//checking in self
 					if (dataList.contains(networkObj.dataString) || analysisFlag) {
 						//System.out.println("Data key" + networkObj.dataString+ " is found in" + node.getId()); 
 						//if(networkObj.requestedNodeId != node.getId()) {
-							networkObj.command ="successfully found";
-							networkObj.respondedNodeId= node.getId();
-							networkObj.respondedNodeIp = node.getIp();
-							networkObj.respondedNodeport = node.getPortNo();
-							sendMessage(networkObj.requestedNodeIp, networkObj.requestedNodeport, networkObj);
+						networkObj.command ="successfully found";
+						networkObj.respondedNodeId= node.getId();
+						networkObj.respondedNodeIp = node.getIp();
+						networkObj.respondedNodeport = node.getPortNo();
+						sendMessage(networkObj.requestedNodeIp, networkObj.requestedNodeport, networkObj);
 						//}
 					}
 					return;
 				}
-				else if (checkSpanRange1(selfId,successorID,NodeId,true,M)) {
+				else if (checkSpanRange1(temp,successorID,NodeId,true,M)) {
 					//send request to successor
+					System.out.println("in successor for node "+networkObj.analysisNodeId);
 					ip = node.getSuccessor().getIp();
 					port = node.getSuccessor().getPortNo();
 					networkObj.hopCount =networkObj.hopCount+1;
