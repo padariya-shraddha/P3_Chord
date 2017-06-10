@@ -609,17 +609,16 @@ class ServerThread extends Thread{
 	}
 
 	public void outSuccess(MyNetwork modelObj) {
-		System.out.println("The data "+modelObj.dataString +" is successfully added on node "+ modelObj.respondedNodeId);
-		System.out.println("Hop count :"+modelObj.hopCount);
-		System.out.println("chord>");
+		System.out.println("The data "+modelObj.dataString +" is successfully added on node "+ modelObj.respondedNodeId+" , Hop count :"+modelObj.hopCount);
+		System.out.print("chord>");
 	}
 	
 	public void inSuccess(MyNetwork modelObj) {
 		if (modelObj.analysisFlag) {
-			System.out.println("The data key "+modelObj.analysisNodeId +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount);
+			System.out.println("The data key "+modelObj.analysisNodeId +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
 			
 		} else {
-			System.out.println("The data "+modelObj.dataString +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount);
+			System.out.println("The data "+modelObj.dataString +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
 			//System.out.println("Hop count :"+modelObj.hopCount);
 		}
 		System.out.println("Checking");

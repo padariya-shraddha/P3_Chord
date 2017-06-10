@@ -30,4 +30,5 @@ public class MyNetwork implements Serializable{
 	public boolean dataFound;
 	public int analysisNodeId;
 	public boolean analysisFlag;
+	public List<String> traversalList;
 }
