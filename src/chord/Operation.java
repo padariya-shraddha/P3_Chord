@@ -112,13 +112,13 @@ public class Operation {
 
 	public static boolean checkSpanRange(int start,int end,int searchKey,boolean flag,int M) {
 
-		if (start==end) {
-			return true;
-		}
-		
 		int mytemp = (end+1)%((int)Math.pow(2, M));
 		
 		if (mytemp==start) {
+			return true;
+		}
+		
+		if (start==end) {
 			return true;
 		}
 		
@@ -464,7 +464,7 @@ public class Operation {
 
 						// contact node Indo
 						cache.print();
-						System.out.println(" The data string " +networkObj.dataString + " is found in cache and it's present on node id" +nodeInfo.nodeId);
+						//System.out.println(" The data string " +networkObj.dataString + " is found in cache and it's present on node id" +nodeInfo.nodeId);
 						try {
 							networkObj.command = "cache";
 							Socket s = new Socket(nodeInfo.ip, nodeInfo.port);
@@ -477,7 +477,14 @@ public class Operation {
 							s.close();
 
 							if(response.dataFound) {
-								System.out.println("The data" +networkObj.dataString+" is found");
+								//System.out.println("The data" +networkObj.dataString+" is found");
+								
+								networkObj.command ="successfully found";
+								networkObj.respondedNodeId= node.getId();
+								networkObj.respondedNodeIp = node.getIp();
+								networkObj.respondedNodeport = node.getPortNo();
+								sendMessage(networkObj.requestedNodeIp, networkObj.requestedNodeport, networkObj);
+								
 								return;
 							}
 							else {
@@ -485,8 +492,8 @@ public class Operation {
 								cache.remove(nodeInfo,0);
 								cache.print();
 								networkObj.command = "in";
-								System.out.println("The data must have been transferrred during add or delete operation");
-								System.out.println("using normal chord lookup to find data");
+								//System.out.println("The data must have been transferrred during add or delete operation");
+								//System.out.println("using normal chord lookup to find data");
 							}
 
 						} catch (IOException | ClassNotFoundException e) {
@@ -495,8 +502,8 @@ public class Operation {
 							// resetting command
 							cache.print();
 							networkObj.command = "in";
-							System.out.println("Node deleted. Using normal chord lookup to find data");
-							System.out.println("using normal chord lookup to find data");
+							//System.out.println("Node deleted. Using normal chord lookup to find data");
+							//System.out.println("using normal chord lookup to find data");
 						} 				
 					}
 				}
@@ -611,6 +618,7 @@ public class Operation {
 				int successorID = node.getSuccessor().getId();
 				
 				if (checkSpanRange(predecessorID, selfId, NodeId, true, M)) {
+					//System.out.println("in self for :"+NodeId);
 					//checking in self
 					if (dataList.contains(networkObj.dataString) || analysisFlag) {
 						

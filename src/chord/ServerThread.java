@@ -157,12 +157,12 @@ class ServerThread extends Thread{
 		if(dataList.contains(modelObj.dataString)) {
 			modelObj.dataFound = true;
 			out.writeObject(modelObj);
-			System.out.println("The data string " + modelObj.dataString+ " is found on "+ node.getId());
+			//System.out.println("The data string " + modelObj.dataString+ " is found on "+ node.getId());
 		}
 		
 		else {
 			modelObj.dataFound = false;
-			System.out.println("The data string " + modelObj.dataString+ " is not found");
+			//System.out.println("The data string " + modelObj.dataString+ " is not found");
 			out.writeObject(modelObj);
 		}
 		
@@ -625,17 +625,17 @@ class ServerThread extends Thread{
 		if (modelObj.analysisFlag) {
 			//System.out.println("The data key "+modelObj.analysisNodeId +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
 			String temp = "data key: "+modelObj.analysisNodeId +" ,found on node: "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" ,Traversal List :"+modelObj.traversalList;
-			//System.out.println(modelObj.hopCount);
+			System.out.println(modelObj.hopCount);
 			//System.out.println(modelObj.hopCount+" ,"+modelObj.traversalList);
 			//System.out.println(modelObj.hopCount);
-			System.out.println(temp);
-			//analysisStore.add(temp);
+			//System.out.println(temp);
+			analysisStore.add(temp);
 		} else {
 			System.out.println("The data "+modelObj.dataString +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
 		}
 		cache.set(modelObj.dataString, modelObj.respondedNodeIp, modelObj.respondedNodeport, modelObj.respondedNodeId );
-		System.out.print("chord> ");
-		System.out.println("Responded id :" +modelObj.respondedNodeId);
+		//System.out.print("chord> ");
+		//System.out.println("Responded id :" +modelObj.respondedNodeId);
 		//System.out.println("Responded id :" +modelObj.respondedNodeId);
 		cache.print();
 		//System.out.print("chord > ");
