@@ -109,10 +109,8 @@ public class P3
 		System.out.println();*/		
 		Operation.writeInLogFilesFinger(fingerTable, finger_path);
 		Operation.writeInLogFilesAntiFinger(antiFingerTable, AntiFinger_path);
-
 		Fix_finger fixFinger = new Fix_finger(local_host_key, local_ip,local_port,fingerTable,node,finger_path,antiFingerTable,AntiFinger_path);
 		fixFinger.start();
-		
 	}
 	
 	public void printFingerTable(){
