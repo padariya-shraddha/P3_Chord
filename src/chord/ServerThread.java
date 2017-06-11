@@ -104,9 +104,13 @@ class ServerThread extends Thread{
 					Operation.outMethod(modelObj,M,node,fingerTable,antiFingerTable,dataList);
 					modelObj.response=true;
 					output_disable = true;
-				} else if(modelObj.command.equals("in")) {
-					
-					Operation.inMethod(modelObj, M, node, fingerTable,antiFingerTable, dataList,cache,modelObj.analysisFlag);
+				}else if(modelObj.command.equals("in")) {
+					if (modelObj.dontUseCache) {
+						Operation.inMethod_proto(modelObj, M, node, fingerTable, dataList, modelObj.analysisFlag);
+					} else {
+						Operation.inMethod(modelObj, M, node, fingerTable,antiFingerTable, dataList,cache,modelObj.analysisFlag);
+					}
+					//Operation.inMethod(modelObj, M, node, fingerTable,antiFingerTable, dataList,cache,modelObj.analysisFlag);
 					modelObj.response=true;
 					output_disable = true;
 				} else if(modelObj.command.equals("successfully added")) {
@@ -160,8 +164,6 @@ class ServerThread extends Thread{
 			modelObj.dataFound = false;
 			System.out.println("The data string " + modelObj.dataString+ " is not found");
 			out.writeObject(modelObj);
-			
-
 		}
 		
 	}
@@ -314,8 +316,6 @@ class ServerThread extends Thread{
 			}
 		}
 		//Operation.printAntiFingerTable(antiFingerTable);
-
-
     }
 
 	public void passFingerTableAndDataToNewNode(MyNetwork modelObj,Node previousPred, int newNodeKey){

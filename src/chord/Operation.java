@@ -338,7 +338,7 @@ public class Operation {
 				int tempselfId= (selfId+1)%totalNodes;
 				int successorID = node.getSuccessor().getId();
 
-				if (checkSpanRange1(predecessorID, selfId, NodeId, true, M)) {
+				if (Operation.checkSpanRange(predecessorID, selfId, NodeId, true, M)) {
 					//add to self
 					dataList.add(networkObj.dataString);
 					System.out.println("The data "+ networkObj.dataString +" is added on "+node.getId());
@@ -350,7 +350,7 @@ public class Operation {
 						sendMessage(networkObj.requestedNodeIp, networkObj.requestedNodeport, networkObj);
 					}
 					//return;
-				}else if (Operation.checkSpanRange1(tempselfId,successorID,NodeId,true,M)) {
+				}else if (Operation.checkSpanRange(tempselfId,successorID,NodeId,true,M)) {
 					//send request to successor
 					ip = node.getSuccessor().getIp();
 					port = node.getSuccessor().getPortNo();
@@ -377,14 +377,14 @@ public class Operation {
 
 					//find exact opposite node
 					int oppoNode= (selfId + (totalNodes/2))%totalNodes;
-					boolean clockwise = checkSpanRange1(selfId, oppoNode, NodeId, true, M);
+					boolean clockwise = Operation.checkSpanRange(selfId, oppoNode, NodeId, true, M);
 
 					if (clockwise) {
 						for (Finger finger : fingerTable) {
 							int start = finger.getKey();
 							int end = finger.getSpan();
 
-							if (Operation.checkSpanRange1(start,end,NodeId,false,M)) {
+							if (Operation.checkSpanRange(start,end,NodeId,false,M)) {
 								//send request to the node to add data
 								ip = finger.getIp();
 								port= finger.getPort();
@@ -399,7 +399,7 @@ public class Operation {
 							int start = antiFinger.getKey();
 							int end = antiFinger.getSpan();
 
-							if (Operation.checkSpanRange1(start,end,NodeId,false,M)) {
+							if (Operation.checkSpanRange(start,end,NodeId,false,M)) {
 								//send request to the node to add data
 
 								ip = antiFinger.getIp();
