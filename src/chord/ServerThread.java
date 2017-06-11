@@ -104,7 +104,7 @@ class ServerThread extends Thread{
 					Operation.outMethod(modelObj,M,node,fingerTable,antiFingerTable,dataList);
 					modelObj.response=true;
 					output_disable = true;
-				} else if(modelObj.command.equals("in")) {
+				}else if(modelObj.command.equals("in")) {
 					if (modelObj.dontUseCache) {
 						Operation.inMethod_proto(modelObj, M, node, fingerTable, dataList, modelObj.analysisFlag);
 					} else {
@@ -614,6 +614,8 @@ class ServerThread extends Thread{
 	}
 
 	public void outSuccess(MyNetwork modelObj) {
+		System.out.println("The data "+modelObj.dataString +" is successfully added on node "+ modelObj.respondedNodeId+" , Hop count :"+modelObj.hopCount);
+		System.out.print("chord>");
 		System.out.println("Hop count :"+modelObj.hopCount);
 		System.out.println("The data "+modelObj.dataString +" is successfully added on node "+ modelObj.respondedNodeId+" , Hop count :"+modelObj.hopCount);
 		System.out.print("chord > ");
@@ -632,6 +634,8 @@ class ServerThread extends Thread{
 			System.out.println("The data "+modelObj.dataString +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
 		}
 		cache.set(modelObj.dataString, modelObj.respondedNodeIp, modelObj.respondedNodeport, modelObj.respondedNodeId );
+		System.out.print("chord> ");
+		System.out.println("Responded id :" +modelObj.respondedNodeId);
 		//System.out.println("Responded id :" +modelObj.respondedNodeId);
 		cache.print();
 		//System.out.print("chord > ");
