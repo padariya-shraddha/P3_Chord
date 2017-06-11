@@ -104,7 +104,11 @@ class ServerThread extends Thread{
 					Operation.outMethod(modelObj,M,node,fingerTable,antiFingerTable,dataList);
 					modelObj.response=true;
 					output_disable = true;
+<<<<<<< HEAD
 				}else if(modelObj.command.equals("in")) {
+=======
+				} else if(modelObj.command.equals("in")) {
+>>>>>>> 2fbc96db2fb910682d03baa31ac1f79fdf69ee5b
 					if (modelObj.dontUseCache) {
 						Operation.inMethod_proto(modelObj, M, node, fingerTable, dataList, modelObj.analysisFlag);
 					} else {
@@ -623,8 +627,11 @@ class ServerThread extends Thread{
 		if (modelObj.analysisFlag) {
 			//System.out.println("The data key "+modelObj.analysisNodeId +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
 			String temp = "data key: "+modelObj.analysisNodeId +" ,found on node: "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" ,Traversal List :"+modelObj.traversalList;
-			System.out.println(modelObj.hopCount);
-			analysisStore.add(temp);
+			//System.out.println(modelObj.hopCount);
+			//System.out.println(modelObj.hopCount+" ,"+modelObj.traversalList);
+			//System.out.println(modelObj.hopCount);
+			System.out.println(temp);
+			//analysisStore.add(temp);
 		} else {
 			System.out.println("The data "+modelObj.dataString +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
 		}
