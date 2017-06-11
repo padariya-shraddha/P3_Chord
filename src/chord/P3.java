@@ -19,7 +19,7 @@ public class P3
 {	
 
 	public static final int M = 6;
-	public static final int CACHESIZE = 10;
+	public static final int CACHESIZE = 2;
 
 	private static ServerSocket serversocket;
 	private static int local_host_key;
@@ -42,13 +42,13 @@ public class P3
 			// for finger table
 			int gap = (int) (nodeId+ Math.pow(2,i));
 			
-			if (gap> Math.pow(2, M)) {
-				gap = (int) (gap % Math.pow(2, M));
+			if (gap >= Math.pow(2, M)) {
+				gap = (int) (gap % (Math.pow(2, M) ));
 			}
 			
 			int range = (int) (gap + Math.pow(2, i));
-			if (range > Math.pow(2, M)) {
-				range = (int) (range % Math.pow(2, M));
+			if (range >= Math.pow(2, M)) {
+				range = (int) (range % (Math.pow(2, M)));
 			}
 			Finger finger = new Finger(gap, range , nodeId, ip ,portNo );
 			fingerTable.add(finger);
@@ -64,7 +64,7 @@ public class P3
 			if(previousGap == -1) {
 				range = (int) (gap + Math.pow(2, i));
 			 
-				if (range > Math.pow(2, M)) {
+				if (range >= Math.pow(2, M)) {
 					range = (int) (range % Math.pow(2, M));
 
 				}
