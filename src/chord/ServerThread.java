@@ -7,6 +7,11 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Team-6
+ * @description This class serves as a server thread which continuously listen for input request
+ */
+
 class ServerThread extends Thread{ 
 	int portNumber;
 	int hostKey;
@@ -23,6 +28,7 @@ class ServerThread extends Thread{
 	boolean output_disable = false;
 	List<AntiFinger> antiFingerTable;
 	LRUCache cache;
+	public static List<String> analysisStore = new ArrayList<>();
 
 	public ServerThread(Socket s,int portNumber,int hostKey,String ipAddr,Node node,Finger finger,Node successorNode,Node predecessorNode,List<Finger> fingerTable,int M,List<String> dataList,List<AntiFinger> antiFingerTable, LRUCache cache){
 		this.s = s;
@@ -610,23 +616,26 @@ class ServerThread extends Thread{
 	public void outSuccess(MyNetwork modelObj) {
 		System.out.println("The data "+modelObj.dataString +" is successfully added on node "+ modelObj.respondedNodeId+" , Hop count :"+modelObj.hopCount);
 		System.out.print("chord>");
+		System.out.println("Hop count :"+modelObj.hopCount);
+		System.out.println("The data "+modelObj.dataString +" is successfully added on node "+ modelObj.respondedNodeId+" , Hop count :"+modelObj.hopCount);
+		System.out.print("chord > ");
 	}
 	
 	public void inSuccess(MyNetwork modelObj) {
 		if (modelObj.analysisFlag) {
-			System.out.println("The data key "+modelObj.analysisNodeId +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
-			
+			//System.out.println("The data key "+modelObj.analysisNodeId +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
+			String temp = "data key: "+modelObj.analysisNodeId +" ,found on node: "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" ,Traversal List :"+modelObj.traversalList;
+			System.out.println(modelObj.hopCount);
+			analysisStore.add(temp);
 		} else {
 			System.out.println("The data "+modelObj.dataString +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
-			//System.out.println("Hop count :"+modelObj.hopCount);
 		}
-		System.out.println("Checking");
 		cache.set(modelObj.dataString, modelObj.respondedNodeIp, modelObj.respondedNodeport, modelObj.respondedNodeId );
 		System.out.print("chord> ");
 		System.out.println("Responded id :" +modelObj.respondedNodeId);
+		//System.out.println("Responded id :" +modelObj.respondedNodeId);
 		cache.print();
-		System.out.println("Hop count :"+modelObj.hopCount);
-		System.out.print("chord>");
+		//System.out.print("chord > ");
 	}
 
 }

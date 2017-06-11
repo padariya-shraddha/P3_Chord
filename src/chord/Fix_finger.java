@@ -7,6 +7,12 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
 
+/**
+ * @author Team-6
+ * @description This thread would run in a background which would eventually make the finger table and anti-finger table 
+ * consistent for all nodes.
+ */
+
 public class Fix_finger extends Thread{
 
 	private int local_host_key;

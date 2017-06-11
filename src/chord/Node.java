@@ -1,7 +1,11 @@
 package chord;
 
 import java.io.Serializable;
-
+/**
+ * @author Team-6
+ * @description This class has been used to store all the information about node IP address,port and unique
+ * identifier which has been assigned
+ */
 public class Node implements Serializable{
 	private int id;
 	private String ip;
