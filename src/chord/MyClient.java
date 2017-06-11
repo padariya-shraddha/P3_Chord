@@ -87,6 +87,10 @@ public class MyClient extends Thread{
 						String[] parsedInputfinal = command.split("\\s+");
 						System.out.println("in readFile " +parsedInputfinal[1]);
 						Operation.readWordsFromFile(parsedInputfinal[1],networkObj,M,node,fingerTable,antiFingerTable,dataList,cache);
+					}else if(command.startsWith("storeWordFile")) {
+						String[] parsedInputfinal = command.split("\\s+");
+						System.out.println("in storeWordFile " +parsedInputfinal[1]);
+						Operation.storeWordsFromFile(parsedInputfinal[1],networkObj,M,node,fingerTable,antiFingerTable,dataList,cache);
 					}
 					else{
 						System.out.println("Please enter valid command");
@@ -169,10 +173,14 @@ public class MyClient extends Thread{
 		}else if(line.contains("readFile")) {
 			obj = new MyNetwork();
 			obj.command =line;
+		}else if(line.contains("storeWordFile")) {
+			obj = new MyNetwork();
+			obj.command =line;
 		}
 		return obj;
 	}
 
+	
 	public void addMethod(MyNetwork networkObj)
 	{
 		String keytoFind = networkObj.addObject.get(0);

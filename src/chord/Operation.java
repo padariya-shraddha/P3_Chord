@@ -17,6 +17,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
@@ -834,7 +835,7 @@ public class Operation {
 	  			temp.dataString= "";
 	  			temp.command= "in";
 	  			temp.analysisFlag = true;
-	  			inMethod(temp, M, node, fingerTable, antiFingerTable, dataList, cache,true);
+	  			inMethod(temp, M, node, fingerTable, antiFingerTable, dataList, cache,false);
 	        	  
 	          }
 	          line = br.readLine();
@@ -844,4 +845,45 @@ public class Operation {
 		}
 	}
 
+	public static void storeWordsFromFile(String fileID,MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList,LRUCache cache){
+		   
+		   System.out.println("storeWordsFromFile "+fileID);
+		   try{
+		   FileReader fr = new FileReader ("/Users/nidhi/Desktop/"+fileID+".txt");        
+	       BufferedReader br = new BufferedReader (fr);     
+	       String line = br.readLine();
+	       HashSet<String> wordList = new HashSet<String>();
+	       int count = 0;
+	       while (line != null) {
+	          String []parts = line.split(" ");
+	          for( String word : parts){
+	        	  if(!wordList.contains(word)){
+	        		  wordList.add(word);
+	        	  } 
+	          }
+	          
+	          line = br.readLine();
+	       }  
+	       
+	       for( String word : wordList)
+	          {
+	        	int dataKey = getmd5Modulo(word,M); 
+	        	MyNetwork temp = new MyNetwork();
+	  			temp.traversalList = new ArrayList<>();
+	  			temp.requestedNodeId= node.getId();
+	  			temp.requestedNodeIp= node.getIp();
+	  			temp.requestedNodeport = node.getPortNo();
+	  			temp.analysisNodeId= dataKey;
+	  			temp.dataString= "";
+	  			temp.command= "in";
+	  			temp.analysisFlag = true;
+	  			outMethod(temp,M,node,fingerTable,antiFingerTable,dataList);
+	        	  
+	          }
+	       
+		   }catch (Exception e) {
+			System.out.println("readWordsFromFile : error");
+		}
+	}
+	
 }
