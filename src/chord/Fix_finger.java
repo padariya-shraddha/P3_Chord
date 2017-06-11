@@ -52,7 +52,7 @@ public class Fix_finger extends Thread{
 			fix_finger_update();
 			fix_Antifinger_update();
 			try {
-				Thread.sleep(5000);
+				Thread.sleep(10000);
 			} catch (InterruptedException e) {
 				//e.printStackTrace();
 				//System.out.println("fix_finger : connection error --1");	//commented by shraddha

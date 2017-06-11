@@ -816,8 +816,10 @@ public class Operation {
 			temp.analysisFlag = true;
 			
 			if (enhanced) {
+				
 				inMethod(temp, M, node, fingerTable, antiFingerTable, dataList, cache,true);
 			} else {
+				temp.dontUseCache =true;
 				inMethod_proto(temp, M, node, fingerTable, dataList, true);
 			}
 			
