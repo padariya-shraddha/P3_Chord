@@ -55,6 +55,7 @@ class ServerThread extends Thread{
 		try {
 			out= new ObjectOutputStream(s.getOutputStream());
 			in=new ObjectInputStream(s.getInputStream());
+			if(in!=null){
 			modelObj = (MyNetwork) in.readObject();
 			if (modelObj != null) {
 				//System.out.println("Request received for command " + modelObj.command);
@@ -137,7 +138,7 @@ class ServerThread extends Thread{
 				output_disable = false;
 			}
 			
-
+			}
 		}catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -150,6 +151,7 @@ class ServerThread extends Thread{
 				}
 			}
 		}
+		
 	}
 
 	private void checkDataList(MyNetwork modelObj, ObjectOutputStream out) throws IOException {
@@ -622,16 +624,21 @@ class ServerThread extends Thread{
 	}
 	
 	public void inSuccess(MyNetwork modelObj) {
+		
 		if (modelObj.analysisFlag) {
 			//System.out.println("The data key "+modelObj.analysisNodeId +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
 			String temp = "data key: "+modelObj.analysisNodeId +" ,found on node: "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" ,Traversal List :"+modelObj.traversalList;
-			System.out.println(modelObj.hopCount);
+			//System.out.println("data: "+modelObj.dataString +" hope count "+modelObj.hopCount);
+			
 			//System.out.println(modelObj.hopCount+" ,"+modelObj.traversalList);
-			//System.out.println(modelObj.hopCount);
+			System.out.println(modelObj.hopCount);
 			//System.out.println(temp);
-			analysisStore.add(temp);
+			analysisStore.add("data key: "+modelObj.analysisNodeId +" "+temp);
 		} else {
-			System.out.println("The data "+modelObj.dataString +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
+			System.out.println(modelObj.hopCount);
+			//System.out.println("The data "+modelObj.dataString +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
+			//System.out.println("The data "+modelObj.dataString + "Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
+			//System.out.println("data: "+modelObj.dataString +" hope count "+modelObj.hopCount);
 		}
 		cache.set(modelObj.dataString, modelObj.respondedNodeIp, modelObj.respondedNodeport, modelObj.respondedNodeId );
 		//System.out.print("chord> ");

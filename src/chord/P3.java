@@ -19,7 +19,7 @@ public class P3
 {	
 
 	public static final int M = 6;
-	public static final int CACHESIZE = 2;
+	public static final int CACHESIZE = 10;
 
 	private static ServerSocket serversocket;
 	private static int local_host_key;

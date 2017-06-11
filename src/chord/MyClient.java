@@ -85,6 +85,10 @@ public class MyClient extends Thread{
 					else if(command.equals("paEnhanced")) {
 						Operation.printAnalysis(networkObj,M,node,fingerTable,antiFingerTable,dataList,cache,true);					
 					}
+					else if(command.equals("printCache")) {
+						LRUCache ca = new LRUCache(10);
+						ca.print();
+					}
 					else if(command.startsWith("waWithCache")) {	//word analysis with cache
 						String[] parsedInputfinal = command.split("\\s+");
 						System.out.println("in readFile " +parsedInputfinal[1]);
@@ -193,6 +197,9 @@ public class MyClient extends Thread{
 			System.out.print(line);
 		}
 		else if(line.contains("storeWordFile")) {
+			obj = new MyNetwork();
+			obj.command =line;
+		}else if(line.contains("printCache")) {
 			obj = new MyNetwork();
 			obj.command =line;
 		}
