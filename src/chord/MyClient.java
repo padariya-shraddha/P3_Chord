@@ -80,13 +80,24 @@ public class MyClient extends Thread{
 						Operation.nodeDeatil(node);
 					} 
 					else if(command.equals("analysis")) {
-						System.out.println("in analysis");
-						Operation.printAnalysis(networkObj,M,node,fingerTable,antiFingerTable,dataList,cache);
+						Operation.printAnalysis(networkObj,M,node,fingerTable,antiFingerTable,dataList,cache);					
 					}
-					else if(command.startsWith("readFile")) {
+					else if(command.startsWith("waWithCache")) {	//word analysis with cache
 						String[] parsedInputfinal = command.split("\\s+");
 						System.out.println("in readFile " +parsedInputfinal[1]);
-						Operation.readWordsFromFile(parsedInputfinal[1],networkObj,M,node,fingerTable,antiFingerTable,dataList,cache);
+						//set last parameter false because we  want to use cache for this analysis
+						Operation.readWordsFromFile(parsedInputfinal[1],networkObj,M,node,fingerTable,antiFingerTable,dataList,cache,false);
+					}
+					else if(command.startsWith("waWithoutCache")) {	//word analysis without cache
+						String[] parsedInputfinal = command.split("\\s+");
+						System.out.println("in readFile " +parsedInputfinal[1]);
+						//set last parameter true because we don't want to use cache for this analysis
+						Operation.readWordsFromFile(parsedInputfinal[1],networkObj,M,node,fingerTable,antiFingerTable,dataList,cache,true);
+					}
+					else if(command.startsWith("storeWordFile")) {
+						//String[] parsedInputfinal = command.split("\\s+");
+						//System.out.println("in storeWordFile " +parsedInputfinal[1]);
+						Operation.storeWordsFromFile(networkObj,M,node,fingerTable,antiFingerTable,dataList,cache);
 					}
 					else{
 						System.out.println("Please enter valid command");
@@ -166,7 +177,14 @@ public class MyClient extends Thread{
 		}else if(line.contains("analysis")) {
 			obj = new MyNetwork();
 			obj.command ="analysis";
-		}else if(line.contains("readFile")) {
+		}else if(line.contains("waWithCache")) {
+			obj = new MyNetwork();
+			obj.command =line;
+		}else if(line.contains("waWithoutCache")) {
+			obj = new MyNetwork();
+			obj.command =line;
+		}
+		else if(line.contains("storeWordFile")) {
 			obj = new MyNetwork();
 			obj.command =line;
 		}

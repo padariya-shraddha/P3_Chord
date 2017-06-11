@@ -17,6 +17,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
@@ -321,7 +322,7 @@ public class Operation {
 		if (networkObj != null && (!networkObj.dataString.equals(""))) {
 			String line = networkObj.dataString.trim();
 			int NodeId = Operation.getmd5Modulo(line,M);
-			System.out.println("NodeId :"+NodeId);
+			//System.out.println("NodeId :"+NodeId);
 			int totalNodes = (int) Math.pow(2, M);
 			int selfId = node.getId();
 			if (NodeId>=0) {
@@ -416,6 +417,12 @@ public class Operation {
 
 	public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList, LRUCache cache,boolean analysisFlag) throws ClassNotFoundException{
 
+		//****************
+		//use networkObj.dontUseCache to enable/disable cache
+		//dontUseCache = true => disable cache
+		//dontUseCache= false => enable cache
+		//****************
+		
 		if ((networkObj != null && (!networkObj.dataString.equals(""))) ||analysisFlag) {
 			boolean catch1 = true;
 			String line;
@@ -792,10 +799,8 @@ public class Operation {
 
 	public static void printAnalysis(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList,LRUCache cache) throws ClassNotFoundException{
 		int totalNodes= (int) Math.pow(2, M);
-		//System.out.println("node.getId() :"+node.getId()+" , node.getIp() :"+node.getIp()+""+node.getId()+" ,node.getPortNo() :"+node.getPortNo());
+		
 		for (int i = 0; i < totalNodes; i++) {
-			//System.out.println("send request for node :"+i);
-
 			MyNetwork temp = new MyNetwork();
 			
 			temp.traversalList = new ArrayList<>();
@@ -811,7 +816,18 @@ public class Operation {
 	}
 	
 	
-	public static void readWordsFromFile(String fileID,MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList,LRUCache cache){
+	/**
+	 * @param fileID
+	 * @param networkObj
+	 * @param M
+	 * @param node
+	 * @param fingerTable
+	 * @param antiFingerTable
+	 * @param dataList
+	 * @param cache
+	 * @param dontUseCache (set this para 'true' if you don't want to use cache else set it 'false')
+	 */
+	public static void readWordsFromFile(String fileID,MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList,LRUCache cache,boolean dontUseCache){
 		   
 		   System.out.println("readWordsFromFile "+fileID);
 		   try{
@@ -834,7 +850,8 @@ public class Operation {
 	  			temp.dataString= "";
 	  			temp.command= "in";
 	  			temp.analysisFlag = true;
-	  			inMethod(temp, M, node, fingerTable, antiFingerTable, dataList, cache,true);
+	  			temp.dontUseCache = dontUseCache;
+	  			inMethod(temp, M, node, fingerTable, antiFingerTable, dataList, cache,false);
 	        	  
 	          }
 	          line = br.readLine();
@@ -844,4 +861,43 @@ public class Operation {
 		}
 	}
 
+	public static void storeWordsFromFile(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList,LRUCache cache){
+		
+		try{
+			FileReader fr = new FileReader ("WordFile.txt"); 
+			BufferedReader br = new BufferedReader (fr);     
+			String line = br.readLine();
+			List<String> wordList = new ArrayList<String>();
+
+			while (line != null) {
+				System.out.println(line);
+				String []parts = line.split(" ");
+				for( String word : parts){
+					if(!wordList.contains(word)){
+						wordList.add(word);
+					} 
+				}
+				line = br.readLine();
+			}  
+			System.out.println(wordList.size());
+			for( String word : wordList)
+			{
+				int dataKey = getmd5Modulo(word,M); 
+				MyNetwork temp = new MyNetwork();
+				temp.traversalList = new ArrayList<>();
+				temp.requestedNodeId= node.getId();
+				temp.requestedNodeIp= node.getIp();
+				temp.requestedNodeport = node.getPortNo();
+				temp.analysisNodeId= dataKey;
+				temp.dataString= word;
+				temp.command= "out";
+				temp.analysisFlag = true;
+				outMethod(temp,M,node,fingerTable,antiFingerTable,dataList);
+			}
+		}catch (Exception e) {
+			System.out.println("readWordsFromFile : error");
+		}
+	}
+	
+	
 }

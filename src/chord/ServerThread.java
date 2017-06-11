@@ -28,6 +28,7 @@ class ServerThread extends Thread{
 	boolean output_disable = false;
 	List<AntiFinger> antiFingerTable;
 	LRUCache cache;
+	public static List<String> analysisStore = new ArrayList<>();
 
 	public ServerThread(Socket s,int portNumber,int hostKey,String ipAddr,Node node,Finger finger,Node successorNode,Node predecessorNode,List<Finger> fingerTable,int M,List<String> dataList,List<AntiFinger> antiFingerTable, LRUCache cache){
 		this.s = s;
@@ -620,13 +621,15 @@ class ServerThread extends Thread{
 	
 	public void inSuccess(MyNetwork modelObj) {
 		if (modelObj.analysisFlag) {
-			System.out.println("The data key "+modelObj.analysisNodeId +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
-			
+			//System.out.println("The data key "+modelObj.analysisNodeId +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
+			String temp = "data key: "+modelObj.analysisNodeId +" ,found on node: "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" ,Traversal List :"+modelObj.traversalList;
+			System.out.println(temp);
+			analysisStore.add(temp);
 		} else {
 			System.out.println("The data "+modelObj.dataString +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
 		}
 		cache.set(modelObj.dataString, modelObj.respondedNodeIp, modelObj.respondedNodeport, modelObj.respondedNodeId );
-		System.out.println("Responded id :" +modelObj.respondedNodeId);
+		//System.out.println("Responded id :" +modelObj.respondedNodeId);
 		cache.print();
 		System.out.print("chord > ");
 	}
