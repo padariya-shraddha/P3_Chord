@@ -629,7 +629,8 @@ class ServerThread extends Thread{
 			String temp = "data key: "+modelObj.analysisNodeId +" ,found on node: "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" ,Traversal List :"+modelObj.traversalList;
 			//System.out.println(modelObj.hopCount);
 			//System.out.println(modelObj.hopCount+" ,"+modelObj.traversalList);
-			System.out.println(modelObj.hopCount);
+			//System.out.println(modelObj.hopCount);
+			System.out.println(temp);
 			//analysisStore.add(temp);
 		} else {
 			System.out.println("The data "+modelObj.dataString +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
