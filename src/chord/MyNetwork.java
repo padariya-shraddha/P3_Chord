@@ -37,4 +37,5 @@ public class MyNetwork implements Serializable{
 	public int analysisNodeId;
 	public boolean analysisFlag;
 	public List<String> traversalList;
+	public boolean dontUseCache;
 }

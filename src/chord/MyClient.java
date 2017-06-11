@@ -79,18 +79,26 @@ public class MyClient extends Thread{
 					else if(command.equals("nodeDetail")) {
 						Operation.nodeDeatil(node);
 					} 
-					else if(command.equals("analysis")) {
-						System.out.println("in analysis");
-						Operation.printAnalysis(networkObj,M,node,fingerTable,antiFingerTable,dataList,cache);
+					else if(command.equals("paChord")) {
+						Operation.printAnalysis(networkObj,M,node,fingerTable,antiFingerTable,dataList,cache,false);					
 					}
-					else if(command.startsWith("readFile")) {
+					else if(command.equals("paEnhanced")) {
+						Operation.printAnalysis(networkObj,M,node,fingerTable,antiFingerTable,dataList,cache,true);					
+					}
+					else if(command.startsWith("waWithCache")) {	//word analysis with cache
 						String[] parsedInputfinal = command.split("\\s+");
 						System.out.println("in readFile " +parsedInputfinal[1]);
-						Operation.readWordsFromFile(parsedInputfinal[1],networkObj,M,node,fingerTable,antiFingerTable,dataList,cache);
-					}else if(command.startsWith("storeWordFile")) {
+						//set last parameter false because we  want to use cache for this analysis
+						Operation.readWordsFromFile(parsedInputfinal[1],networkObj,M,node,fingerTable,antiFingerTable,dataList,cache,false);
+					}
+					else if(command.startsWith("waWithoutCache")) {	//word analysis without cache
 						String[] parsedInputfinal = command.split("\\s+");
-						System.out.println("in storeWordFile " +parsedInputfinal[1]);
-						Operation.storeWordsFromFile(parsedInputfinal[1],networkObj,M,node,fingerTable,antiFingerTable,dataList,cache);
+						System.out.println("in readFile " +parsedInputfinal[1]);
+						//set last parameter true because we don't want to use cache for this analysis
+						Operation.readWordsFromFile(parsedInputfinal[1],networkObj,M,node,fingerTable,antiFingerTable,dataList,cache,true);
+					}
+					else if(command.startsWith("storeWordFile")) {
+						Operation.storeWordsFromFile(networkObj,M,node,fingerTable,antiFingerTable,dataList,cache);
 					}
 					else{
 						System.out.println("Please enter valid command");
@@ -167,20 +175,29 @@ public class MyClient extends Thread{
 		}else if(line.contains("nodeDetail")) {
 			obj = new MyNetwork();
 			obj.command ="nodeDetail";
-		}else if(line.contains("analysis")) {
+		}
+		else if(line.contains("paChord")) {
 			obj = new MyNetwork();
-			obj.command ="analysis";
-		}else if(line.contains("readFile")) {
+			obj.command ="paChord";
+		}
+		else if(line.contains("paEnhanced")) {
+			obj = new MyNetwork();
+			obj.command ="paEnhanced";
+		}
+		else if(line.contains("waWithCache")) {
 			obj = new MyNetwork();
 			obj.command =line;
-		}else if(line.contains("storeWordFile")) {
+		}else if(line.contains("waWithoutCache")) {
+			obj = new MyNetwork();
+			obj.command =line;
+		}
+		else if(line.contains("storeWordFile")) {
 			obj = new MyNetwork();
 			obj.command =line;
 		}
 		return obj;
 	}
 
-	
 	public void addMethod(MyNetwork networkObj)
 	{
 		String keytoFind = networkObj.addObject.get(0);

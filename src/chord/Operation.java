@@ -322,7 +322,7 @@ public class Operation {
 		if (networkObj != null && (!networkObj.dataString.equals(""))) {
 			String line = networkObj.dataString.trim();
 			int NodeId = Operation.getmd5Modulo(line,M);
-			System.out.println("NodeId :"+NodeId);
+			//System.out.println("NodeId :"+NodeId);
 			int totalNodes = (int) Math.pow(2, M);
 			int selfId = node.getId();
 			if (NodeId>=0) {
@@ -415,8 +415,14 @@ public class Operation {
 		}
 	}
 
-	public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList, LRUCache cache,boolean analysisFlag) throws ClassNotFoundException{
+	public static void inMethod(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList, LRUCache cache,boolean analysisFlag){
 
+		//****************
+		//use networkObj.dontUseCache to enable/disable cache
+		//dontUseCache = true => disable cache
+		//dontUseCache= false => enable cache
+		//****************
+		
 		if ((networkObj != null && (!networkObj.dataString.equals(""))) ||analysisFlag) {
 			boolean catch1 = true;
 			String line;
@@ -476,7 +482,7 @@ public class Operation {
 								System.out.println("using normal chord lookup to find data");
 							}
 
-						} catch (IOException e) {
+						} catch (IOException | ClassNotFoundException e) {
 							cache.print();
 							cache.remove(nodeInfo,0);
 							// resetting command
@@ -566,74 +572,77 @@ public class Operation {
 		}
 	}
 
-	public static void inMethod_proto(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<String> dataList){
+	public static void inMethod_proto(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<String> dataList,boolean analysisFlag){
 
-		//System.out.println("IN method");
-		//Operation.printDataTable(dataList);
-
-		if (networkObj != null && (!networkObj.dataString.equals(""))) {
-			String line = networkObj.dataString.trim();
-			int NodeId = Operation.getmd5Modulo(line,M);
-
+		if (networkObj != null && (!networkObj.dataString.equals("")) ||analysisFlag) {
+			String line;
+			int NodeId;
+			
+			if (analysisFlag) {
+				line = "";
+				NodeId = networkObj.analysisNodeId;
+			} else {
+				line = networkObj.dataString.trim();
+				NodeId = Operation.getmd5Modulo(line,M);
+			}
+			
+			int totalNodes = (int) Math.pow(2, M);
+			int selfId = node.getId();
 			if (NodeId>=0) {
-
-				//************ we can also use anti- finger table
 
 				String ip ;
 				int port;
 
+				networkObj.traversalList.add(""+selfId);
+				
 				//check if NodeId is in range of predecessorID and self
-				int selfId = node.getId();
 				int predecessorID = node.getPredecessor().getId();
 				predecessorID = (predecessorID+1)%((int) Math.pow(2, M));
 
+				//check if NodeId resides between self and successor
+				int temp = (selfId+1)%((int) Math.pow(2, M));
+				int successorID = node.getSuccessor().getId();
+				
 				if (checkSpanRange1(predecessorID, selfId, NodeId, true, M)) {
-
 					//checking in self
-					if (dataList.contains(networkObj.dataString)) {
-						System.out.println("Data key " + networkObj.dataString+ " is found in" + node.getId()); 
-						if(networkObj.requestedNodeId != node.getId()) {
-							networkObj.command ="successfully found";
-							networkObj.respondedNodeId= node.getId();
-							networkObj.respondedNodeIp = node.getIp();
-							networkObj.respondedNodeport = node.getPortNo();
-							sendMessage(networkObj.requestedNodeIp, networkObj.requestedNodeport, networkObj);
-						}
+					if (dataList.contains(networkObj.dataString) || analysisFlag) {
+						
+						networkObj.command ="successfully found";
+						networkObj.respondedNodeId= node.getId();
+						networkObj.respondedNodeIp = node.getIp();
+						networkObj.respondedNodeport = node.getPortNo();
+						sendMessage(networkObj.requestedNodeIp, networkObj.requestedNodeport, networkObj);
+					
 					}
 					return;
 				}
-
-				//check if NodeId resides between self and successor *****
-				selfId= (selfId+1)%((int) Math.pow(2, M));
-				int successorID = node.getSuccessor().getId();
-
-				if (checkSpanRange1(selfId,successorID,NodeId,true,M)) {
+				else if (checkSpanRange1(temp,successorID,NodeId,true,M)) {
 					//send request to successor
 					ip = node.getSuccessor().getIp();
 					port = node.getSuccessor().getPortNo();
-
+					networkObj.hopCount =networkObj.hopCount+1;
 					sendMessage(ip, port, networkObj);
-
 					return;
 				}
+				else{
+					
+					for (Finger finger : fingerTable) {
+						int start = finger.getKey();
+						int end = finger.getSpan();
 
-				for (Finger finger : fingerTable) {
-					int start = finger.getKey();
-					int end = finger.getSpan();
-
-					if (checkSpanRange1(start,end,NodeId,false,M)) {
-						//send request to the node which has the data
-
-						ip = finger.getIp();
-						port= finger.getPort();
-
-						sendMessage(ip, port, networkObj);
-
-						return;
+						if (checkSpanRange1(start,end,NodeId,false,M)) {
+							//send request to the node which has the data
+							ip = finger.getIp();
+							port= finger.getPort();
+							networkObj.hopCount =networkObj.hopCount+1;
+							sendMessage(ip, port, networkObj);
+							return;	//break
+						}
 					}
 				}
 			}
 		}
+		
 	}
 
 	public static void printFingerTable(List<Finger> fingerTable){
@@ -791,12 +800,10 @@ public class Operation {
 		}
 	}
 
-	public static void printAnalysis(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList,LRUCache cache) throws ClassNotFoundException{
+	public static void printAnalysis(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList,LRUCache cache,boolean enhanced){
 		int totalNodes= (int) Math.pow(2, M);
-		//System.out.println("node.getId() :"+node.getId()+" , node.getIp() :"+node.getIp()+""+node.getId()+" ,node.getPortNo() :"+node.getPortNo());
+		
 		for (int i = 0; i < totalNodes; i++) {
-			//System.out.println("send request for node :"+i);
-
 			MyNetwork temp = new MyNetwork();
 			
 			temp.traversalList = new ArrayList<>();
@@ -807,83 +814,101 @@ public class Operation {
 			temp.dataString= "";
 			temp.command= "in";
 			temp.analysisFlag = true;
-			inMethod(temp, M, node, fingerTable, antiFingerTable, dataList, cache,true);
+			
+			if (enhanced) {
+				inMethod(temp, M, node, fingerTable, antiFingerTable, dataList, cache,true);
+			} else {
+				inMethod_proto(temp, M, node, fingerTable, dataList, true);
+			}
+			
 		}
 	}
 	
-	
-	public static void readWordsFromFile(String fileID,MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList,LRUCache cache){
-		   
-		   System.out.println("readWordsFromFile "+fileID);
-		   try{
-		   FileReader fr = new FileReader ("/Users/nidhi/Desktop/"+fileID+".txt");        
-	       BufferedReader br = new BufferedReader (fr);     
-	       String line = br.readLine();
-	       int count = 0;
-	       while (line != null) {
-	          String []parts = line.split(" ");
-	          for( String word : parts)
-	          {
-	        	
-	        	int dataKey = getmd5Modulo(word,M); 
-	        	MyNetwork temp = new MyNetwork();
-	  			temp.traversalList = new ArrayList<>();
-	  			temp.requestedNodeId= node.getId();
-	  			temp.requestedNodeIp= node.getIp();
-	  			temp.requestedNodeport = node.getPortNo();
-	  			temp.analysisNodeId= dataKey;
-	  			temp.dataString= "";
-	  			temp.command= "in";
-	  			temp.analysisFlag = true;
-	  			inMethod(temp, M, node, fingerTable, antiFingerTable, dataList, cache,false);
-	        	  
-	          }
-	          line = br.readLine();
-	       }         
-		   }catch (Exception e) {
+	/**
+	 * @param fileID
+	 * @param networkObj
+	 * @param M
+	 * @param node
+	 * @param fingerTable
+	 * @param antiFingerTable
+	 * @param dataList
+	 * @param cache
+	 * @param dontUseCache (set this para 'true' if you don't want to use cache else set it 'false')
+	 */
+	public static void readWordsFromFile(String fileID,MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList,LRUCache cache,boolean dontUseCache){
+
+		System.out.println("readWordsFromFile "+fileID);
+		try{
+			FileReader fr = new FileReader (fileID+".txt");        
+			BufferedReader br = new BufferedReader (fr);     
+			String line = br.readLine();
+			int count = 0;
+			while (line != null) {
+				String []parts = line.split(" ");
+				for( String word : parts)
+				{
+					int dataKey = getmd5Modulo(word,M); 
+					MyNetwork temp = new MyNetwork();
+					temp.traversalList = new ArrayList<>();
+					temp.requestedNodeId= node.getId();
+					temp.requestedNodeIp= node.getIp();
+					temp.requestedNodeport = node.getPortNo();
+					temp.analysisNodeId= dataKey;
+					temp.dataString= "";
+					temp.command= "in";
+					temp.analysisFlag = true;
+					temp.dontUseCache = dontUseCache;
+
+					if (dontUseCache) {
+						inMethod_proto(temp, M, node, fingerTable, dataList, false);
+					} else {
+						inMethod(temp, M, node, fingerTable, antiFingerTable, dataList, cache,false);
+					}
+				}
+				line = br.readLine();
+			}         
+		}catch (Exception e) {
 			System.out.println("readWordsFromFile : error");
 		}
 	}
 
-	public static void storeWordsFromFile(String fileID,MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList,LRUCache cache){
-		   
-		   System.out.println("storeWordsFromFile "+fileID);
-		   try{
-		   FileReader fr = new FileReader ("/Users/nidhi/Desktop/"+fileID+".txt");        
-	       BufferedReader br = new BufferedReader (fr);     
-	       String line = br.readLine();
-	       HashSet<String> wordList = new HashSet<String>();
-	       int count = 0;
-	       while (line != null) {
-	          String []parts = line.split(" ");
-	          for( String word : parts){
-	        	  if(!wordList.contains(word)){
-	        		  wordList.add(word);
-	        	  } 
-	          }
-	          
-	          line = br.readLine();
-	       }  
-	       
-	       for( String word : wordList)
-	          {
-	        	int dataKey = getmd5Modulo(word,M); 
-	        	MyNetwork temp = new MyNetwork();
-	  			temp.traversalList = new ArrayList<>();
-	  			temp.requestedNodeId= node.getId();
-	  			temp.requestedNodeIp= node.getIp();
-	  			temp.requestedNodeport = node.getPortNo();
-	  			temp.analysisNodeId= dataKey;
-	  			temp.dataString= "";
-	  			temp.command= "in";
-	  			temp.analysisFlag = true;
-	  			outMethod(temp,M,node,fingerTable,antiFingerTable,dataList);
-	        	  
-	          }
-	       
-		   }catch (Exception e) {
+	public static void storeWordsFromFile(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList,LRUCache cache){
+		
+		try{
+			FileReader fr = new FileReader ("WordFile.txt"); 
+			BufferedReader br = new BufferedReader (fr);     
+			String line = br.readLine();
+			List<String> wordList = new ArrayList<String>();
+
+			while (line != null) {
+				System.out.println(line);
+				String []parts = line.split(" ");
+				for( String word : parts){
+					if(!wordList.contains(word)){
+						wordList.add(word);
+					} 
+				}
+				line = br.readLine();
+			}  
+			System.out.println(wordList.size());
+			for( String word : wordList)
+			{
+				int dataKey = getmd5Modulo(word,M); 
+				MyNetwork temp = new MyNetwork();
+				temp.traversalList = new ArrayList<>();
+				temp.requestedNodeId= node.getId();
+				temp.requestedNodeIp= node.getIp();
+				temp.requestedNodeport = node.getPortNo();
+				temp.analysisNodeId= dataKey;
+				temp.dataString= word;
+				temp.command= "out";
+				temp.analysisFlag = true;
+				outMethod(temp,M,node,fingerTable,antiFingerTable,dataList);
+			}
+		}catch (Exception e) {
 			System.out.println("readWordsFromFile : error");
 		}
 	}
+	
 	
 }
