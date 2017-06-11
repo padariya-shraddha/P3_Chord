@@ -14,6 +14,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Team-6
+ * @description This Class has been used to continuously read the commands given by users
+ */
 
 public class MyClient extends Thread{
 
@@ -78,6 +82,11 @@ public class MyClient extends Thread{
 					else if(command.equals("analysis")) {
 						System.out.println("in analysis");
 						Operation.printAnalysis(networkObj,M,node,fingerTable,antiFingerTable,dataList,cache);
+					}
+					else if(command.startsWith("readFile")) {
+						String[] parsedInputfinal = command.split("\\s+");
+						System.out.println("in readFile " +parsedInputfinal[1]);
+						Operation.readWordsFromFile(parsedInputfinal[1],networkObj,M,node,fingerTable,antiFingerTable,dataList,cache);
 					}
 					else{
 						System.out.println("Please enter valid command");
@@ -157,6 +166,9 @@ public class MyClient extends Thread{
 		}else if(line.contains("analysis")) {
 			obj = new MyNetwork();
 			obj.command ="analysis";
+		}else if(line.contains("readFile")) {
+			obj = new MyNetwork();
+			obj.command =line;
 		}
 		return obj;
 	}

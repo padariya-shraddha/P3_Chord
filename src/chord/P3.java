@@ -10,6 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+/**
+ * @author Team-6
+ * @description Main class which will invoke client thread and server thread
+ */
+
 public class P3
 {	
 	public static final int M = 6;

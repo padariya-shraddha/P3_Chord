@@ -2,6 +2,13 @@ package chord;
 
 import java.io.Serializable;
 
+/**
+ * @author Team-6
+ * @description This Class contains finger table information which would be used for searching the data key and node 
+ * consistent for all nodes.
+ */
+
+
 public class Finger implements Serializable{
 	private int key;
 	private int span;

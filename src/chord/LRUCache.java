@@ -2,6 +2,13 @@ package chord;
 
 import java.util.HashMap;
 
+/**
+ * @author Team-6
+ * @description This Class has been used to maintain the cache for each node which would be used while searching 
+ * the data efficiently
+ */
+
+
 public class LRUCache {
     int capacity;
     HashMap<String, NodeInfo> map = new HashMap<String, NodeInfo>();

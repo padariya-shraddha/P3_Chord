@@ -3,6 +3,12 @@ package chord;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * @author Team-6
+ * @description The object of this class would be used to pass all the information and to 
+ * establish communication from one node to other node
+ */
+
 public class MyNetwork implements Serializable{
 
 	public String command;

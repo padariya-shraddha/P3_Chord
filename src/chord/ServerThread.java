@@ -7,6 +7,11 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Team-6
+ * @description This class serves as a server thread which continuously listen for input request
+ */
+
 class ServerThread extends Thread{ 
 	int portNumber;
 	int hostKey;
@@ -608,12 +613,8 @@ class ServerThread extends Thread{
 	}
 
 	public void outSuccess(MyNetwork modelObj) {
-<<<<<<< HEAD
-		System.out.println("The data "+modelObj.dataString +" is successfully added on node "+ modelObj.respondedNodeId);
 		System.out.println("Hop count :"+modelObj.hopCount);
-=======
 		System.out.println("The data "+modelObj.dataString +" is successfully added on node "+ modelObj.respondedNodeId+" , Hop count :"+modelObj.hopCount);
->>>>>>> 8f06f49574db3928aa2b3b402be40a237e2fe7a0
 		System.out.print("chord>");
 	}
 	

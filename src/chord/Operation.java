@@ -1,6 +1,8 @@
 package chord;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -19,6 +21,12 @@ import java.util.List;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
+
+/**
+ * @author Team-6
+ * @description This class contains all the common methods which has been used to perform data operations and
+ * communication among all participating nodes in a distributed enviornment
+ */
 
 public class Operation {
 
@@ -820,7 +828,6 @@ public class Operation {
 			MyNetwork temp = new MyNetwork();
 			
 			temp.traversalList = new ArrayList<>();
-			
 			temp.requestedNodeId= node.getId();
 			temp.requestedNodeIp= node.getIp();
 			temp.requestedNodeport = node.getPortNo();
@@ -829,6 +836,40 @@ public class Operation {
 			temp.command= "in";
 			temp.analysisFlag = true;
 			inMethod(temp, M, node, fingerTable, antiFingerTable, dataList, cache,true);
+		}
+	}
+	
+	
+	public static void readWordsFromFile(String fileID,MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList,LRUCache cache){
+		   
+		   System.out.println("readWordsFromFile "+fileID);
+		   try{
+		   FileReader fr = new FileReader ("/Users/nidhi/Desktop/"+fileID+".txt");        
+	       BufferedReader br = new BufferedReader (fr);     
+	       String line = br.readLine();
+	       int count = 0;
+	       while (line != null) {
+	          String []parts = line.split(" ");
+	          for( String word : parts)
+	          {
+	        	
+	        	int dataKey = getmd5Modulo(word,M); 
+	        	MyNetwork temp = new MyNetwork();
+	  			temp.traversalList = new ArrayList<>();
+	  			temp.requestedNodeId= node.getId();
+	  			temp.requestedNodeIp= node.getIp();
+	  			temp.requestedNodeport = node.getPortNo();
+	  			temp.analysisNodeId= dataKey;
+	  			temp.dataString= "";
+	  			temp.command= "in";
+	  			temp.analysisFlag = true;
+	  			inMethod(temp, M, node, fingerTable, antiFingerTable, dataList, cache,true);
+	        	  
+	          }
+	          line = br.readLine();
+	       }         
+		   }catch (Exception e) {
+			System.out.println("readWordsFromFile : error");
 		}
 	}
 

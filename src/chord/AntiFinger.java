@@ -2,6 +2,10 @@ package chord;
 
 import java.io.Serializable;
 
+/**
+ * @author Team-6
+ * @description This class contains a anti-finger table which has been used for bidirectional lookup chord. 
+ */
 public class AntiFinger implements Serializable{
 	private int key;
 	private int span;
