@@ -79,8 +79,11 @@ public class MyClient extends Thread{
 					else if(command.equals("nodeDetail")) {
 						Operation.nodeDeatil(node);
 					} 
-					else if(command.equals("analysis")) {
-						Operation.printAnalysis(networkObj,M,node,fingerTable,antiFingerTable,dataList,cache);					
+					else if(command.equals("paChord")) {
+						Operation.printAnalysis(networkObj,M,node,fingerTable,antiFingerTable,dataList,cache,false);					
+					}
+					else if(command.equals("paEnhanced")) {
+						Operation.printAnalysis(networkObj,M,node,fingerTable,antiFingerTable,dataList,cache,true);					
 					}
 					else if(command.startsWith("waWithCache")) {	//word analysis with cache
 						String[] parsedInputfinal = command.split("\\s+");
@@ -95,8 +98,6 @@ public class MyClient extends Thread{
 						Operation.readWordsFromFile(parsedInputfinal[1],networkObj,M,node,fingerTable,antiFingerTable,dataList,cache,true);
 					}
 					else if(command.startsWith("storeWordFile")) {
-						//String[] parsedInputfinal = command.split("\\s+");
-						//System.out.println("in storeWordFile " +parsedInputfinal[1]);
 						Operation.storeWordsFromFile(networkObj,M,node,fingerTable,antiFingerTable,dataList,cache);
 					}
 					else{
@@ -174,10 +175,16 @@ public class MyClient extends Thread{
 		}else if(line.contains("nodeDetail")) {
 			obj = new MyNetwork();
 			obj.command ="nodeDetail";
-		}else if(line.contains("analysis")) {
+		}
+		else if(line.contains("paChord")) {
 			obj = new MyNetwork();
-			obj.command ="analysis";
-		}else if(line.contains("waWithCache")) {
+			obj.command ="paChord";
+		}
+		else if(line.contains("paEnhanced")) {
+			obj = new MyNetwork();
+			obj.command ="paEnhanced";
+		}
+		else if(line.contains("waWithCache")) {
 			obj = new MyNetwork();
 			obj.command =line;
 		}else if(line.contains("waWithoutCache")) {

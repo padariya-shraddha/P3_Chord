@@ -623,7 +623,7 @@ class ServerThread extends Thread{
 		if (modelObj.analysisFlag) {
 			//System.out.println("The data key "+modelObj.analysisNodeId +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
 			String temp = "data key: "+modelObj.analysisNodeId +" ,found on node: "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" ,Traversal List :"+modelObj.traversalList;
-			System.out.println(temp);
+			System.out.println(modelObj.hopCount);
 			analysisStore.add(temp);
 		} else {
 			System.out.println("The data "+modelObj.dataString +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
@@ -631,7 +631,7 @@ class ServerThread extends Thread{
 		cache.set(modelObj.dataString, modelObj.respondedNodeIp, modelObj.respondedNodeport, modelObj.respondedNodeId );
 		//System.out.println("Responded id :" +modelObj.respondedNodeId);
 		cache.print();
-		System.out.print("chord > ");
+		//System.out.print("chord > ");
 	}
 
 }
