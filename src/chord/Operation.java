@@ -834,6 +834,10 @@ public class Operation {
 
 	public static void printAnalysis(MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList,LRUCache cache,boolean enhanced){
 		int totalNodes= (int) Math.pow(2, M);
+		DateFormat df = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
+		Calendar calobj = Calendar.getInstance();
+
+		//String date = df.format(calobj.getTime());
 
 		for (int i = 0; i < totalNodes; i++) {
 			MyNetwork temp = new MyNetwork();
@@ -846,6 +850,8 @@ public class Operation {
 			temp.dataString= "";
 			temp.command= "in";
 			temp.analysisFlag = true;
+			temp.date = df.format(calobj.getTime());
+			temp.miliseconds = calobj.getTimeInMillis();
 
 			if (enhanced) {
 
@@ -872,7 +878,9 @@ public class Operation {
 	public static void readWordsFromFile(String fileID,MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList,LRUCache cache,boolean dontUseCache){
 		try{
 			FileReader fr = new FileReader (fileID+".txt");        
-			BufferedReader br = new BufferedReader (fr);     
+			BufferedReader br = new BufferedReader (fr);   
+			DateFormat df = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
+			Calendar calobj = Calendar.getInstance();
 			String line = br.readLine();
 			int count = 0;
 			while (line != null) {
@@ -890,6 +898,8 @@ public class Operation {
 				temp.command= "in";
 				temp.analysisFlag = true;
 				temp.dontUseCache = dontUseCache;
+				temp.date = df.format(calobj.getTime());
+				temp.miliseconds = calobj.getTimeInMillis();
 
 				if (dontUseCache) {
 					inMethod_proto(temp, M, node, fingerTable, dataList, false);

@@ -4,7 +4,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -624,6 +628,21 @@ class ServerThread extends Thread{
 	}
 	
 	public void inSuccess(MyNetwork modelObj) {
+		SimpleDateFormat format = new SimpleDateFormat("yy/MM/dd HH:mm:ss");  
+		DateFormat df = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
+		Calendar calobj = Calendar.getInstance();
+		String DateStop = df.format(calobj.getTime());
+		long diff = 0;
+				
+		if(modelObj.date != null){
+			try {
+				long timeMilli2 = calobj.getTimeInMillis();
+				diff = timeMilli2 - modelObj.miliseconds;
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.out.println("inSuccess : error in date");
+			}   
+		}
 		
 		if (modelObj.analysisFlag) {
 			//System.out.println("The data key "+modelObj.analysisNodeId +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
@@ -631,11 +650,11 @@ class ServerThread extends Thread{
 			//System.out.println("data: "+modelObj.dataString +" hope count "+modelObj.hopCount);
 			
 			//System.out.println(modelObj.hopCount+" ,"+modelObj.traversalList);
-			System.out.println(modelObj.hopCount);
+			System.out.println(modelObj.hopCount +" "+diff);
 			//System.out.println(temp);
 			analysisStore.add("data key: "+modelObj.analysisNodeId +" "+temp);
 		} else {
-			System.out.println(modelObj.hopCount);
+			System.out.println(modelObj.hopCount +" "+diff);
 			//System.out.println("The data "+modelObj.dataString +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
 			//System.out.println("The data "+modelObj.dataString + "Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
 			//System.out.println("data: "+modelObj.dataString +" hope count "+modelObj.hopCount);

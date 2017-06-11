@@ -11,7 +11,10 @@ import java.math.BigInteger;
 import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -65,6 +68,10 @@ public class MyClient extends Thread{
 						Operation.outMethod(networkObj,M,node,fingerTable,antiFingerTable,dataList);
 					} 
 					else if(command.equals("in")) {
+						DateFormat df = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
+						Calendar calobj = Calendar.getInstance();
+						networkObj.date = df.format(calobj.getTime());
+						networkObj.miliseconds = calobj.getTimeInMillis();
 						Operation.inMethod(networkObj, M, node, fingerTable,antiFingerTable, dataList,cache,false);
 					}
 					else if(command.equals("printFinger")) {

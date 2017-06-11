@@ -38,4 +38,6 @@ public class MyNetwork implements Serializable{
 	public boolean analysisFlag;
 	public List<String> traversalList;
 	public boolean dontUseCache;
+	public String date;
+	public long miliseconds;
 }
