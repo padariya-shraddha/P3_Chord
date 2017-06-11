@@ -42,7 +42,7 @@ public class MyClient extends Thread{
 		try {
 			BufferedReader br= new BufferedReader(new InputStreamReader(System.in));
 
-			System.out.print("chord > ");
+			System.out.print("chord> ");
 			String line = br.readLine();
 			line = line.trim();
 
@@ -91,7 +91,7 @@ public class MyClient extends Thread{
 						//set last parameter false because we  want to use cache for this analysis
 						Operation.readWordsFromFile(parsedInputfinal[1],networkObj,M,node,fingerTable,antiFingerTable,dataList,cache,false);
 					}
-					else if(command.startsWith("waWithoutCache")) {	//word analysis without cache
+					else if(command.startsWith("waWithOutCache")) {	//word analysis without cache
 						String[] parsedInputfinal = command.split("\\s+");
 						System.out.println("in readFile " +parsedInputfinal[1]);
 						//set last parameter true because we don't want to use cache for this analysis
@@ -103,7 +103,7 @@ public class MyClient extends Thread{
 					else{
 						System.out.println("Please enter valid command");
 					}
-					System.out.print("chord > ");
+					System.out.print("chord> ");
 					line = br.readLine();
 				}
 			}
@@ -187,9 +187,10 @@ public class MyClient extends Thread{
 		else if(line.contains("waWithCache")) {
 			obj = new MyNetwork();
 			obj.command =line;
-		}else if(line.contains("waWithoutCache")) {
+		}else if(line.contains("waWithOutCache")) {
 			obj = new MyNetwork();
 			obj.command =line;
+			System.out.print(line);
 		}
 		else if(line.contains("storeWordFile")) {
 			obj = new MyNetwork();

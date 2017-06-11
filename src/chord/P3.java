@@ -17,8 +17,8 @@ import java.util.Scanner;
 
 public class P3
 {	
-	public static final int M = 6;
-	public static final int CACHESIZE = 5;
+	public static final int M = 5;
+	public static final int CACHESIZE = 10;
 	private static ServerSocket serversocket;
 	private static int local_host_key;
 	static String local_ip;

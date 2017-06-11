@@ -115,7 +115,13 @@ public class Operation {
 		if (start==end) {
 			return true;
 		}
-
+		
+		int mytemp = (end+1)%((int)Math.pow(2, M));
+		
+		if (mytemp==start) {
+			return true;
+		}
+		
 		boolean result = false;
 		int keyStart = -1;
 		int keyEnd = -1;
@@ -424,7 +430,6 @@ public class Operation {
 		//dontUseCache = true => disable cache
 		//dontUseCache= false => enable cache
 		//****************
-		
 		if ((networkObj != null && (!networkObj.dataString.equals(""))) ||analysisFlag) {
 			boolean catch1 = true;
 			String line;
@@ -840,17 +845,16 @@ public class Operation {
 	 * @param dontUseCache (set this para 'true' if you don't want to use cache else set it 'false')
 	 */
 	public static void readWordsFromFile(String fileID,MyNetwork networkObj,int M,Node node,List<Finger> fingerTable,List<AntiFinger> antiFingerTable,List<String> dataList,LRUCache cache,boolean dontUseCache){
-
-		System.out.println("readWordsFromFile "+fileID);
 		try{
 			FileReader fr = new FileReader (fileID+".txt");        
 			BufferedReader br = new BufferedReader (fr);     
 			String line = br.readLine();
 			int count = 0;
 			while (line != null) {
+				
 				String []parts = line.split(" ");
 				for( String word : parts)
-				{
+				{	
 					int dataKey = getmd5Modulo(word,M); 
 					MyNetwork temp = new MyNetwork();
 					temp.traversalList = new ArrayList<>();
@@ -858,7 +862,7 @@ public class Operation {
 					temp.requestedNodeIp= node.getIp();
 					temp.requestedNodeport = node.getPortNo();
 					temp.analysisNodeId= dataKey;
-					temp.dataString= "";
+					temp.dataString= word;
 					temp.command= "in";
 					temp.analysisFlag = true;
 					temp.dontUseCache = dontUseCache;
@@ -885,7 +889,6 @@ public class Operation {
 			List<String> wordList = new ArrayList<String>();
 
 			while (line != null) {
-				System.out.println(line);
 				String []parts = line.split(" ");
 				for( String word : parts){
 					if(!wordList.contains(word)){
@@ -894,7 +897,7 @@ public class Operation {
 				}
 				line = br.readLine();
 			}  
-			System.out.println(wordList.size());
+			//System.out.println(wordList.size());
 			for( String word : wordList)
 			{
 				int dataKey = getmd5Modulo(word,M); 
@@ -912,6 +915,8 @@ public class Operation {
 		}catch (Exception e) {
 			System.out.println("readWordsFromFile : error");
 		}
+		
+		System.out.println("chord>");
 	}
 	
 	

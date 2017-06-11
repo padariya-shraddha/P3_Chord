@@ -104,11 +104,7 @@ class ServerThread extends Thread{
 					Operation.outMethod(modelObj,M,node,fingerTable,antiFingerTable,dataList);
 					modelObj.response=true;
 					output_disable = true;
-<<<<<<< HEAD
-				}else if(modelObj.command.equals("in")) {
-=======
 				} else if(modelObj.command.equals("in")) {
->>>>>>> 2fbc96db2fb910682d03baa31ac1f79fdf69ee5b
 					if (modelObj.dontUseCache) {
 						Operation.inMethod_proto(modelObj, M, node, fingerTable, dataList, modelObj.analysisFlag);
 					} else {
