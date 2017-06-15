@@ -645,7 +645,7 @@ class ServerThread extends Thread{
 		}
 		
 		if (modelObj.analysisFlag) {
-			//System.out.println("The data key "+modelObj.analysisNodeId +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
+			System.out.println("The data key "+modelObj.analysisNodeId +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
 			String temp = "data key: "+modelObj.analysisNodeId +" ,found on node: "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" ,Traversal List :"+modelObj.traversalList;
 			//System.out.println("data: "+modelObj.dataString +" hope count "+modelObj.hopCount);
 			
@@ -655,7 +655,7 @@ class ServerThread extends Thread{
 			analysisStore.add("data key: "+modelObj.analysisNodeId +" "+temp);
 		} else {
 			System.out.println(modelObj.hopCount +" "+diff);
-			//System.out.println("The data "+modelObj.dataString +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
+			System.out.println("The data "+modelObj.dataString +" is successfully found on node "+ modelObj.respondedNodeId+" ,Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
 			//System.out.println("The data "+modelObj.dataString + "Hop count :"+modelObj.hopCount+" , Traversal List :"+modelObj.traversalList);
 			//System.out.println("data: "+modelObj.dataString +" hope count "+modelObj.hopCount);
 		}
